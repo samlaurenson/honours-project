@@ -1,4 +1,0 @@
-language: csharp
-solution: HonoursProject.sln
-mono:
-    - latest
