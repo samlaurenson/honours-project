@@ -1,4 +1,20 @@
 language: csharp
-solution: HonoursProject/HonoursProject.sln
-mono:
-    - latest
+services:
+    - docker
+before_install:
+    - docker pull mcr.microsoft.com/dotnet/core/sdk:latest
+jobs:
+    include:
+        - stage: build
+            - script:
+                - dotnet restore
+                - dotnet test
+                - dotnet build -c Release
+        - stage: deploy
+            - script:
+                - dotnet publish -c Release
+                - docker build -t honsproj .
+            
+stages:
+    - build
+    - deploy
