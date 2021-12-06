@@ -11,7 +11,7 @@ namespace HonoursProject
         {
             Console.WriteLine("Hello World!");
             int i = 0;
-            while(true)
+            while(i < 15)
             {
                 Console.WriteLine(i);
                 i++;
