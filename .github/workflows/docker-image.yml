@@ -29,3 +29,6 @@ jobs:
     
     - name: Build the Docker image
       run: docker build -t honsproj HonoursProject/.
+      
+    - name: Run docker container
+      run: docker run honsproj
