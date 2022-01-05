@@ -1,5 +1,6 @@
 ﻿using System;
 using ActressMas;
+using HonoursProject.behaviours;
 
 namespace HonoursProject
 {
@@ -19,12 +20,16 @@ namespace HonoursProject
     {
         static void Main(string[] args)
         {
-            TestMe t = new TestMe();
+            /*TestMe t = new TestMe();
             int test = t.func(2);
-            int test2 = t.func2(2);
+            int test2 = t.func2(2);*/
             var env = new EnvironmentMas();
-            var houseAg = new HouseAgent();
+            var advertAgent = new AdvertisingAgent(3);
+            var houseAg = new HouseAgent(new SelfishBehaviour());
+
+            env.Add(advertAgent, "advertiser");
             env.Add(houseAg, "house");
+
             env.Start();
             //Console.ReadLine();
         }
