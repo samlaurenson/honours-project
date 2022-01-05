@@ -64,18 +64,29 @@ namespace HonoursProject
                 totalDemandValues[i] = totalDemand;
             }
 
+            Random rand = new Random();
 
             var env = new EnvironmentMas(noTurns: 100);
+            int numberOfHouseholds = 2;
 
             //Demand curves will be used for requesting and receiving time slot allocations
             env.Memory.Add("DemandCurve", bucketedDemandCurves);
             env.Memory.Add("TotalDemandValues", totalDemandValues);
+            env.Memory.Add("EnvRandom", rand);
+            env.Memory.Add("UniqueTimeSlots", uniqueTimeSlots);
+            env.Memory.Add("NoOfAgents", numberOfHouseholds);
 
             var advertAgent = new AdvertisingAgent(3);
-            var houseAg = new HouseAgent(new SelfishBehaviour());
+            var dayManager = new DayManagerAgent();
+
+            for (int i = 0; i < numberOfHouseholds; i++)
+            {
+                var houseAg = new HouseAgent(new SelfishBehaviour());
+                env.Add(houseAg, $"house{i}");
+            }
 
             env.Add(advertAgent, "advertiser");
-            env.Add(houseAg, "house");
+            env.Add(dayManager, "daymanager");
 
             env.Start();
         }
