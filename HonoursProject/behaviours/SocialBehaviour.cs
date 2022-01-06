@@ -10,9 +10,54 @@ namespace HonoursProject.behaviours
         //If agent accepts the exchange, true will be returned, otherwise function will return false
         public bool ConsiderRequest(HouseAgent agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot)
         {
-            //could have a bool for this function to see whether or not the requesting agent is in the list of agents who this agent owes favours to
-            //check for if agent is in list would be done in HouseAgent bit - the decision will be made here
-            throw new NotImplementedException();
+            double currentSatisfaction = agent.CalculateSatisfaction(null);
+
+            List<int> potentialAllocatedTimeSlots = new List<int>(agent.AllocatedSlots);
+
+            //Checking agent still has time slot that requesting agent is looking for
+            if (potentialAllocatedTimeSlots.Contains(requestedSlot))
+            {
+                //Replacing requested slot with the requesting agents unwanted slot
+                potentialAllocatedTimeSlots.Remove(requestedSlot);
+                potentialAllocatedTimeSlots.Add(requestingAgentSlot);
+
+                double potentialSatisfaction = agent.CalculateSatisfaction(potentialAllocatedTimeSlots);
+
+                if (potentialSatisfaction > currentSatisfaction)
+                {
+                    return true;
+                }
+
+                if (Equals(potentialSatisfaction, currentSatisfaction))
+                {
+                    if (agent.SocialCapital)
+                    {
+                        int favoursOwedToRequester = 0;
+                        int favoursGivenToRequester = 0;
+
+                        if (agent.FavoursOwed.ContainsKey(requestingAgentName))
+                        {
+                            favoursOwedToRequester = agent.FavoursOwed[requestingAgentName];
+                        }
+
+                        if (agent.FavoursGiven.ContainsKey(requestingAgentName))
+                        {
+                            favoursGivenToRequester = agent.FavoursGiven[requestingAgentName];
+                        }
+
+                        if (favoursOwedToRequester > favoursGivenToRequester)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        //When social capital is not used, social agents always accept neutral exchanges
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         //Determines if the agent should switch strategy from selfish to social

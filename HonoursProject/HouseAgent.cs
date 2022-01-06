@@ -12,9 +12,12 @@ namespace HonoursProject
         private IBehaviour _agentBehaviour;
         private int _satisfaction;
         private bool _madeInteraction;
+        private bool _useSocialCapital;
         private List<int> _allocatedSlots = new List<int>();
         private List<int> _requestedSlots = new List<int>();
-        private List<string> _favoursOwedTo = new List<string>();
+        //private List<string> _favoursOwedTo = new List<string>();
+        private Dictionary<string, int> _favoursOwed = new Dictionary<string, int>();
+        private Dictionary<string, int> _favoursGiven = new Dictionary<string, int>();
 
         private static int curve = 0;
         private static int numberOfTimeSlotsWanted = 4;
@@ -33,11 +36,29 @@ namespace HonoursProject
             set { this._agentBehaviour = value; }
         }
 
-        public List<string> FavoursOwedList
+        public bool SocialCapital
+        {
+            get { return this._useSocialCapital; }
+            set { this._useSocialCapital = value; }
+        }
+
+        public Dictionary<string, int> FavoursOwed
+        {
+            get { return this._favoursOwed; }
+            set { this._favoursOwed = value; }
+        }
+
+        public Dictionary<string, int> FavoursGiven
+        {
+            get { return this._favoursGiven; }
+            set { this._favoursGiven = value; }
+        }
+
+        /*public List<string> FavoursOwedList
         {
             get { return _favoursOwedTo; }
             set { _favoursOwedTo = value; }
-        }
+        }*/
 
         public List<int> AllocatedSlots
         {
