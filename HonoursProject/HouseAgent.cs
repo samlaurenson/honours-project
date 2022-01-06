@@ -19,7 +19,7 @@ namespace HonoursProject
         private static int curve = 0;
         private static int numberOfTimeSlotsWanted = 4;
 
-        private static List<double> _agentFlexibility = new List<double>() { 1.0, 0.75 }; //Temporarily putting this here until a better place is found
+        private List<double> _agentFlexibility; //Temporarily putting this here until a better place is found
         //Using 2 entries for agent flexibility so that unit tests could be made to fully test the satisfaction calculation function
 
         public HouseAgent(IBehaviour behaviour)
@@ -43,6 +43,12 @@ namespace HonoursProject
         {
             get { return this._requestedSlots; }
             set { this._requestedSlots = value; }
+        }
+
+        public List<double> AgentFlexibility
+        {
+            get { return this._agentFlexibility; }
+            set { this._agentFlexibility = value; }
         }
 
         public override void Setup()

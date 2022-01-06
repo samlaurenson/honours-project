@@ -82,6 +82,7 @@ namespace HonoursProject
             for (int i = 0; i < numberOfHouseholds; i++)
             {
                 var houseAg = new HouseAgent(new SelfishBehaviour());
+                houseAg.AgentFlexibility = new List<double>() { 1.0 };
                 env.Add(houseAg, $"house{i}");
             }
 
