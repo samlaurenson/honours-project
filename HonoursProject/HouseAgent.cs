@@ -19,7 +19,8 @@ namespace HonoursProject
         private static int curve = 0;
         private static int numberOfTimeSlotsWanted = 4;
 
-        private static List<double> agentFlexibility = new List<double>() { 1.0 }; //Temporarily putting this here until a better place is found
+        private static List<double> _agentFlexibility = new List<double>() { 1.0, 0.75 }; //Temporarily putting this here until a better place is found
+        //Using 2 entries for agent flexibility so that unit tests could be made to fully test the satisfaction calculation function
 
         public HouseAgent(IBehaviour behaviour)
         {
@@ -116,7 +117,7 @@ namespace HonoursProject
             double totalSatisfaction = 0;
 
 
-            for (int i = 0; i < agentFlexibility.Count; i++)
+            for (int i = 0; i < _agentFlexibility.Count; i++)
             {
                 List<int> tempAllocatedTimeSlotsCopy = new List<int>(tempAllocatedTimeSlots);
                 foreach (var allocatedSlot in tempAllocatedTimeSlotsCopy)
@@ -132,7 +133,7 @@ namespace HonoursProject
                         {
                             tempRequestedTimeSlots.Remove(allocatedSlot);
                             tempAllocatedTimeSlots.Remove(allocatedSlot);
-                            totalSatisfaction += agentFlexibility[i];
+                            totalSatisfaction += _agentFlexibility[i];
                         }
                     }
                     else
@@ -155,13 +156,13 @@ namespace HonoursProject
                             {
                                 tempRequestedTimeSlots.Remove(requestedSlot);
                                 tempAllocatedTimeSlots.Remove(allocatedSlot);
-                                totalSatisfaction += agentFlexibility[i];
+                                totalSatisfaction += _agentFlexibility[i];
                                 break;
                             } else if (allocatedSlot == temp2)
                             {
                                 tempRequestedTimeSlots.Remove(requestedSlot);
                                 tempAllocatedTimeSlots.Remove(allocatedSlot);
-                                totalSatisfaction += agentFlexibility[i];
+                                totalSatisfaction += _agentFlexibility[i];
                                 break;
                             }
                         }

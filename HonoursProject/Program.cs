@@ -67,7 +67,7 @@ namespace HonoursProject
             Random rand = new Random();
 
             var env = new EnvironmentMas(noTurns: 100);
-            int numberOfHouseholds = 2;
+            int numberOfHouseholds = 1;
 
             //Demand curves will be used for requesting and receiving time slot allocations
             env.Memory.Add("DemandCurve", bucketedDemandCurves);

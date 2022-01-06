@@ -17,7 +17,8 @@ namespace HonoursProject.Tests
             var agent = new HouseAgent(new SelfishBehaviour());
             agent.AllocatedSlots = new List<int>() { 1, 2, 3, 4 };
             agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
-            Assert.AreEqual(0.75, agent.CalculateSatisfaction(null));
+
+            Assert.AreEqual(0.9375, agent.CalculateSatisfaction(null));
         }
 
         [TestMethod()]
@@ -26,7 +27,7 @@ namespace HonoursProject.Tests
             var agent = new HouseAgent(new SelfishBehaviour());
             List<int> allocatedSlots = new List<int>() { 1, 2, 7, 4 };
             agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
-            Assert.AreEqual(0.5, agent.CalculateSatisfaction(allocatedSlots));
+            Assert.AreEqual(0.6875, agent.CalculateSatisfaction(allocatedSlots));
         }
 
         [TestMethod()]
@@ -45,6 +46,24 @@ namespace HonoursProject.Tests
             agent.AllocatedSlots = new List<int>();
             agent.RequestedSlots = new List<int>();
             Assert.AreEqual(0, agent.CalculateSatisfaction(null));
+        }
+
+        [TestMethod()]
+        public void CalculateSatisfactionTest_EmptyRequestSlots()
+        {
+            var agent = new HouseAgent(new SelfishBehaviour());
+            List<int> allocatedSlots = new List<int>() { 1, 2, 7, 4 };
+            agent.RequestedSlots = new List<int>();
+            Assert.AreEqual(0, agent.CalculateSatisfaction(allocatedSlots));
+        }
+
+        [TestMethod()]
+        public void CalculateSatisfactionTest_InvalidRequestTimeSlots()
+        {
+            var agent = new HouseAgent(new SelfishBehaviour());
+            List<int> allocatedSlots = new List<int>() { 1, 2, 7, 4 };
+            agent.RequestedSlots = new List<int>() { 0, 2, 3, 24 };
+            Assert.AreEqual(0.625, agent.CalculateSatisfaction(allocatedSlots));
         }
     }
 }
