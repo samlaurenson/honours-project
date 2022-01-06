@@ -17,4 +17,10 @@
     <ProjectReference Include="..\HonoursProject\HonoursProject.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ActressMas">
+      <HintPath>..\HonoursProject\ActressMas.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

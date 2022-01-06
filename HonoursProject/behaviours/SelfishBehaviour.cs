@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HonoursProject.behaviours
 {
-    class SelfishBehaviour : IBehaviour
+    public class SelfishBehaviour : IBehaviour
     {
         //Determines if the agent will accept the request exchange or not
         //If agent accepts the exchange, true will be returned, otherwise function will return false

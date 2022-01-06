@@ -7,7 +7,7 @@ using HonoursProject.behaviours;
 
 namespace HonoursProject
 {
-    class HouseAgent : Agent
+    public class HouseAgent : Agent
     {
         private IBehaviour _agentBehaviour;
         private int _satisfaction;
@@ -32,14 +32,16 @@ namespace HonoursProject
             set { _favoursOwedTo = value; }
         }
 
-        public List<int> GetAllocatedSlots()
+        public List<int> AllocatedSlots
         {
-            return this._allocatedSlots;
+            get {return this._allocatedSlots;}
+            set { this._allocatedSlots = value; }
         }
 
-        public List<int> GetRequestedSlots()
+        public List<int> RequestedSlots
         {
-            return this._requestedSlots;
+            get { return this._requestedSlots; }
+            set { this._requestedSlots = value; }
         }
 
         public override void Setup()
@@ -101,6 +103,11 @@ namespace HonoursProject
                 timeSlots = this._allocatedSlots;
             }
 
+            //Precaution in case both lists are empty. This should not happen but this has been put here to prevent the program crashing if this case does happen.
+            if (this._requestedSlots.Count == 0 && timeSlots.Count == 0)
+            {
+                return 0;
+            }
 
             List<int> tempRequestedTimeSlots = new List<int>(this._requestedSlots);
             List<int> tempAllocatedTimeSlots = new List<int>(timeSlots);
