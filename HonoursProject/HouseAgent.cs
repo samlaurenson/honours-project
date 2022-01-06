@@ -18,6 +18,8 @@ namespace HonoursProject
         private static int curve = 0;
         private static int numberOfTimeSlotsWanted = 4;
 
+        private static List<double> agentFlexibility = new List<double>() { 1.0 }; //Temporarily putting this here until a better place is found
+
         public HouseAgent(IBehaviour behaviour)
         {
             this._agentBehaviour = behaviour;
@@ -38,6 +40,8 @@ namespace HonoursProject
             {
                 curve = 0;
             }
+
+            Console.WriteLine(CalculateSatisfaction(null));
             Console.WriteLine("Hello World!");
         }
 
@@ -67,6 +71,79 @@ namespace HonoursProject
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        //Function that will calculate the satisfaction an agent would have when given a list of time slots
+        //If there is a null input for this function, then the agent will calculate their satisfaction using the list of slots they were allocated
+        public double CalculateSatisfaction(List<int> timeSlots)
+        {
+            //If there is no input for function, then the slots the agent has will be used for calculating the satisfaction
+            if (timeSlots == null)
+            {
+                timeSlots = this._allocatedSlots;
+            }
+
+
+            List<int> tempRequestedTimeSlots = new List<int>(this._requestedSlots);
+            List<int> tempAllocatedTimeSlots = new List<int>(timeSlots);
+
+            //Counting the number of allocated time slots that match the agents requested time slots
+            double totalSatisfaction = 0;
+
+
+            for (int i = 0; i < agentFlexibility.Count; i++)
+            {
+                List<int> tempAllocatedTimeSlotsCopy = new List<int>(tempAllocatedTimeSlots);
+                foreach (var allocatedSlot in tempAllocatedTimeSlotsCopy)
+                {
+                    if (tempRequestedTimeSlots.Count == 0)
+                    {
+                        return totalSatisfaction / numberOfTimeSlotsWanted;
+                    }
+
+                    if (i == 0)
+                    {
+                        if (tempRequestedTimeSlots.Contains(allocatedSlot))
+                        {
+                            tempRequestedTimeSlots.Remove(allocatedSlot);
+                            tempAllocatedTimeSlots.Remove(allocatedSlot);
+                            totalSatisfaction += agentFlexibility[i];
+                        }
+                    }
+                    else
+                    {
+                        foreach (var requestedSlot in tempRequestedTimeSlots)
+                        {
+                            int temp = requestedSlot + i;
+                            if (temp > 24)
+                            {
+                                temp -= 24;
+                            }
+
+                            int temp2 = requestedSlot - i;
+                            if (temp2 < 1)
+                            {
+                                temp2 += 24;
+                            }
+
+                            if (allocatedSlot == temp)
+                            {
+                                tempRequestedTimeSlots.Remove(requestedSlot);
+                                tempAllocatedTimeSlots.Remove(allocatedSlot);
+                                totalSatisfaction += agentFlexibility[i];
+                                break;
+                            } else if (allocatedSlot == temp2)
+                            {
+                                tempRequestedTimeSlots.Remove(requestedSlot);
+                                tempAllocatedTimeSlots.Remove(allocatedSlot);
+                                totalSatisfaction += agentFlexibility[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return totalSatisfaction / numberOfTimeSlotsWanted;
         }
 
         //Function that will select time slots that agent will request based on the demand curve
