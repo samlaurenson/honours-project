@@ -27,6 +27,12 @@ namespace HonoursProject
             this._agentBehaviour = behaviour;
         }
 
+        public IBehaviour Behaviour
+        {
+            get { return this._agentBehaviour; }
+            set { this._agentBehaviour = value; }
+        }
+
         public List<string> FavoursOwedList
         {
             get { return _favoursOwedTo; }
