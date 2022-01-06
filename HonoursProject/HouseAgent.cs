@@ -32,6 +32,16 @@ namespace HonoursProject
             set { _favoursOwedTo = value; }
         }
 
+        public List<int> GetAllocatedSlots()
+        {
+            return this._allocatedSlots;
+        }
+
+        public List<int> GetRequestedSlots()
+        {
+            return this._requestedSlots;
+        }
+
         public override void Setup()
         {
             //Make function to do allocation (demand curves from environment memory) and call it here
