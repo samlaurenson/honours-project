@@ -14,6 +14,7 @@ namespace HonoursProject
         private bool _madeInteraction;
         private List<int> _allocatedSlots = new List<int>();
         private List<int> _requestedSlots = new List<int>();
+        private List<string> _favoursOwedTo = new List<string>();
 
         private static int curve = 0;
         private static int numberOfTimeSlotsWanted = 4;
@@ -24,6 +25,13 @@ namespace HonoursProject
         {
             this._agentBehaviour = behaviour;
         }
+
+        public List<string> FavoursOwedList
+        {
+            get { return _favoursOwedTo; }
+            set { _favoursOwedTo = value; }
+        }
+
         public override void Setup()
         {
             //Make function to do allocation (demand curves from environment memory) and call it here
