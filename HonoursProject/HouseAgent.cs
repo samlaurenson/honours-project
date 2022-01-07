@@ -106,8 +106,8 @@ namespace HonoursProject
 
             Console.WriteLine(CalculateSatisfaction(null));
             _dataStore.HouseAgents.Add(this);
+
             Console.WriteLine("Hello World!");
-            Send("daymanager", "endOfDay");
         }
 
         public override void Act(Message message)

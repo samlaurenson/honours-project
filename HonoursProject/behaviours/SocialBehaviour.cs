@@ -45,6 +45,7 @@ namespace HonoursProject.behaviours
                             favoursGivenToRequester = agent.FavoursGiven[requestingAgentName];
                         }
 
+                        //If agent owes a favour, then request will be accepted
                         if (favoursOwedToRequester > favoursGivenToRequester)
                         {
                             return true;

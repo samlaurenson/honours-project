@@ -9,14 +9,11 @@ namespace HonoursProject.behaviours
 {
     class DayManagerAgent : Agent
     {
-        private int numOfDays = 0; //Increment for how many days have passed in the model
+        private int _numOfDays = 0; //Increment for how many days have passed in the model
         private List<int> availableTimeSlots = new List<int>();
         private int _numberOfEvolvingAgents;
         private DataStore _dataStore = DataStore.Instance;
-
-        //***NOTE*** - This agent will handle the end of day social learning stuff. This means this agent will need an instance of the datastore singleton
-        //so that it can get all the agents in the environment and will also need the input for the number of agents that will evolve in a day. This could be 
-        //input to the day agent through the likes of a constructor.
+        private List<string> _readyAgents = new List<string>();
 
         public DayManagerAgent(int numberOfEvolvingAgents)
         {
@@ -36,14 +33,27 @@ namespace HonoursProject.behaviours
                 message.Parse(out string action, out List<string> parameters);
                 switch (action)
                 {
-                    case "endOfDay":
-                        EndOfDaySocialLearning();
+                    case "readyNextDay":
+                        this._readyAgents.Add(message.Sender);
+                        break;
+                    default:
                         break;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        public override void ActDefault()
+        {
+            int numberOfAgents = _dataStore.HouseAgents.Count;
+            if (this._readyAgents.Count == numberOfAgents)
+            {
+                this._numOfDays++;
+                this._readyAgents.Clear();
+                Broadcast($"newDay {this._numOfDays}");
             }
         }
 
