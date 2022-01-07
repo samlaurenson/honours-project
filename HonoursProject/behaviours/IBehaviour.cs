@@ -10,6 +10,6 @@ namespace HonoursProject.behaviours
         //requestingAgentSlot - one that this agent is being offered by requesting agent
         //requestedSlot - one that this agent will give to the requesting agent
         public bool ConsiderRequest(HouseAgent agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot);
-        public bool SwitchStrategy();
+        public void SwitchStrategy(HouseAgent agent);
     }
 }

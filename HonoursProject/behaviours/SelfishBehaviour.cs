@@ -32,11 +32,10 @@ namespace HonoursProject.behaviours
             return false;
         }
 
-        //Determines if the agent should switch strategy from selfish to social
-        //If agent should switch strategy, then function will return true, otherwise function will return false
-        public bool SwitchStrategy()
+        //Function is called when agent will switch from selfish strategy to social strategy
+        public void SwitchStrategy(HouseAgent agent)
         {
-            throw new NotImplementedException();
+            agent.Behaviour = new SocialBehaviour();
         }
     }
 }

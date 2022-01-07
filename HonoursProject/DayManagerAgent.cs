@@ -131,7 +131,7 @@ namespace HonoursProject.behaviours
                     //Agent will swap strategy if behaviour is not the same as how the agent is currently behaving and if the difference is greater than the threshold
                     if (difference > threshold && learningAgent.Behaviour != previousPerformances[observedPerformance].Item1)
                     {
-                        learningAgent.Behaviour.SwitchStrategy();
+                        learningAgent.Behaviour.SwitchStrategy(learningAgent);
                     }
                 }
 
