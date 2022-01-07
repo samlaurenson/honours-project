@@ -34,35 +34,7 @@ namespace HonoursProject
             List<List<double>> bucketedDemandCurves = Enumerable.Repeat(new List<double>(uniqueTimeSlots), DEMAND_CURVE.Count).ToList();
             List<double> totalDemandValues = Enumerable.Repeat(new double(), DEMAND_CURVE.Count).ToList();
 
-            //Re-creating bucketing system like how the initial implementation has it
-            for (int i = 0; i < DEMAND_CURVE.Count; i++)
-            {
-                List<double> bucketedCurve = Enumerable.Repeat(new double(), uniqueTimeSlots).ToList();
-                int bucket = 0;
-                int bucketFill = 0;
-                for (int j = 0; j < DEMAND_CURVE[i].Count; j++)
-                {
-                    bucketedCurve[bucket] = bucketedCurve[bucket] + DEMAND_CURVE[i][j];
-                    bucketFill++;
-                    if (bucketFill == 6)
-                    {
-                        bucketedCurve[bucket] = Math.Round(bucketedCurve[bucket] * 10.0) / 10.0;
-                        bucketFill = 0;
-                        bucket++;
-                    }
-                }
-                bucketedDemandCurves[i] = bucketedCurve;
-
-                //Calculating total demand
-                double totalDemand = 0;
-                for (int j = 0; j < bucketedCurve.Count; j++)
-                {
-                    totalDemand = totalDemand + bucketedCurve[j];
-                }
-
-                totalDemand = Math.Round(totalDemand * 10.0) / 10.0;
-                totalDemandValues[i] = totalDemand;
-            }
+            BucketingDemandCurves(ref bucketedDemandCurves, ref totalDemandValues, DEMAND_CURVE, uniqueTimeSlots);
 
             Random rand = new Random();
 
@@ -106,6 +78,40 @@ namespace HonoursProject
                 numberOfEvolvingAgents.Add((int)Math.Round((population / 100.0f) * percentageOfEvolvingAgents[i]));
             }
             return numberOfEvolvingAgents;
+        }
+
+        //Function that will bucket demand curves which will be used to determine what slots are allocated to agents and what slots those agents will request
+        private static void BucketingDemandCurves(ref List<List<double>> bucketedDemandCurves, ref List<double> totalDemandValues, List<List<double>> demandcurve, int uniqueTimeSlots)
+        {
+            //Re-creating bucketing system like how the initial implementation has it
+            for (int i = 0; i < demandcurve.Count; i++)
+            {
+                List<double> bucketedCurve = Enumerable.Repeat(new double(), uniqueTimeSlots).ToList();
+                int bucket = 0;
+                int bucketFill = 0;
+                for (int j = 0; j < demandcurve[i].Count; j++)
+                {
+                    bucketedCurve[bucket] = bucketedCurve[bucket] + demandcurve[i][j];
+                    bucketFill++;
+                    if (bucketFill == 6)
+                    {
+                        bucketedCurve[bucket] = Math.Round(bucketedCurve[bucket] * 10.0) / 10.0;
+                        bucketFill = 0;
+                        bucket++;
+                    }
+                }
+                bucketedDemandCurves[i] = bucketedCurve;
+
+                //Calculating total demand
+                double totalDemand = 0;
+                for (int j = 0; j < bucketedCurve.Count; j++)
+                {
+                    totalDemand = totalDemand + bucketedCurve[j];
+                }
+
+                totalDemand = Math.Round(totalDemand * 10.0) / 10.0;
+                totalDemandValues[i] = totalDemand;
+            }
         }
     }
 }
