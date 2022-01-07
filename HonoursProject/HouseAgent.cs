@@ -88,7 +88,7 @@ namespace HonoursProject
         public override void Setup()
         {
             Thread.Sleep(50); 
-            _dataStore.HouseAgents.Add(this);
+            //_dataStore.HouseAgents.Add(this);
         }
 
         public override void Act(Message message)
@@ -101,6 +101,9 @@ namespace HonoursProject
                 {
                     case "allocate":
                         //initial allocation of slots for the day
+                        Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
+                        this._madeInteraction = false;
+                        Thread.Sleep(20);
                         //Listing slots - if a slot in the allocated list is not in the requested list - then this is considered unwanted and will be listed
                         List<int> slotsToList = new List<int>();
                         foreach (int slot in AllocatedSlots)
@@ -117,13 +120,16 @@ namespace HonoursProject
                         }
 
                         string advertiseSlots = string.Join(" ", slotsToList.ToArray()); //Turning slots to advertise in to string format so they can be sent to advertiser through message passing
-
-                        Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
                         Send("advertiser", $"list {advertiseSlots}");
                         break;
                     case "notify":
                         //advertising agent lets house agents know when there is a slot available to exchange
-                        string agentWithDesiredSlot = parameters[0];
+
+                        //Only do this if madeInteraction is true - if false then break
+                        if (!this._madeInteraction)
+                        {
+                            break;
+                        }
 
                         List<int> advertisingAgentSlots = new List<int>();
                         for (int i = 1; i < parameters.Count; i++)
@@ -161,6 +167,13 @@ namespace HonoursProject
                         int requestingAgentSlot = Int32.Parse(parameters[1]);
                         int requestingAgentDesiredSlot = Int32.Parse(parameters[2]);
 
+                        //Only do this if madeInteraction is true - if false then break
+                        if (!this._madeInteraction)
+                        {
+                            Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");
+                            break;
+                        }
+
                         bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
 
                         if (decision)
@@ -186,6 +199,8 @@ namespace HonoursProject
                         break;
                     case "prepareForNextDay":
                         //This message will come from the advertising agent who will send this after all the exchange rounds have been completed
+                        //Will need to calculate and store end of day satisfaction and then notify day manager that agents are ready to proceed
+                        Send("daymanager", "readyNextDay");
                         break;
                 }
             }

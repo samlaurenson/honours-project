@@ -9,7 +9,7 @@ namespace HonoursProject
 {
     class AdvertisingAgent : Agent
     {
-        private int _numberOfExchangeRounds = 5;
+        private int _numberOfExchangeRounds = 3;
         private Dictionary<string, List<int>> _advertisedTimeSlots = new Dictionary<string, List<int>>();
         private string _currentAdvertisingHouse;
         private int _currentExchangeRound;
@@ -28,8 +28,8 @@ namespace HonoursProject
         public void DayResetAdvertiser()
         {
             this._currentExchangeRound = 0;
-            this._exchangeWaitTimer = 3;
-            this._turnsToWait = 3;
+            this._exchangeWaitTimer = 6;
+            this._turnsToWait = 6;
             this._exchangeInProgress = false;
         }
 
@@ -80,6 +80,9 @@ namespace HonoursProject
                         int slotToReAdd = Int32.Parse(parameters[0]);
                         this._advertisedTimeSlots[message.Sender].Add(slotToReAdd);
                         break;
+                    case "newDay":
+                        DayResetAdvertiser();
+                        break;
                 }
             }
             catch (Exception e)
@@ -120,7 +123,7 @@ namespace HonoursProject
             {
                 return;
             }
-            Thread.Sleep(20);
+            Thread.Sleep(50);
 
             this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
             this._currentAdvertisingHouse = "";
@@ -136,7 +139,7 @@ namespace HonoursProject
             }
             else
             {
-                Console.WriteLine("End of Round");
+                Console.WriteLine($"----------- End of Round {this._currentExchangeRound} -------------------------");
                 this._currentExchangeRound++;
                 if (this._currentExchangeRound < _numberOfExchangeRounds)
                 {
@@ -144,7 +147,6 @@ namespace HonoursProject
                 }
                 else
                 {
-                    Console.WriteLine("End of day");
                     Broadcast("prepareForNextDay");
                 }
             }

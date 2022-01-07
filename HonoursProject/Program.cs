@@ -25,7 +25,7 @@ namespace HonoursProject
 
             Random rand = new Random();
             DataStore.Instance.EnvironmentRandom = rand;
-            int numberOfSimulationRuns = 5;
+            int numberOfSimulationRuns = 3;
 
             int numberOfHouseholds = 5;
 
@@ -57,6 +57,7 @@ namespace HonoursProject
                     {
                         var houseAg = new HouseAgent(new SelfishBehaviour(), k);
                         houseAg.AgentFlexibility = new List<double>() { 1.0 };
+                        DataStore.Instance.HouseAgents.Add(houseAg);
                         env.Add(houseAg, $"house{k}");
                     }
 

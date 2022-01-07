@@ -75,8 +75,12 @@ namespace HonoursProject.behaviours
 
                 EndOfDaySocialLearning();
 
-                Broadcast($"newDay {this._numOfDays}");
                 Console.WriteLine("***************** END OF DAY *********************");
+
+                Thread.Sleep(200);
+                Setup();
+                Send("advertiser", "newDay");
+                //Broadcast($"newDay {this._numOfDays}");
             }
         }
 
