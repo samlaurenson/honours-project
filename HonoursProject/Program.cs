@@ -7,18 +7,6 @@ using HonoursProject.behaviours;
 
 namespace HonoursProject
 {
-    public class TestMe
-    {
-        public int func(int t)
-        {
-            return t + 1;
-        }
-
-        public int func2(int t)
-        {
-            return t - 1;
-        }
-    }
     class Program
     {
         static void Main(string[] args)

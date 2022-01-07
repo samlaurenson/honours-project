@@ -9,6 +9,12 @@ namespace HonoursProject.behaviours.Tests
     [TestClass()]
     public class SelfishBehaviourTests
     {
+        /*
+         *
+         *      Testing considering request function
+         *
+         */
+
         [TestMethod()]
         public void ConsiderRequestTest_MutuallyBeneficial()
         {
@@ -44,6 +50,20 @@ namespace HonoursProject.behaviours.Tests
 
             bool decision = agent.Behaviour.ConsiderRequest(agent, "agent2", 6, 4);
             Assert.IsFalse(decision);
+        }
+
+        /*
+         *
+         *      Testing switch strategy function
+         *
+         */
+
+        [TestMethod()]
+        public void SwitchStrategy_SelfishToSocial()
+        {
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            agent.Behaviour.SwitchStrategy(agent);
+            Assert.IsTrue(agent.Behaviour is SocialBehaviour);
         }
     }
 }
