@@ -69,6 +69,8 @@ namespace HonoursProject
             var env = new EnvironmentMas(noTurns: 100);
             int numberOfHouseholds = 1;
 
+            List<int> numberOfEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
+
             //Demand curves will be used for requesting and receiving time slot allocations
             env.Memory.Add("DemandCurve", bucketedDemandCurves);
             env.Memory.Add("TotalDemandValues", totalDemandValues);
@@ -90,6 +92,20 @@ namespace HonoursProject
             env.Add(dayManager, "daymanager");
 
             env.Start();
+        }
+
+        //Function that will determine the number of agents that will evolve in the model
+        //Works in the way that the model will run the first time with 0% of agents evolving each day
+        //Then another version of the model will run where 10% of agents will evolve each day, and will do this for all the percentages in the percentageOfEvolvingAgents list
+        private static List<int> CalculateNumberOfEvolvingAgents(int population)
+        {
+            List<int> percentageOfEvolvingAgents = new List<int>() { 0, 10, 25, 50, 100 }; //List storing the percentage of agents that will evolve in a model
+            List<int> numberOfEvolvingAgents = new List<int>();
+            for (int i = 0; i < percentageOfEvolvingAgents.Count; i++)
+            {
+                numberOfEvolvingAgents.Add((int)Math.Round((population / 100.0f) * percentageOfEvolvingAgents[i]));
+            }
+            return numberOfEvolvingAgents;
         }
     }
 }
