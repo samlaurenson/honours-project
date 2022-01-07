@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using ActressMas;
 using HonoursProject.behaviours;
 
@@ -74,6 +75,8 @@ namespace HonoursProject
 
         public override void Setup()
         {
+            Thread.Sleep(50); //Sleeping for a bit to make sure agent doesn't cause an error when trying to access environment memory variables too quickly -- could try find a better way to overcome this
+
             //Make function to do allocation (demand curves from environment memory) and call it here
             List<List<double>> demandCurves = Environment.Memory["DemandCurve"];
 

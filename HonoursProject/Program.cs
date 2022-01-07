@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ActressMas;
 using HonoursProject.behaviours;
@@ -34,36 +35,48 @@ namespace HonoursProject
             List<List<double>> bucketedDemandCurves = Enumerable.Repeat(new List<double>(uniqueTimeSlots), DEMAND_CURVE.Count).ToList();
             List<double> totalDemandValues = Enumerable.Repeat(new double(), DEMAND_CURVE.Count).ToList();
 
-            BucketingDemandCurves(ref bucketedDemandCurves, ref totalDemandValues, DEMAND_CURVE, uniqueTimeSlots);
-
             Random rand = new Random();
+            int numberOfSimulationRuns = 5;
 
-            var env = new EnvironmentMas(noTurns: 100);
             int numberOfHouseholds = 1;
 
-            List<int> numberOfEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
+            List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
-            //Demand curves will be used for requesting and receiving time slot allocations
-            env.Memory.Add("DemandCurve", bucketedDemandCurves);
-            env.Memory.Add("TotalDemandValues", totalDemandValues);
-            env.Memory.Add("EnvRandom", rand);
-            env.Memory.Add("UniqueTimeSlots", uniqueTimeSlots);
-            env.Memory.Add("NoOfAgents", numberOfHouseholds);
-
-            var advertAgent = new AdvertisingAgent(3);
-            var dayManager = new DayManagerAgent();
-
-            for (int i = 0; i < numberOfHouseholds; i++)
+            for (int i = 0; i < listNumberEvolvingAgents.Count; i++)
             {
-                var houseAg = new HouseAgent(new SelfishBehaviour());
-                houseAg.AgentFlexibility = new List<double>() { 1.0 };
-                env.Add(houseAg, $"house{i}");
+                BucketingDemandCurves(ref bucketedDemandCurves, ref totalDemandValues, DEMAND_CURVE, uniqueTimeSlots);
+                int numberOfAgentsEvolving = listNumberEvolvingAgents[i];
+
+                for (int j = 0; j < numberOfSimulationRuns; j++)
+                {
+                    var env = new EnvironmentMas(noTurns: 100);
+                    //BucketingDemandCurves(ref bucketedDemandCurves, ref totalDemandValues, DEMAND_CURVE, uniqueTimeSlots);
+
+                    //Demand curves will be used for requesting and receiving time slot allocations
+                    env.Memory.Add("DemandCurve", bucketedDemandCurves);
+                    env.Memory.Add("TotalDemandValues", totalDemandValues);
+                    env.Memory.Add("EnvRandom", rand);
+                    env.Memory.Add("UniqueTimeSlots", uniqueTimeSlots);
+                    env.Memory.Add("NoOfAgents", numberOfHouseholds);
+
+                    var advertAgent = new AdvertisingAgent(3);
+                    var dayManager = new DayManagerAgent();
+
+                    for (int k = 0; k < numberOfHouseholds; k++)
+                    {
+                        var houseAg = new HouseAgent(new SelfishBehaviour());
+                        houseAg.AgentFlexibility = new List<double>() { 1.0 };
+                        env.Add(houseAg, $"house{k}");
+                    }
+
+                    env.Add(advertAgent, "advertiser");
+                    env.Add(dayManager, "daymanager");
+
+                    env.Start();
+
+                    Console.WriteLine($"Sim {j+1} done with {numberOfAgentsEvolving} agents evolving");
+                }
             }
-
-            env.Add(advertAgent, "advertiser");
-            env.Add(dayManager, "daymanager");
-
-            env.Start();
         }
 
         //Function that will determine the number of agents that will evolve in the model
@@ -81,6 +94,7 @@ namespace HonoursProject
         }
 
         //Function that will bucket demand curves which will be used to determine what slots are allocated to agents and what slots those agents will request
+        //NOTE: Function will be called each time model will be run with new value for evolving agents -- or at least this is how it is done in the inital implementation
         private static void BucketingDemandCurves(ref List<List<double>> bucketedDemandCurves, ref List<double> totalDemandValues, List<List<double>> demandcurve, int uniqueTimeSlots)
         {
             //Re-creating bucketing system like how the initial implementation has it
