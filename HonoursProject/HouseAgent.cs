@@ -10,12 +10,12 @@ namespace HonoursProject
     public class HouseAgent : Agent
     {
         private IBehaviour _agentBehaviour;
+        private DataStore _dataStore = DataStore.Instance;
         private int _satisfaction;
         private bool _madeInteraction;
         private bool _useSocialCapital;
         private List<int> _allocatedSlots = new List<int>();
         private List<int> _requestedSlots = new List<int>();
-        //private List<string> _favoursOwedTo = new List<string>();
         private Dictionary<string, int> _favoursOwed = new Dictionary<string, int>();
         private Dictionary<string, int> _favoursGiven = new Dictionary<string, int>();
 
@@ -54,12 +54,6 @@ namespace HonoursProject
             set { this._favoursGiven = value; }
         }
 
-        /*public List<string> FavoursOwedList
-        {
-            get { return _favoursOwedTo; }
-            set { _favoursOwedTo = value; }
-        }*/
-
         public List<int> AllocatedSlots
         {
             get {return this._allocatedSlots;}
@@ -96,6 +90,7 @@ namespace HonoursProject
             }
 
             Console.WriteLine(CalculateSatisfaction(null));
+            _dataStore.HouseAgents.Add(this);
             Console.WriteLine("Hello World!");
         }
 
