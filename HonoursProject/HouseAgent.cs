@@ -146,7 +146,14 @@ namespace HonoursProject
 
                         break;
                     case "acceptRequest":
-                        //receive request for slot exchange
+                        //Exchange was successful -- so will need to replace current slot with the desired slot
+                        //Message parameters : P0 -> slot this agent currently has, P1 -> agents desired slot
+
+                        int currentSlot = Int32.Parse(parameters[0]);
+                        int desiredSlot = Int32.Parse(parameters[1]);
+
+                        this.AllocatedSlots.Remove(currentSlot);
+                        this.AllocatedSlots.Remove(desiredSlot);
                         break;
                 }
             }
