@@ -12,6 +12,7 @@ namespace HonoursProject
     {
         private IBehaviour _agentBehaviour;
         private DataStore _dataStore = DataStore.Instance;
+        private int _id;
         private int _satisfaction;
         private bool _madeInteraction;
         private bool _useSocialCapital;
@@ -26,15 +27,21 @@ namespace HonoursProject
         private List<double> _agentFlexibility; //Temporarily putting this here until a better place is found
         //Using 2 entries for agent flexibility so that unit tests could be made to fully test the satisfaction calculation function
 
-        public HouseAgent(IBehaviour behaviour)
+        public HouseAgent(IBehaviour behaviour, int id)
         {
             this._agentBehaviour = behaviour;
+            this._id = id;
         }
 
         public IBehaviour Behaviour
         {
             get { return this._agentBehaviour; }
             set { this._agentBehaviour = value; }
+        }
+
+        public int GetID
+        {
+            get { return this._id; }
         }
 
         public bool SocialCapital
@@ -73,6 +80,11 @@ namespace HonoursProject
             set { this._agentFlexibility = value; }
         }
 
+        public int GetNumberOfTimeSlots
+        {
+            get { return numberOfTimeSlotsWanted; }
+        }
+
         public override void Setup()
         {
             Thread.Sleep(50); //Sleeping for a bit to make sure agent doesn't cause an error when trying to access environment memory variables too quickly -- could try find a better way to overcome this
@@ -95,6 +107,7 @@ namespace HonoursProject
             Console.WriteLine(CalculateSatisfaction(null));
             _dataStore.HouseAgents.Add(this);
             Console.WriteLine("Hello World!");
+            Send("daymanager", "endOfDay");
         }
 
         public override void Act(Message message)

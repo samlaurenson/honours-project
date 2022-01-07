@@ -12,8 +12,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_MutuallyBeneficial()
         {
-            var agent = new HouseAgent(new SocialBehaviour());
-            var agent2 = new HouseAgent(new SocialBehaviour());
+            var agent = new HouseAgent(new SocialBehaviour(), 0);
+            var agent2 = new HouseAgent(new SocialBehaviour(), 1);
 
             agent.AgentFlexibility = new List<double>() { 1.0 };
             agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };
@@ -31,8 +31,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_AgentDeniesRequest()
         {
-            var agent = new HouseAgent(new SocialBehaviour());
-            var agent2 = new HouseAgent(new SocialBehaviour());
+            var agent = new HouseAgent(new SocialBehaviour(), 0);
+            var agent2 = new HouseAgent(new SocialBehaviour(), 1);
 
             agent.AgentFlexibility = new List<double>() { 1.0 };
             agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };
@@ -50,8 +50,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_AgentAcceptedBecauseFavourOwed()
         {
-            var agent = new HouseAgent(new SocialBehaviour());
-            var agent2 = new HouseAgent(new SocialBehaviour());
+            var agent = new HouseAgent(new SocialBehaviour(), 0);
+            var agent2 = new HouseAgent(new SocialBehaviour(), 1);
 
             agent.AgentFlexibility = new List<double>() { 1.0 };
             agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };
@@ -70,8 +70,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_AgentAcceptedNoSocialCapital()
         {
-            var agent = new HouseAgent(new SocialBehaviour());
-            var agent2 = new HouseAgent(new SocialBehaviour());
+            var agent = new HouseAgent(new SocialBehaviour(), 0);
+            var agent2 = new HouseAgent(new SocialBehaviour(), 1);
 
             agent.AgentFlexibility = new List<double>() { 1.0 };
             agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };
@@ -90,8 +90,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_AgentDeclinesUsingSocialCapital()
         {
-            var agent = new HouseAgent(new SocialBehaviour());
-            var agent2 = new HouseAgent(new SocialBehaviour());
+            var agent = new HouseAgent(new SocialBehaviour(), 0);
+            var agent2 = new HouseAgent(new SocialBehaviour(), 1);
 
             agent.AgentFlexibility = new List<double>() { 1.0 };
             agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };

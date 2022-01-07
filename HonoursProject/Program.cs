@@ -38,7 +38,7 @@ namespace HonoursProject
             Random rand = new Random();
             int numberOfSimulationRuns = 5;
 
-            int numberOfHouseholds = 1;
+            int numberOfHouseholds = 2;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
@@ -49,8 +49,8 @@ namespace HonoursProject
 
                 for (int j = 0; j < numberOfSimulationRuns; j++)
                 {
+                    DataStore.Instance.HouseAgents.Clear();
                     var env = new EnvironmentMas(noTurns: 100);
-                    //BucketingDemandCurves(ref bucketedDemandCurves, ref totalDemandValues, DEMAND_CURVE, uniqueTimeSlots);
 
                     //Demand curves will be used for requesting and receiving time slot allocations
                     env.Memory.Add("DemandCurve", bucketedDemandCurves);
@@ -60,11 +60,11 @@ namespace HonoursProject
                     env.Memory.Add("NoOfAgents", numberOfHouseholds);
 
                     var advertAgent = new AdvertisingAgent(3);
-                    var dayManager = new DayManagerAgent();
+                    var dayManager = new DayManagerAgent(numberOfAgentsEvolving);
 
                     for (int k = 0; k < numberOfHouseholds; k++)
                     {
-                        var houseAg = new HouseAgent(new SelfishBehaviour());
+                        var houseAg = new HouseAgent(new SelfishBehaviour(), k);
                         houseAg.AgentFlexibility = new List<double>() { 1.0 };
                         env.Add(houseAg, $"house{k}");
                     }

@@ -12,8 +12,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_MutuallyBeneficial()
         {
-            var agent = new HouseAgent(new SelfishBehaviour());
-            var agent2 = new HouseAgent(new SelfishBehaviour());
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            var agent2 = new HouseAgent(new SelfishBehaviour(), 1);
 
             agent.AgentFlexibility = new List<double>() { 1.0 };
             agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };
@@ -30,8 +30,8 @@ namespace HonoursProject.behaviours.Tests
         [TestMethod()]
         public void ConsiderRequestTest_AgentDeniesRequest()
         {
-            var agent = new HouseAgent(new SelfishBehaviour());
-            var agent2 = new HouseAgent(new SelfishBehaviour());
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            var agent2 = new HouseAgent(new SelfishBehaviour(), 1);
 
             //"agent" will not want the requesting agent slot as the agent does not want slot 6 (6 is not in agent requested slot list)
             agent.AgentFlexibility = new List<double>() { 1.0 };
