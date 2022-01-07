@@ -24,9 +24,10 @@ namespace HonoursProject
             List<double> totalDemandValues = Enumerable.Repeat(new double(), DEMAND_CURVE.Count).ToList();
 
             Random rand = new Random();
+            DataStore.Instance.EnvironmentRandom = rand;
             int numberOfSimulationRuns = 5;
 
-            int numberOfHouseholds = 2;
+            int numberOfHouseholds = 5;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
@@ -41,9 +42,11 @@ namespace HonoursProject
                     var env = new EnvironmentMas(noTurns: 100);
 
                     //Demand curves will be used for requesting and receiving time slot allocations
-                    env.Memory.Add("DemandCurve", bucketedDemandCurves);
-                    env.Memory.Add("TotalDemandValues", totalDemandValues);
-                    env.Memory.Add("EnvRandom", rand);
+                    //env.Memory.Add("DemandCurve", bucketedDemandCurves);
+                    //env.Memory.Add("TotalDemandValues", totalDemandValues);
+                    //env.Memory.Add("EnvRandom", rand);
+                    DataStore.Instance.BucketedDemandCurve = bucketedDemandCurves;
+                    DataStore.Instance.TotalDemand = totalDemandValues;
                     env.Memory.Add("UniqueTimeSlots", uniqueTimeSlots);
                     env.Memory.Add("NoOfAgents", numberOfHouseholds);
 

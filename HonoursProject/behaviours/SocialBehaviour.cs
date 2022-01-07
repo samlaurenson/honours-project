@@ -64,6 +64,7 @@ namespace HonoursProject.behaviours
         //Function is called when agent will switch from social strategy to selfish strategy
         public void SwitchStrategy(HouseAgent agent)
         {
+            Console.WriteLine(agent.Name + " is switching from social to selfish");
             agent.Behaviour = new SelfishBehaviour();
         }
     }

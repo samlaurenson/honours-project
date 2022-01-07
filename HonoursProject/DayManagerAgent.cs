@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using ActressMas;
 
 namespace HonoursProject.behaviours
@@ -23,7 +24,22 @@ namespace HonoursProject.behaviours
         public override void Setup()
         {
             CreateAvailableSlots();
-            Console.WriteLine("Hello World! - Day manager");
+
+            Thread.Sleep(20);
+            int curve = 0;
+            foreach (HouseAgent agent in _dataStore.HouseAgents)
+            {
+                //Could try moving this back in to environment memory
+                agent.RequestingSlotHandler(_dataStore.BucketedDemandCurve[curve], _dataStore.TotalDemand[curve]);
+                agent.RandomSlotAllocationHandler();
+                curve++;
+                if (curve >= _dataStore.BucketedDemandCurve.Count)
+                {
+                    curve = 0;
+                }
+            }
+
+            Broadcast("allocate");
         }
 
         public override void Act(Message message)
@@ -60,6 +76,7 @@ namespace HonoursProject.behaviours
                 EndOfDaySocialLearning();
 
                 Broadcast($"newDay {this._numOfDays}");
+                Console.WriteLine("***************** END OF DAY *********************");
             }
         }
 
@@ -83,7 +100,8 @@ namespace HonoursProject.behaviours
                 {
                     if (availableTimeSlots.Count < requiredTimeSlots)
                     {
-                        Random rand = Environment.Memory["EnvRandom"];
+                        //Random rand = Environment.Memory["EnvRandom"];
+                        Random rand = _dataStore.EnvironmentRandom;
                         int selector = rand.Next(possibleTimeSlots.Count);
                         int timeSlot = possibleTimeSlots[selector];
                         availableTimeSlots.Add(timeSlot);
@@ -96,14 +114,17 @@ namespace HonoursProject.behaviours
                     }
                 }
             }
-            Environment.Memory.Add("AvailableSlots", availableTimeSlots);
+
+            _dataStore.AvailableSlots = availableTimeSlots;
+            //Environment.Memory.Add("AvailableSlots", availableTimeSlots);
         }
 
         //Function that will handle the social learning of agents after all exchanges have been made for a day
         private void EndOfDaySocialLearning()
         {
             List<HouseAgent> houseAgents = _dataStore.HouseAgents;
-            Random rand = Environment.Memory["EnvRandom"];
+            //Random rand = Environment.Memory["EnvRandom"];
+            Random rand = _dataStore.EnvironmentRandom;
 
             //If list is empty, do nothing and exit function
             if (houseAgents.Count == 0) { return; }

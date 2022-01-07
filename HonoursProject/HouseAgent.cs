@@ -87,27 +87,8 @@ namespace HonoursProject
 
         public override void Setup()
         {
-            Thread.Sleep(50); //Sleeping for a bit to make sure agent doesn't cause an error when trying to access environment memory variables too quickly -- could try find a better way to overcome this
-
-            //Make function to do allocation (demand curves from environment memory) and call it here
-            List<List<double>> demandCurves = Environment.Memory["DemandCurve"];
-
-            //Agent pick what slots they would like to receive
-            RequestingSlotHandler(demandCurves[curve], Environment.Memory["TotalDemandValues"][curve]);
-
-            //Allocating time slot to agent
-            RandomSlotAllocationHandler();
-
-            curve++;
-            if (curve >= demandCurves.Count)
-            {
-                curve = 0;
-            }
-
-            Console.WriteLine(CalculateSatisfaction(null));
+            Thread.Sleep(50); 
             _dataStore.HouseAgents.Add(this);
-
-            Console.WriteLine("Hello World!");
         }
 
         public override void Act(Message message)
@@ -120,9 +101,57 @@ namespace HonoursProject
                 {
                     case "allocate":
                         //initial allocation of slots for the day
+                        //Listing slots - if a slot in the allocated list is not in the requested list - then this is considered unwanted and will be listed
+                        List<int> slotsToList = new List<int>();
+                        foreach (int slot in AllocatedSlots)
+                        {
+                            if (!RequestedSlots.Contains(slot))
+                            {
+                                slotsToList.Add(slot);
+                            }
+                        }
+
+                        if (slotsToList.Count == 0)
+                        {
+                            break;
+                        }
+
+                        string advertiseSlots = string.Join(" ", slotsToList.ToArray()); //Turning slots to advertise in to string format so they can be sent to advertiser through message passing
+
+                        Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
+                        Send("advertiser", $"list {advertiseSlots}");
                         break;
                     case "notify":
                         //advertising agent lets house agents know when there is a slot available to exchange
+                        string agentWithDesiredSlot = parameters[0];
+
+                        List<int> advertisingAgentSlots = new List<int>();
+                        for (int i = 1; i < parameters.Count; i++)
+                        {
+                            advertisingAgentSlots.Add(Int32.Parse(parameters[i]));
+                        }
+
+                        int? slotToExchange = null;
+                        //Getting an unwanted slot to swap for a desired slot
+                        for (int i = 0; i < AllocatedSlots.Count; i++)
+                        {
+                            if (!RequestedSlots.Contains(AllocatedSlots[i]))
+                            {
+                                slotToExchange = AllocatedSlots[i];
+                            }
+                        }
+
+                        //Getting a desired slot
+                        //If the agent advertising their slot has a slot that is in this agents requested slots - then this will be the desired slot
+                        foreach (int requestSlot in RequestedSlots)
+                        {
+                            if (advertisingAgentSlots.Contains(requestSlot) && slotToExchange != null)
+                            {
+                                Send("advertiser", $"request {requestSlot} {slotToExchange}");
+                                break;
+                            }
+                        }
+
                         break;
                     case "sendRequest":
                         //gets message from advertising agent when another agent requests a slot that this agent has
@@ -142,18 +171,21 @@ namespace HonoursProject
 
                             //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
                             Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
-                        }
+                        } else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");}
 
                         break;
                     case "acceptRequest":
                         //Exchange was successful -- so will need to replace current slot with the desired slot
                         //Message parameters : P0 -> slot this agent currently has, P1 -> agents desired slot
-
+                        Console.WriteLine(Name + " had a successful trade with " + message.Sender);
                         int currentSlot = Int32.Parse(parameters[0]);
                         int desiredSlot = Int32.Parse(parameters[1]);
 
                         this.AllocatedSlots.Remove(currentSlot);
                         this.AllocatedSlots.Remove(desiredSlot);
+                        break;
+                    case "prepareForNextDay":
+                        //This message will come from the advertising agent who will send this after all the exchange rounds have been completed
                         break;
                 }
             }
@@ -242,7 +274,7 @@ namespace HonoursProject
         }
 
         //Function that will select time slots that agent will request based on the demand curve
-        private void RequestingSlotHandler(List<double> demandCurve, double totalDemand)
+        public void RequestingSlotHandler(List<double> demandCurve, double totalDemand)
         {
             if (_requestedSlots.Count > 0)
             {
@@ -251,12 +283,12 @@ namespace HonoursProject
 
             for (int i = 1; i <= numberOfTimeSlotsWanted; i++)
             {
-                Random rand = Environment.Memory["EnvRandom"];
+                Random rand = _dataStore.EnvironmentRandom;
                 // Selects a time slot based on the demand curve
                 int wheelSelector = rand.Next((int)(totalDemand * 10));
                 int wheelCalculator = 0;
                 int timeSlot = 0;
-                while (wheelCalculator < wheelSelector)
+                while (wheelCalculator < wheelSelector && timeSlot < 24)
                 {
                     wheelCalculator = wheelCalculator + ((int)(demandCurve[timeSlot] * 10));
                     timeSlot++;
@@ -275,14 +307,14 @@ namespace HonoursProject
         }
 
         //Function that will randomly allocate slots to agent
-        private void RandomSlotAllocationHandler()
+        public void RandomSlotAllocationHandler()
         {
-            List<int> availableTimeSlots = Environment.Memory["AvailableSlots"];
+            List<int> availableTimeSlots = _dataStore.AvailableSlots;
             for (int requestedTimeSlot = 1; requestedTimeSlot <= _requestedSlots.Count; requestedTimeSlot++)
             {
                 if (availableTimeSlots.Count > 0)
                 {
-                    Random rand = Environment.Memory["EnvRandom"];
+                    Random rand = DataStore.Instance.EnvironmentRandom;
                     int selector = rand.Next(availableTimeSlots.Count);
                     int timeSlot = availableTimeSlots[selector];
                     _allocatedSlots.Add(timeSlot);
