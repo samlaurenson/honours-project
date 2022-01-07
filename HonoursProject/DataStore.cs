@@ -7,6 +7,7 @@ namespace HonoursProject
     class DataStore
     {
         private static DataStore _instance;
+        private List<HouseAgent> _houseAgents = new List<HouseAgent>();
 
         private DataStore() {}
 
@@ -21,6 +22,12 @@ namespace HonoursProject
 
                 return _instance;
             }
+        }
+
+        public List<HouseAgent> HouseAgents
+        {
+            get { return _houseAgents; }
+            set { _houseAgents = value; }
         }
     }
 }
