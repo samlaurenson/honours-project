@@ -49,10 +49,16 @@ namespace HonoursProject.behaviours
         public override void ActDefault()
         {
             int numberOfAgents = _dataStore.HouseAgents.Count;
+
+            if(numberOfAgents == 0) { Stop(); } //If there are no agents in the model - leave the model
+
             if (this._readyAgents.Count == numberOfAgents)
             {
                 this._numOfDays++;
                 this._readyAgents.Clear();
+
+                EndOfDaySocialLearning();
+
                 Broadcast($"newDay {this._numOfDays}");
             }
         }
