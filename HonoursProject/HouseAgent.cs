@@ -125,7 +125,25 @@ namespace HonoursProject
                         //advertising agent lets house agents know when there is a slot available to exchange
                         break;
                     case "sendRequest":
-                        //send a request for a slot exchange
+                        //gets message from advertising agent when another agent requests a slot that this agent has
+                        //Message parameters : P0 -> requesting agent name (string), P1 -> slot to be exchanged for desired slot (int), P2 -> slot the requesting agent wants from this agent (int)
+
+                        string requestingAgentName = parameters[0];
+                        int requestingAgentSlot = Int32.Parse(parameters[1]);
+                        int requestingAgentDesiredSlot = Int32.Parse(parameters[2]);
+
+                        bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
+
+                        if (decision)
+                        {
+                            //Exchange was successful -- agent will replace the slot they had with the requesting agents slot
+                            this.AllocatedSlots.Remove(requestingAgentDesiredSlot);
+                            this.AllocatedSlots.Add(requestingAgentSlot);
+
+                            //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
+                            Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
+                        }
+
                         break;
                     case "acceptRequest":
                         //receive request for slot exchange
