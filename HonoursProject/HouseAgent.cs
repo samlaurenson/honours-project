@@ -198,23 +198,6 @@ namespace HonoursProject
                         }
 
                         this._madeInteraction = true;
-                        /*
-                        else
-                        {
-                            bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
-
-                            if (decision)
-                            {
-                                //Exchange was successful -- agent will replace the slot they had with the requesting agents slot
-                                this.AllocatedSlots.Remove(requestingAgentDesiredSlot);
-                                this.AllocatedSlots.Add(requestingAgentSlot);
-
-                                //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
-                                Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
-                            }
-                            else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}"); }
-
-                        }*/
 
                         bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
 
@@ -224,23 +207,23 @@ namespace HonoursProject
                             this.AllocatedSlots.Remove(requestingAgentDesiredSlot);
                             this.AllocatedSlots.Add(requestingAgentSlot);
 
+                            //If agent is a social agent - then remember that they have given the requesting agent a favour
+                            if (_agentBehaviour is SocialBehaviour)
+                            {
+                                if (!FavoursGiven.ContainsKey(message.Sender))
+                                {
+                                    FavoursGiven.Add(message.Sender, 1);
+                                }
+                                else
+                                {
+                                    FavoursGiven[message.Sender]++;
+                                }
+                            }
+
                             //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
                             Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
                         }
                         else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}"); }
-
-                        /*bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
-
-                        if (decision)
-                        {
-                            //Exchange was successful -- agent will replace the slot they had with the requesting agents slot
-                            this.AllocatedSlots.Remove(requestingAgentDesiredSlot);
-                            this.AllocatedSlots.Add(requestingAgentSlot);
-
-                            //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
-                            Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
-                        } else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");}
-                        */
 
                         break;
                     case "acceptRequest":
@@ -249,6 +232,19 @@ namespace HonoursProject
                         Console.WriteLine(Name + " had a successful trade with " + message.Sender);
                         int currentSlot = Int32.Parse(parameters[0]);
                         int desiredSlot = Int32.Parse(parameters[1]);
+
+                        //If requesting agent is a social agent, then remember that they owe a favour to the agent that accepted the request
+                        if (_agentBehaviour is SocialBehaviour)
+                        {
+                            if (!FavoursOwed.ContainsKey(message.Sender))
+                            {
+                                FavoursOwed.Add(message.Sender, 1);
+                            }
+                            else
+                            {
+                                FavoursOwed[message.Sender]++;
+                            }
+                        }
 
                         this.AllocatedSlots.Remove(currentSlot);
                         this.AllocatedSlots.Remove(desiredSlot);

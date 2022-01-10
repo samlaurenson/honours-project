@@ -70,9 +70,11 @@ namespace HonoursProject
                         this._advertisedTimeSlots.Add(message.Sender, advertisedSlots);
                         break;
                     case "request":
-                        //Might have to turn this in to a function which adds to a list of requests and goes through them
-                        //When timer actives then could go through the list of requests and deal with them to prevent all agents trying to
-                        //request slot from advertiser at same time
+                        //Could change this so that the advertising agent has a public function that will return if there has been a request made or not
+                        //and house agents could check this before they request. This could help overcome the problem of adding agents to a list, selecting the first one and 
+                        //then having to access and change the unselected agents back to not having made an interaction
+                        
+                        //could even shuffle the request list before picking who will be considered?
 
                         int desiredSlot = Int32.Parse(parameters[0]);
                         int slotToExchange = Int32.Parse(parameters[1]);
