@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -87,7 +88,15 @@ namespace HonoursProject
 
         private double averageAgentSatisfaction()
         {
-            return 0;
+            List<double> agentSatisfactions = new List<double>();
+
+            //Getting satisfaction for each agent in order to get the average satisfaction
+            foreach (var agent in HouseAgents)
+            {
+                agentSatisfactions.Add(agent.CalculateSatisfaction(null));
+            }
+
+            return agentSatisfactions.Average();
         }
 
         private double optimumAgentSatisfaction()
