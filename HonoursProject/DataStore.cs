@@ -12,6 +12,9 @@ namespace HonoursProject
     {
         private static DataStore _instance;
         private List<HouseAgent> _houseAgents = new List<HouseAgent>();
+
+        private Dictionary<int, List<Dictionary<int, List<double>>>> _simulations = new Dictionary<int, List<Dictionary<int, List<double>>>>(); //int -> simulation number, list is the data for models running
+                                                                                                                                                //the different number of evolving agents
         private Dictionary<int, List<double>> _endOfDaySatisfactions = new Dictionary<int, List<double>>(); //int -> day number, list of doubles -> satisfactions
 
         private List<int> _availableSlots = new List<int>();
@@ -65,10 +68,16 @@ namespace HonoursProject
             set { bucketedDemandCurves = value; }
         }
 
-        public Dictionary<int, List<double>> EndOfDaySatisfactoin
+        public Dictionary<int, List<double>> EndOfDaySatisfaction
         {
             get { return _endOfDaySatisfactions; }
             set { _endOfDaySatisfactions = value; }
+        }
+
+        public Dictionary<int, List<Dictionary<int, List<double>>>> SimulationData
+        {
+            get { return _simulations; }
+            set { _simulations = value; }
         }
 
         public void CalculateEndOfDaySatisfactions(int day)

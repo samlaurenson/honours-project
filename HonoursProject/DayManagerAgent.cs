@@ -96,6 +96,8 @@ namespace HonoursProject.behaviours
             {
                 if (this._numOfDays < this._maxDays-1)
                 {
+                    _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
+
                     Thread.Sleep(20);
                     this._numOfDays++;
                     this._readyAgents.Clear();
@@ -112,6 +114,7 @@ namespace HonoursProject.behaviours
                 else
                 {
                     Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
+                    Broadcast("Stop");
                     Stop();
                 }
             }

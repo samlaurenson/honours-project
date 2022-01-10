@@ -27,7 +27,7 @@ namespace HonoursProject
             DataStore.Instance.EnvironmentRandom = rand;
             int numberOfSimulationRuns = 3;
 
-            int numberOfHouseholds = 5;
+            int numberOfHouseholds = 10;
             int numberOfDays = 3;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
@@ -40,7 +40,7 @@ namespace HonoursProject
                 for (int j = 0; j < numberOfSimulationRuns; j++)
                 {
                     DataStore.Instance.HouseAgents.Clear();
-                    var env = new EnvironmentMas(noTurns: numberOfHouseholds * 100);
+                    var env = new EnvironmentMas();
 
                     //Demand curves will be used for requesting and receiving time slot allocations
                     //env.Memory.Add("DemandCurve", bucketedDemandCurves);
@@ -54,9 +54,17 @@ namespace HonoursProject
                     var advertAgent = new AdvertisingAgent(3);
                     var dayManager = new DayManagerAgent(numberOfAgentsEvolving, numberOfDays);
 
-                    for (int k = 0; k < numberOfHouseholds; k++)
+                    for (int k = 0; k < numberOfHouseholds/2; k++)
                     {
                         var houseAg = new HouseAgent(new SelfishBehaviour(), k);
+                        houseAg.AgentFlexibility = new List<double>() { 1.0 };
+                        DataStore.Instance.HouseAgents.Add(houseAg);
+                        env.Add(houseAg, $"house{k}");
+                    }
+
+                    for (int k = numberOfHouseholds / 2; k < numberOfHouseholds; k++)
+                    {
+                        var houseAg = new HouseAgent(new SocialBehaviour(), k);
                         houseAg.AgentFlexibility = new List<double>() { 1.0 };
                         DataStore.Instance.HouseAgents.Add(houseAg);
                         env.Add(houseAg, $"house{k}");
@@ -66,6 +74,22 @@ namespace HonoursProject
                     env.Add(dayManager, "daymanager");
 
                     env.Start();
+
+                    //Adding end of day data to a dictionary which will store all the satisfactions for a simulation
+                    //This includes each of the evolving agent runs which is the "List<Dictionary<int, List<double>>>" - this list contains a dictionary of days, which holds the satisfaction list
+                    //for that day
+                    if (DataStore.Instance.SimulationData.ContainsKey(i))
+                    {
+                        //If an entry has already been made for the simulation, then just add to the list already created
+                        DataStore.Instance.SimulationData[i].Add(DataStore.Instance.EndOfDaySatisfaction);
+                    }
+                    else
+                    {
+                        //If the simulation has not yet had an entry created for it - it will be done here
+                        DataStore.Instance.SimulationData.Add(i, new List<Dictionary<int, List<double>>>() { DataStore.Instance.EndOfDaySatisfaction });
+                    }
+
+                    DataStore.Instance.EndOfDaySatisfaction.Clear(); //Clearing list so can be used again
 
                     Console.WriteLine($"Sim {j+1} done with {numberOfAgentsEvolving} agents evolving ({i+1}/{listNumberEvolvingAgents.Count})");
                 }

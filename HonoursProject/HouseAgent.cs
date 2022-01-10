@@ -39,6 +39,12 @@ namespace HonoursProject
             set { this._agentBehaviour = value; }
         }
 
+        public bool MadeInteraction
+        {
+            get { return _madeInteraction; }
+            set { _madeInteraction = value; }
+        }
+
         public int GetID
         {
             get { return this._id; }
@@ -125,39 +131,55 @@ namespace HonoursProject
                     case "notify":
                         //advertising agent lets house agents know when there is a slot available to exchange
 
+                        Thread.Sleep(50);
                         //Only do this if madeInteraction is true - if false then break
-                        if (!this._madeInteraction)
+                        if (this._madeInteraction)
                         {
                             break;
                         }
-
-                        List<int> advertisingAgentSlots = new List<int>();
-                        for (int i = 1; i < parameters.Count; i++)
+                        else
                         {
-                            advertisingAgentSlots.Add(Int32.Parse(parameters[i]));
-                        }
+                            string advertisedHouse = parameters[0];
 
-                        int? slotToExchange = null;
-                        //Getting an unwanted slot to swap for a desired slot
-                        for (int i = 0; i < AllocatedSlots.Count; i++)
-                        {
-                            if (!RequestedSlots.Contains(AllocatedSlots[i]))
+
+                            /*if (_dataStore.HouseAgents[_dataStore.HouseAgents.FindIndex(agent => agent.Name == advertisedHouse)]
+                                .MadeInteraction)
                             {
-                                slotToExchange = AllocatedSlots[i];
+                                return;
+                            }*/
+
+                            List<int> advertisingAgentSlots = new List<int>();
+                            for (int i = 1; i < parameters.Count; i++)
+                            {
+                                advertisingAgentSlots.Add(Int32.Parse(parameters[i]));
+                            }
+
+                            int? slotToExchange = null;
+                            //Getting an unwanted slot to swap for a desired slot
+                            for (int i = 0; i < AllocatedSlots.Count; i++)
+                            {
+                                if (!RequestedSlots.Contains(AllocatedSlots[i]))
+                                {
+                                    slotToExchange = AllocatedSlots[i];
+                                }
+                            }
+
+                            //Getting a desired slot
+                            //If the agent advertising their slot has a slot that is in this agents requested slots - then this will be the desired slot
+                            foreach (int requestSlot in RequestedSlots)
+                            {
+                                if (advertisingAgentSlots.Contains(requestSlot) && slotToExchange != null)
+                                {
+                                    Send("advertiser", $"request {requestSlot} {slotToExchange}");
+                                    this._madeInteraction = true;
+                                    break;
+                                }
                             }
                         }
 
-                        //Getting a desired slot
-                        //If the agent advertising their slot has a slot that is in this agents requested slots - then this will be the desired slot
-                        foreach (int requestSlot in RequestedSlots)
-                        {
-                            if (advertisingAgentSlots.Contains(requestSlot) && slotToExchange != null)
-                            {
-                                Send("advertiser", $"request {requestSlot} {slotToExchange}");
-                                break;
-                            }
-                        }
-
+                        break;
+                    case "undoInteraction":
+                        this._madeInteraction = false;
                         break;
                     case "sendRequest":
                         //gets message from advertising agent when another agent requests a slot that this agent has
@@ -166,13 +188,33 @@ namespace HonoursProject
                         string requestingAgentName = parameters[0];
                         int requestingAgentSlot = Int32.Parse(parameters[1]);
                         int requestingAgentDesiredSlot = Int32.Parse(parameters[2]);
+                        //Thread.Sleep(50);
 
                         //Only do this if madeInteraction is true - if false then break
-                        if (!this._madeInteraction)
+                        if (this._madeInteraction)
                         {
                             Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");
                             break;
                         }
+
+                        this._madeInteraction = true;
+                        /*
+                        else
+                        {
+                            bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
+
+                            if (decision)
+                            {
+                                //Exchange was successful -- agent will replace the slot they had with the requesting agents slot
+                                this.AllocatedSlots.Remove(requestingAgentDesiredSlot);
+                                this.AllocatedSlots.Add(requestingAgentSlot);
+
+                                //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
+                                Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
+                            }
+                            else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}"); }
+
+                        }*/
 
                         bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
 
@@ -184,7 +226,21 @@ namespace HonoursProject
 
                             //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
                             Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
+                        }
+                        else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}"); }
+
+                        /*bool decision = Behaviour.ConsiderRequest(this, requestingAgentName, requestingAgentSlot, requestingAgentDesiredSlot);
+
+                        if (decision)
+                        {
+                            //Exchange was successful -- agent will replace the slot they had with the requesting agents slot
+                            this.AllocatedSlots.Remove(requestingAgentDesiredSlot);
+                            this.AllocatedSlots.Add(requestingAgentSlot);
+
+                            //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
+                            Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
                         } else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");}
+                        */
 
                         break;
                     case "acceptRequest":
@@ -206,6 +262,9 @@ namespace HonoursProject
                         //Datastore will also need to calculate average satisfaction for all agent types - so will need to go through each agent, calculate the satisfaction and divide by number
                         //of agents of that type - LINQ to loop over agents who are social behaviour? calculate their satisfaction and increment a counter which will be the overall divisor
                         Send("daymanager", "readyNextDay");
+                        break;
+                    case "Stop":
+                        Stop();
                         break;
                 }
             }
