@@ -26,7 +26,7 @@ namespace HonoursProject.behaviours
         public override void Setup()
         {
             CreateAvailableSlots();
-            test();
+            AllocateSlots();
 
             /*Thread.Sleep(20);
             int curve = 0;
@@ -45,7 +45,7 @@ namespace HonoursProject.behaviours
             Broadcast("allocate");*/
         }
 
-        private void test()
+        private void AllocateSlots()
         {
             Thread.Sleep(20);
             int curve = 0;
@@ -104,8 +104,8 @@ namespace HonoursProject.behaviours
 
                     Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
                     Thread.Sleep(200);
-                    
-                    test();
+
+                    AllocateSlots();
                                     
                     Send("advertiser", "newDay");
                 }
