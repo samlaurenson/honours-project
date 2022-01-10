@@ -101,7 +101,34 @@ namespace HonoursProject
 
         private double optimumAgentSatisfaction()
         {
-            return 0;
+            List<int> allRequestedSlots = new List<int>();
+            List<int> allAllocatedSlots = new List<int>();
+
+            foreach (var agent in HouseAgents)
+            {
+                agent.RequestedSlots.ForEach(x => allRequestedSlots.Add(x));
+                agent.AllocatedSlots.ForEach(x => allAllocatedSlots.Add(x));
+            }
+
+            //Stores number of slots that could potentially be fulfilled with perfect trading
+            double satisfiedSlots = 0;
+
+            //Storing total number of slot requests by all agents
+            double totalSlots = allRequestedSlots.Count;
+
+            foreach (int slot in allRequestedSlots)
+            {
+                if(allAllocatedSlots.Contains(slot))
+                {
+                    //For each request - if request has been allocated to any agent then increase number of satisfied slots
+                    satisfiedSlots++;
+
+                    //Remove slot from the list of all allocated slots so not slots can be allocated more than once
+                    allAllocatedSlots.Remove(slot);
+                }
+            }
+
+            return satisfiedSlots / totalSlots;
         }
 
         private void calculateSatisfactionForAgentTypes(List<double> satisfactions)
