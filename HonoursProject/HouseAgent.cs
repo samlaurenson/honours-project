@@ -200,6 +200,11 @@ namespace HonoursProject
                     case "prepareForNextDay":
                         //This message will come from the advertising agent who will send this after all the exchange rounds have been completed
                         //Will need to calculate and store end of day satisfaction and then notify day manager that agents are ready to proceed
+
+                        //could either send message containing the random and optimum satisfactions to day manager or could just add it to 
+                        //datastore (which is probably better)
+                        //Datastore will also need to calculate average satisfaction for all agent types - so will need to go through each agent, calculate the satisfaction and divide by number
+                        //of agents of that type - LINQ to loop over agents who are social behaviour? calculate their satisfaction and increment a counter which will be the overall divisor
                         Send("daymanager", "readyNextDay");
                         break;
                 }
@@ -303,7 +308,7 @@ namespace HonoursProject
                 int wheelSelector = rand.Next((int)(totalDemand * 10));
                 int wheelCalculator = 0;
                 int timeSlot = 0;
-                while (wheelCalculator < wheelSelector && timeSlot < 24)
+                while (wheelCalculator < wheelSelector)
                 {
                     wheelCalculator = wheelCalculator + ((int)(demandCurve[timeSlot] * 10));
                     timeSlot++;

@@ -66,7 +66,7 @@ namespace HonoursProject
 
                     env.Start();
 
-                    Console.WriteLine($"Sim {j+1} done with {numberOfAgentsEvolving} agents evolving");
+                    Console.WriteLine($"Sim {j+1} done with {numberOfAgentsEvolving} agents evolving ({i+1}/{listNumberEvolvingAgents.Count})");
                 }
             }
         }

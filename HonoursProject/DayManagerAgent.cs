@@ -70,6 +70,9 @@ namespace HonoursProject.behaviours
 
             if (this._readyAgents.Count == numberOfAgents)
             {
+                //Put here the function to calculate and store end of day satisfactions for agents
+                //_dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
+
                 this._numOfDays++;
                 this._readyAgents.Clear();
 
