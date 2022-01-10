@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using HonoursProject.behaviours;
 
 namespace HonoursProject
 {
@@ -99,6 +100,8 @@ namespace HonoursProject
             return agentSatisfactions.Average();
         }
 
+        //Function will calculate the optimum average satisfaction that could be obtained for all agents based on
+        //requests and allocations
         private double optimumAgentSatisfaction()
         {
             List<int> allRequestedSlots = new List<int>();
@@ -131,9 +134,21 @@ namespace HonoursProject
             return satisfiedSlots / totalSlots;
         }
 
+        //Function that will calculate the average agent satisfaction for each agent type
         private void calculateSatisfactionForAgentTypes(List<double> satisfactions)
         {
+            //var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour).Select(group => group.ToList()).ToList();
+            var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour.GetType()).ToList();
 
+            foreach (var typeList in agentTypes)
+            {
+                double satisfaction = 0;
+                foreach(var agent in typeList)
+                {
+                    satisfaction += agent.CalculateSatisfaction(null);
+                }
+                satisfactions.Add(satisfaction/typeList.Count());
+            }
         }
 
         private void endOfDaySatisfactionStandardDeviation(List<double> satisfactions)
