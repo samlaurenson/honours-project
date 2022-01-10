@@ -10,21 +10,43 @@ namespace HonoursProject.behaviours
 {
     class DayManagerAgent : Agent
     {
-        private int _numOfDays = 0; //Increment for how many days have passed in the model
+        private int _numOfDays; //Increment for how many days have passed in the model
+        private int _maxDays;
         private List<int> availableTimeSlots = new List<int>();
         private int _numberOfEvolvingAgents;
         private DataStore _dataStore = DataStore.Instance;
         private List<string> _readyAgents = new List<string>();
 
-        public DayManagerAgent(int numberOfEvolvingAgents)
+        public DayManagerAgent(int numberOfEvolvingAgents, int days)
         {
             this._numberOfEvolvingAgents = numberOfEvolvingAgents;
+            this._maxDays = days;
         }
 
         public override void Setup()
         {
             CreateAvailableSlots();
+            test();
 
+            /*Thread.Sleep(20);
+            int curve = 0;
+            foreach (HouseAgent agent in _dataStore.HouseAgents)
+            {
+                //Could try moving this back in to environment memory
+                agent.RequestingSlotHandler(_dataStore.BucketedDemandCurve[curve], _dataStore.TotalDemand[curve]);
+                agent.RandomSlotAllocationHandler();
+                curve++;
+                if (curve >= _dataStore.BucketedDemandCurve.Count)
+                {
+                    curve = 0;
+                }
+            }
+
+            Broadcast("allocate");*/
+        }
+
+        private void test()
+        {
             Thread.Sleep(20);
             int curve = 0;
             foreach (HouseAgent agent in _dataStore.HouseAgents)
@@ -64,26 +86,34 @@ namespace HonoursProject.behaviours
 
         public override void ActDefault()
         {
-            int numberOfAgents = _dataStore.HouseAgents.Count;
-
-            if(numberOfAgents == 0) { Stop(); } //If there are no agents in the model - leave the model
-
-            if (this._readyAgents.Count == numberOfAgents)
+            if (_dataStore.HouseAgents.Count == 0)
             {
-                //Put here the function to calculate and store end of day satisfactions for agents
-                //_dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
+                Stop();
+            } //If there are no agents in the model - leave the model
 
-                this._numOfDays++;
-                this._readyAgents.Clear();
+            //If all agents are ready to proceed to next day - then agents will be activated for next day
+            if (this._readyAgents.Count == _dataStore.HouseAgents.Count)
+            {
+                if (this._numOfDays < this._maxDays-1)
+                {
+                    Thread.Sleep(20);
+                    this._numOfDays++;
+                    this._readyAgents.Clear();
 
-                EndOfDaySocialLearning();
+                    EndOfDaySocialLearning();
 
-                Console.WriteLine("***************** END OF DAY *********************");
-
-                Thread.Sleep(200);
-                Setup();
-                Send("advertiser", "newDay");
-                //Broadcast($"newDay {this._numOfDays}");
+                    Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
+                    Thread.Sleep(200);
+                    
+                    test();
+                                    
+                    Send("advertiser", "newDay");
+                }
+                else
+                {
+                    Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
+                    Stop();
+                }
             }
         }
 

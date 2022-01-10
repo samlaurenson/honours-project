@@ -137,7 +137,6 @@ namespace HonoursProject
         //Function that will calculate the average agent satisfaction for each agent type
         private void calculateSatisfactionForAgentTypes(List<double> satisfactions)
         {
-            //var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour).Select(group => group.ToList()).ToList();
             var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour.GetType()).ToList();
 
             foreach (var typeList in agentTypes)
