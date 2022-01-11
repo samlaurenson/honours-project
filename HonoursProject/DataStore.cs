@@ -87,12 +87,24 @@ namespace HonoursProject
             satisfactions.Add(averageAgentSatisfaction());
             satisfactions.Add(optimumAgentSatisfaction());
 
-            //Adding average satisfaction of each agent type to list
-            calculateSatisfactionForAgentTypes(satisfactions);
+            var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour.GetType()).ToList();
 
-            //Getting the average variance for each agent type
-            endOfDaySatisfactionStandardDeviation(satisfactions);
+            //Calculating average satisfaction and variance for each agent type
+            foreach (var type in agentTypes)
+            {
+                //Adding average satisfaction of each agent type to list
+                satisfactions.Add(calculateSatisfactionForAgentTypes(type.ToList()));
 
+                //Getting the average variance for each agent type
+                satisfactions.Add(endOfDaySatisfactionStandardDeviation(type.ToList()));
+            }
+
+            //First 2 elements in list will be the average and optimum agent satisfactions
+            //After the first 2 elements, then elements will be the average satisfaction for agent type followed by average variance for agent type
+            //And will follow this pattern for each agent type
+            //e.g. 0 -> average agent satisfaction, 1 -> optimum agent satisfaction,
+            // 2 -> Selfish agent satisfaction, 3 -> selfish agent satisfaction variance,
+            // 4 -> Social agent satisfaction, 5 -> social agent satisfaction variance, and so on...
             _endOfDaySatisfactions.Add(day, satisfactions);
         }
 
@@ -144,24 +156,34 @@ namespace HonoursProject
         }
 
         //Function that will calculate the average agent satisfaction for each agent type
-        private void calculateSatisfactionForAgentTypes(List<double> satisfactions)
+        private double calculateSatisfactionForAgentTypes(List<HouseAgent> agents)
         {
-            var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour.GetType()).ToList();
+            double satisfaction = 0.0;
 
-            foreach (var typeList in agentTypes)
+            foreach (var agent in agents)
             {
-                double satisfaction = 0;
-                foreach(var agent in typeList)
-                {
-                    satisfaction += agent.CalculateSatisfaction(null);
-                }
-                satisfactions.Add(satisfaction/typeList.Count());
+                satisfaction += agent.CalculateSatisfaction(null);
             }
+
+            return satisfaction;
         }
 
-        private void endOfDaySatisfactionStandardDeviation(List<double> satisfactions)
+        private double endOfDaySatisfactionStandardDeviation(List<HouseAgent> agents)
         {
+            double sumDiffsSquared = 0.0;
+            int groupSize = 0;
+            double averageSatisfaction = calculateSatisfactionForAgentTypes(agents);
 
+            foreach (var agent in agents)
+            {
+                double diff = agent.CalculateSatisfaction(null) - averageSatisfaction;
+                diff *= diff;
+                sumDiffsSquared += diff;
+                groupSize++;
+            }
+
+            double populationVariance = sumDiffsSquared / (double)groupSize;
+            return Math.Sqrt(populationVariance);
         }
     }
 }
