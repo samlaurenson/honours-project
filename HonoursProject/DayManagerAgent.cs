@@ -51,6 +51,9 @@ namespace HonoursProject.behaviours
             int curve = 0;
             foreach (HouseAgent agent in _dataStore.HouseAgents)
             {
+                agent.RequestedSlots.Clear();
+                agent.AllocatedSlots.Clear();
+
                 //Could try moving this back in to environment memory
                 agent.RequestingSlotHandler(_dataStore.BucketedDemandCurve[curve], _dataStore.TotalDemand[curve]);
                 agent.RandomSlotAllocationHandler();
@@ -113,6 +116,7 @@ namespace HonoursProject.behaviours
                 }
                 else
                 {
+                    _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
                     Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
                     Broadcast("Stop");
                     Stop();

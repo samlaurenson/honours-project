@@ -28,7 +28,7 @@ namespace HonoursProject
             int numberOfSimulationRuns = 3;
 
             int numberOfHouseholds = 10;
-            int numberOfDays = 3;
+            int numberOfDays = 5;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
@@ -66,6 +66,7 @@ namespace HonoursProject
                     {
                         var houseAg = new HouseAgent(new SocialBehaviour(), k);
                         houseAg.AgentFlexibility = new List<double>() { 1.0 };
+                        houseAg.SocialCapital = true;
                         DataStore.Instance.HouseAgents.Add(houseAg);
                         env.Add(houseAg, $"house{k}");
                     }
@@ -78,6 +79,14 @@ namespace HonoursProject
                     //Adding end of day data to a dictionary which will store all the satisfactions for a simulation
                     //This includes each of the evolving agent runs which is the "List<Dictionary<int, List<double>>>" - this list contains a dictionary of days, which holds the satisfaction list
                     //for that day
+
+                    //Data storage for model will look like this:
+                    //Simulation
+                    //  -> Number of evolving agents
+                    //      -> Days
+
+                    //So first key will be the simulation, second is a list of the model running with each percentage of evolving agent, then that will contain a dictionary of days with the average satisfactions on that day
+
                     if (DataStore.Instance.SimulationData.ContainsKey(i))
                     {
                         //If an entry has already been made for the simulation, then just add to the list already created

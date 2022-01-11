@@ -48,6 +48,7 @@ namespace HonoursProject.behaviours
                         //If agent owes a favour, then request will be accepted
                         if (favoursOwedToRequester > favoursGivenToRequester)
                         {
+                            Console.WriteLine($"||||||||||||| {agent.Name} REPAID A FAVOUR TO {requestingAgentName} |||||||||||||");
                             return true;
                         }
                     }
