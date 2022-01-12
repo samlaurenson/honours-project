@@ -18,5 +18,8 @@ jobs:
     - name: Get dotnet services
       run: docker pull mcr.microsoft.com/dotnet/core/sdk:latest
     
-    - name: Build the Docker images
+    - name: Building the model Docker image
       run: docker-compose build model
+
+    - name: Building the graphing Docker image
+      run: docker-compose build graphing
