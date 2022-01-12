@@ -13,9 +13,9 @@ namespace HonoursProject
         private static DataStore _instance;
         private List<HouseAgent> _houseAgents = new List<HouseAgent>();
 
-        private Dictionary<int, List<Dictionary<int, List<double>>>> _simulations = new Dictionary<int, List<Dictionary<int, List<double>>>>(); //int -> simulation number, list is the data for models running
+        private Dictionary<int, List<List<List<double>>>> _simulations = new Dictionary<int, List<List<List<double>>>>(); //int -> simulation number, list is the data for models running
                                                                                                                                                 //the different number of evolving agents
-        private Dictionary<int, List<double>> _endOfDaySatisfactions = new Dictionary<int, List<double>>(); //int -> day number, list of doubles -> satisfactions
+        private List<List<double>> _endOfDaySatisfactions = new List<List<double>>(); //int -> day number, list of doubles -> satisfactions
 
         private List<int> _availableSlots = new List<int>();
         private Random _random;
@@ -68,13 +68,13 @@ namespace HonoursProject
             set { bucketedDemandCurves = value; }
         }
 
-        public Dictionary<int, List<double>> EndOfDaySatisfaction
+        public List<List<double>> EndOfDaySatisfaction
         {
             get { return _endOfDaySatisfactions; }
             set { _endOfDaySatisfactions = value; }
         }
 
-        public Dictionary<int, List<Dictionary<int, List<double>>>> SimulationData
+        public Dictionary<int, List<List<List<double>>>> SimulationData
         {
             get { return _simulations; }
             set { _simulations = value; }
@@ -82,6 +82,7 @@ namespace HonoursProject
 
         public void CalculateEndOfDaySatisfactions(int day)
         {
+            //_endOfDaySatisfactions.Clear();
             List<double> satisfactions = new List<double>();
 
             satisfactions.Add(averageAgentSatisfaction());
@@ -105,7 +106,7 @@ namespace HonoursProject
             //e.g. 0 -> average agent satisfaction, 1 -> optimum agent satisfaction,
             // 2 -> Selfish agent satisfaction, 3 -> selfish agent satisfaction variance,
             // 4 -> Social agent satisfaction, 5 -> social agent satisfaction variance, and so on...
-            _endOfDaySatisfactions.Add(day, satisfactions);
+            _endOfDaySatisfactions.Add(satisfactions);
         }
 
         private double averageAgentSatisfaction()

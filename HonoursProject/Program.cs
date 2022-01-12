@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using ActressMas;
 using HonoursProject.behaviours;
@@ -32,7 +35,7 @@ namespace HonoursProject
 
             Random rand = new Random();
             DataStore.Instance.EnvironmentRandom = rand;
-            int numberOfSimulationRuns = 1;
+            int numberOfSimulationRuns = 2;
 
             int numberOfHouseholds = 10;
             int numberOfDays = 2;
@@ -94,15 +97,19 @@ namespace HonoursProject
 
                     //So first key will be the simulation, second is a list of the model running with each percentage of evolving agent, then that will contain a dictionary of days with the average satisfactions on that day
 
+                    //Extracting the data for days in this running of the simulation here and will add this to the simulation data dictionary
+                    List<List<double>> temp = new List<List<double>>();
+                    temp.AddRange(DataStore.Instance.EndOfDaySatisfaction);
+
                     if (DataStore.Instance.SimulationData.ContainsKey(i))
                     {
                         //If an entry has already been made for the simulation, then just add to the list already created
-                        DataStore.Instance.SimulationData[i].Add(DataStore.Instance.EndOfDaySatisfaction);
+                        DataStore.Instance.SimulationData[i].Add(new List<List<double>>(temp));
                     }
                     else
                     {
                         //If the simulation has not yet had an entry created for it - it will be done here
-                        DataStore.Instance.SimulationData.Add(i, new List<Dictionary<int, List<double>>>() { DataStore.Instance.EndOfDaySatisfaction });
+                        DataStore.Instance.SimulationData.Add(i, new List<List<List<double>>>() { temp });
                     }
 
                     DataStore.Instance.EndOfDaySatisfaction.Clear(); //Clearing list so can be used again
@@ -111,12 +118,15 @@ namespace HonoursProject
                 }
             }
 
-            var output = await _httpClient.GetAsync("/graph");
+            string json = JsonSerializer.Serialize(DataStore.Instance.SimulationData.ToList());
+            File.WriteAllText(@"..\..\..\outputFile.json", json);
+
+            /*var output = await _httpClient.GetAsync("/graph");
 
             if (output.StatusCode == HttpStatusCode.OK)
             {
                 Console.WriteLine(await output.Content.ReadAsStringAsync());
-            }
+            }*/
         }
 
         //Function that will determine the number of agents that will evolve in the model
