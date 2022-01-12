@@ -19,7 +19,7 @@ jobs:
       run: docker pull mcr.microsoft.com/dotnet/core/sdk:latest
     
     - name: Build the Docker images
-      run: docker-compose build
+      run: docker-compose build model
       
     - name: Run docker container
       run: docker run hnrs_model
