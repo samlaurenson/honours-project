@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using ActressMas;
 using HonoursProject.behaviours;
 
@@ -10,7 +14,9 @@ namespace HonoursProject
 {
     class Program
     {
-        static void Main(string[] args)
+        public static HttpClient _httpClient = new HttpClient() { BaseAddress = new Uri("http://localhost:5000/") };
+
+        async static Task Main(string[] args)
         {
             //Size of array is causing issues when using a double[,], so a list will be used instead -- ideally move this in to a config file
             List<List<double>> DEMAND_CURVE = new List<List<double>>()
@@ -103,6 +109,13 @@ namespace HonoursProject
 
                     Console.WriteLine($"Sim {j+1} done with {numberOfAgentsEvolving} agents evolving ({i+1}/{listNumberEvolvingAgents.Count})");
                 }
+            }
+
+            var output = await _httpClient.GetAsync("/graph");
+
+            if (output.StatusCode == HttpStatusCode.OK)
+            {
+                Console.WriteLine(await output.Content.ReadAsStringAsync());
             }
         }
 
