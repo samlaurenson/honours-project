@@ -18,8 +18,8 @@ jobs:
     - name: Get dotnet services
       run: docker pull mcr.microsoft.com/dotnet/core/sdk:latest
     
-    - name: Build the Docker image
-      run: docker build -t honsproj .
+    - name: Build the Docker images
+      run: docker-compose build
       
     - name: Run docker container
-      run: docker run honsproj dotnet test
+      run: docker run hnrs_model
