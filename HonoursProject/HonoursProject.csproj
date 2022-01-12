@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IronPython" Version="2.7.11" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="ActressMas">
       <HintPath>..\ActressMas.dll</HintPath>
     </Reference>

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using ActressMas;
 using HonoursProject.behaviours;
+using IronPython.Hosting;
+using Microsoft.Scripting.Utils;
 
 namespace HonoursProject
 {
@@ -25,10 +28,10 @@ namespace HonoursProject
 
             Random rand = new Random();
             DataStore.Instance.EnvironmentRandom = rand;
-            int numberOfSimulationRuns = 3;
+            int numberOfSimulationRuns = 1;
 
             int numberOfHouseholds = 10;
-            int numberOfDays = 5;
+            int numberOfDays = 2;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 

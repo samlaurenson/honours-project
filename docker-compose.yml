@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  model:
+    build: .
+    image: hnrs_model:latest
+
+  graphing:
+    build: DataVisualising/.
+    image: hnrs_graphing:latest

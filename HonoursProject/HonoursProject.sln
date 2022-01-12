@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HonoursProject", "HonoursProject.csproj", "{15EB473D-064A-4166-AA18-ADC7FB91C84D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HonoursProjectTests", "..\HonoursProjectTests\HonoursProjectTests.csproj", "{ED1B286E-444A-48E2-AAB5-E6AEA2784499}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HonoursProjectTests", "..\HonoursProjectTests\HonoursProjectTests.csproj", "{ED1B286E-444A-48E2-AAB5-E6AEA2784499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
