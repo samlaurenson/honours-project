@@ -7,11 +7,18 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using ActressMas;
+using Autofac.Extensions.DependencyInjection;
 using HonoursProject.behaviours;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore;
+using Microsoft.Extensions.Configuration;
 
 namespace HonoursProject
 {
@@ -91,8 +98,8 @@ namespace HonoursProject
                     //for that day
 
                     //Data storage for model will look like this:
-                    //Simulation
-                    //  -> Number of evolving agents
+                    //Number of evolving agents
+                    //  -> Simulation
                     //      -> Days
 
                     //So first key will be the simulation, second is a list of the model running with each percentage of evolving agent, then that will contain a dictionary of days with the average satisfactions on that day
@@ -118,16 +125,38 @@ namespace HonoursProject
                 }
             }
 
+            //Turning simulation data in to json file which will be sent to the python flask server to produce graphs on the data
             string json = JsonSerializer.Serialize(DataStore.Instance.SimulationData.ToList());
             File.WriteAllText(@"..\..\..\outputFile.json", json);
 
-            /*var output = await _httpClient.GetAsync("/graph");
+            /*CreateHostBuilder(args).ConfigureHostConfiguration(hostConfig =>
+            {
+                hostConfig.AddJsonFile(json);
+            }).Build().Run();
+            */
+
+            var output = await _httpClient.PostAsync("/graph", new StringContent(json, Encoding.UTF8,"application/json"));
 
             if (output.StatusCode == HttpStatusCode.OK)
             {
                 Console.WriteLine(await output.Content.ReadAsStringAsync());
-            }*/
+            }
         }
+
+        /*public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            //Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults()
+            return Host.CreateDefaultBuilder(args)
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+                webBuilder.UseIISIntegration();
+                webBuilder.UseKestrel();
+                webBuilder.UseStartup<Startup>();
+                webBuilder.UseUrls("http://*:5000");
+                });
+        }*/
 
         //Function that will determine the number of agents that will evolve in the model
         //Works in the way that the model will run the first time with 0% of agents evolving each day

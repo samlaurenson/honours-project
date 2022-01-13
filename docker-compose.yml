@@ -3,7 +3,22 @@ services:
   model:
     build: .
     image: hnrs_model:latest
+    ports:
+      - "0.0.0.0:8000:8000"
+    networks:
+        -   hnrs_network
+    environment:
+      - API_URL=Api:5000
 
   graphing:
     build: DataVisualising/.
     image: hnrs_graphing:latest
+    ports:
+      - "0.0.0.0:5000:5000"
+    networks:
+        -   hnrs_network
+
+
+networks:
+  hnrs_network:
+    external: true
