@@ -1,4 +1,6 @@
 import numpy as np
+import os
+import plotly as py
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -14,8 +16,77 @@ def graph():
     day = simulation[0][0]
 
     averageSimulationData = calculateAverageSimulation(evolving_index) #doing this with just the first evolving array as trial - will need to loop this for each evolving agent
+    
+    days = []
+    #Number of days to array for graphing
+    for i in range(len(evolving_index['Value'][0])):
+        days.append(i)
+    
+    print(days)
+    plotEODAverage(days, averageSimulationData)
     print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "The average agent satisfaction for 1st day of 1st simulation is " + str(day)
+
+def plotEODAverage(days, endOfDaySatisfactions):
+    satisf = []
+    for i in range(len(endOfDaySatisfactions)):
+        satisf.append(endOfDaySatisfactions[i][0])
+
+    data = []
+    data.append(
+        py.graph_objs.Scatter(
+            x = days,
+            y = satisf,
+        )
+    )
+
+    layout: any = dict(
+        title=dict(
+            text='Average consumer satisfaction at the end of each day',
+            xanchor='center',
+            x=0.5,
+        ),
+        xaxis=dict(
+            title='Day',
+            showline=True,
+            linecolor='black',
+            linewidth=1,
+            gridcolor='rgb(225, 225, 225)',
+            gridwidth=1,
+            range=[days[0], days[-1]],
+            tickmode='linear',
+            tick0=0,
+            dtick=100,
+        ),
+        yaxis=dict(
+            title='Average consumer satisfaction',
+            showline=True,
+            linecolor='black',
+            linewidth=1,
+            gridcolor='rgb(225, 225, 225)',
+            gridwidth=1,
+            range=[0, 1],
+            tickmode='linear',
+            tick0=0,
+            dtick=0.2,
+        ),
+        margin=dict(
+            l=40,
+            r=30,
+            b=80,
+            t=100,
+        ),
+        paper_bgcolor='rgb(255, 255, 255)',
+        plot_bgcolor='rgb(255, 255, 255)',
+        font=dict(
+            size=19
+        )
+    )
+
+    graph = dict(data=data, layout=layout)
+    path = os.path.join('.', "avg.pdf")
+    py.io.write_image(graph, path)
+
 
 def calculateAverageSimulation(data):
     numOfDays = len(data['Value'][0])

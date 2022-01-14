@@ -24,10 +24,18 @@ namespace HonoursProject
 {
     class Program
     {
-        public static HttpClient _httpClient = new HttpClient() { BaseAddress = new Uri("http://localhost:5000/") };
+        //public static HttpClient _httpClient = new HttpClient() { BaseAddress = new Uri("http://localhost:5000/") };
+        public static HttpClient _httpClient = new HttpClient() { };
 
         async static Task Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .Build();
+
+            _httpClient.BaseAddress = new Uri("http://"+configuration["graphing_service"]);
+
             //Size of array is causing issues when using a double[,], so a list will be used instead -- ideally move this in to a config file
             List<List<double>> DEMAND_CURVE = new List<List<double>>()
             {
@@ -45,7 +53,7 @@ namespace HonoursProject
             int numberOfSimulationRuns = 2;
 
             int numberOfHouseholds = 10;
-            int numberOfDays = 2;
+            int numberOfDays = 5;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
@@ -121,19 +129,14 @@ namespace HonoursProject
 
                     DataStore.Instance.EndOfDaySatisfaction.Clear(); //Clearing list so can be used again
 
-                    Console.WriteLine($"Sim {j+1} done with {numberOfAgentsEvolving} agents evolving ({i+1}/{listNumberEvolvingAgents.Count})");
+                    Console.WriteLine($"///////// Sim {j + 1} done //////////////");
                 }
+                Console.WriteLine($"/////////// {numberOfAgentsEvolving} agents evolving ({i+1}/{listNumberEvolvingAgents.Count}) ////////////");
             }
 
             //Turning simulation data in to json file which will be sent to the python flask server to produce graphs on the data
             string json = JsonSerializer.Serialize(DataStore.Instance.SimulationData.ToList());
             File.WriteAllText(@"..\..\..\outputFile.json", json);
-
-            /*CreateHostBuilder(args).ConfigureHostConfiguration(hostConfig =>
-            {
-                hostConfig.AddJsonFile(json);
-            }).Build().Run();
-            */
 
             var output = await _httpClient.PostAsync("/graph", new StringContent(json, Encoding.UTF8,"application/json"));
 
@@ -142,21 +145,6 @@ namespace HonoursProject
                 Console.WriteLine(await output.Content.ReadAsStringAsync());
             }
         }
-
-        /*public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            //Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults()
-            return Host.CreateDefaultBuilder(args)
-                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-                webBuilder.UseIISIntegration();
-                webBuilder.UseKestrel();
-                webBuilder.UseStartup<Startup>();
-                webBuilder.UseUrls("http://*:5000");
-                });
-        }*/
 
         //Function that will determine the number of agents that will evolve in the model
         //Works in the way that the model will run the first time with 0% of agents evolving each day
