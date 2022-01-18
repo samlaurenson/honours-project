@@ -8,95 +8,124 @@ using HonoursProject.behaviours;
 
 namespace HonoursProject
 {
+    //! Class for the House Agent.
+    /*!
+     House agents are the agents that will be interacting with other house agents to complete exchanges.
+     */
     public class HouseAgent : Agent
     {
-        private IBehaviour _agentBehaviour;
-        private DataStore _dataStore = DataStore.Instance;
-        private int _id;
+        private IBehaviour _agentBehaviour; /*!< variable that stores the behaviour strategy that the agent will follow. */
+        private DataStore _dataStore = DataStore.Instance; /*!< Reference to the DataStore instance. */
+        private int _id; /*!< variable that is the ID of the house agent. */
         private int _satisfaction;
-        private bool _madeInteraction;
-        private bool _useSocialCapital;
-        private List<int> _allocatedSlots = new List<int>();
-        private List<int> _requestedSlots = new List<int>();
-        private Dictionary<string, int> _favoursOwed = new Dictionary<string, int>();
-        private Dictionary<string, int> _favoursGiven = new Dictionary<string, int>();
+        private bool _madeInteraction; /*!< variable that is used as a flag to signal whether the agent has made an interaction this day or not. */
+        private bool _useSocialCapital; /*!< variable that will be used to determine whether the model will use social capital or not. */
+        private List<int> _allocatedSlots = new List<int>(); /*!< List of time slots the agent has been allocated. */
+        private List<int> _requestedSlots = new List<int>(); /*!< List of requested slots the agent desires. */
+        private Dictionary<string, int> _favoursOwed = new Dictionary<string, int>(); /*!< Dictionary of other agent names and the number of times this agent owes another agent a favour */
+        private Dictionary<string, int> _favoursGiven = new Dictionary<string, int>(); /*!< Dictionary of other agent names and the number of times this agent has given another agent a favour */
 
         private static int curve = 0;
-        private static int numberOfTimeSlotsWanted = 4;
+        private static int numberOfTimeSlotsWanted = 4; /*!< The number of time slots each agent will have. */
 
-        private List<double> _agentFlexibility; //Temporarily putting this here until a better place is found
+        private List<double> _agentFlexibility; /*!< List of values that determines the flexibility of the agent - used to calculate the agent's satisfaction. */
         //Using 2 entries for agent flexibility so that unit tests could be made to fully test the satisfaction calculation function
 
+        //! Constructor for the house agent.
+        /*!
+         \param behaviour The behaviour strategy that the agent will follow.
+         \param id The id of the house agent.
+         */
         public HouseAgent(IBehaviour behaviour, int id)
         {
             this._agentBehaviour = behaviour;
             this._id = id;
         }
 
+        //! Getter and setter for agent behaviour.
         public IBehaviour Behaviour
         {
             get { return this._agentBehaviour; }
             set { this._agentBehaviour = value; }
         }
 
+        //! Getter and setter for made interaction flag.
         public bool MadeInteraction
         {
             get { return _madeInteraction; }
             set { _madeInteraction = value; }
         }
 
+        //! Getter for house agent id.
         public int GetID
         {
             get { return this._id; }
         }
 
+        //! Getter and setter for social capital flag.
         public bool SocialCapital
         {
             get { return this._useSocialCapital; }
             set { this._useSocialCapital = value; }
         }
 
+        //! Getter and setter for favours owed dictionary.
         public Dictionary<string, int> FavoursOwed
         {
             get { return this._favoursOwed; }
             set { this._favoursOwed = value; }
         }
 
+        //! Getter and setter for favours given dictionary.
         public Dictionary<string, int> FavoursGiven
         {
             get { return this._favoursGiven; }
             set { this._favoursGiven = value; }
         }
 
+        //! Getter and setter for allocated slots list.
         public List<int> AllocatedSlots
         {
             get {return this._allocatedSlots;}
             set { this._allocatedSlots = value; }
         }
 
+        //! Getter and setter for requested slots list.
         public List<int> RequestedSlots
         {
             get { return this._requestedSlots; }
             set { this._requestedSlots = value; }
         }
 
+        //! Getter and setter for agent flexibility list.
         public List<double> AgentFlexibility
         {
             get { return this._agentFlexibility; }
             set { this._agentFlexibility = value; }
         }
 
+        //! Getter for number of time slots per agent.
         public int GetNumberOfTimeSlots
         {
             get { return numberOfTimeSlotsWanted; }
         }
 
+        //! Setup function
+        /*!
+         Will execute when environment starts.
+         */
         public override void Setup()
         {
             Thread.Sleep(50); 
             //_dataStore.HouseAgents.Add(this);
         }
 
+        //! Act function.
+        /*!
+         Will run whenever agent receives a message.
+         Accepted messages include - "allocate", "notify", "undoInteraction", "sendRequest", "acceptRequest", "prepareForNextDay", "Stop"
+         \param message The message that the agent has received.
+         */
         public override void Act(Message message)
         {
             try
@@ -267,8 +296,10 @@ namespace HonoursProject
             }
         }
 
-        //Function that will calculate the satisfaction an agent would have when given a list of time slots
-        //If there is a null input for this function, then the agent will calculate their satisfaction using the list of slots they were allocated
+        //! Function that will be used to calculate the satisfaction of house agents.
+        /*!
+         \param timeSlots Calculates satisfaction for the given list of time slots. If null, will use the list of allocated slots for this agent.
+         */
         public double CalculateSatisfaction(List<int> timeSlots)
         {
             //If there is no input for function, then the slots the agent has will be used for calculating the satisfaction
@@ -345,7 +376,12 @@ namespace HonoursProject
             return totalSatisfaction / numberOfTimeSlotsWanted;
         }
 
-        //Function that will select time slots that agent will request based on the demand curve
+        //! Function that will determine the slots the agent will request.
+        /*!
+         Determines the slots the agent will request based on the demand curve.
+        \param demandCurve The list of demand curve values.
+        \param totalDemand Value of demand based on demand curve.
+         */
         public void RequestingSlotHandler(List<double> demandCurve, double totalDemand)
         {
             if (_requestedSlots.Count > 0)
@@ -378,7 +414,7 @@ namespace HonoursProject
             }
         }
 
-        //Function that will randomly allocate slots to agent
+        //! Function that will randomly allocate slots for this agent.
         public void RandomSlotAllocationHandler()
         {
             List<int> availableTimeSlots = _dataStore.AvailableSlots;

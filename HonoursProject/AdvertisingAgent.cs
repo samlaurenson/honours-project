@@ -54,6 +54,7 @@ namespace HonoursProject
         //! Setup function
         /*!
          Will execute when environment starts.
+         Used for setting the timers the advertising agent requires.
          */
         public override void Setup()
         {

@@ -156,7 +156,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Act function. </p>
-<p >Will run whenever agent receives a message. </p><dl class="params"><dt>Parameters</dt><dd>
+<p >Will run whenever agent receives a message. Accepted message is the "readyNextDay" message - which will add an agents name to a list of agents that are ready to progress to next day. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">message</td><td>The message that the agent has received. </td></tr>
   </table>
@@ -181,7 +181,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Act default function. </p>
-<p >Function will execute whenever agent has not done anything in a turn. </p>
+<p >Function will execute whenever agent has not done anything in a turn. This is where the day manager will check if all agents are ready to progress to the next day. If agents are ready to progress, then satisfactions will be calculated, social learning will take place and day counter will be incremented and agents notified that next day has started. </p>
 
 </div>
 </div>
