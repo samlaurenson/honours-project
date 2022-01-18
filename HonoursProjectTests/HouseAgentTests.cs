@@ -71,5 +71,22 @@ namespace HonoursProject.Tests
             agent.RequestedSlots = new List<int>() { 0, 2, 3, 24 };
             Assert.AreEqual(0.625, agent.CalculateSatisfaction(allocatedSlots));
         }
+
+        [TestMethod()]
+        public void ListUnwantedSlotsTest()
+        {
+            //Checking that the house agent is listing the correct slots - being the slots that it does not want
+            //Unwanted slots are slots in the allocated list that are not in the requested list
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            agent.AgentFlexibility = new List<double>() { 1.0 };
+            agent.AllocatedSlots = new List<int>() { 1, 2, 7, 4 };
+            agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
+
+            string slotCheck = agent.ListUnwantedSlots();
+
+            //Slots in allocated list that are not in requested list are slots 7 and 4
+            Assert.AreEqual("7 4", slotCheck);
+
+        }
     }
 }

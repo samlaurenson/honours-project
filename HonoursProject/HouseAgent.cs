@@ -116,7 +116,7 @@ namespace HonoursProject
          */
         public override void Setup()
         {
-            Thread.Sleep(50); 
+            //Thread.Sleep(50); 
             //_dataStore.HouseAgents.Add(this);
         }
 
@@ -138,29 +138,21 @@ namespace HonoursProject
                         //initial allocation of slots for the day
                         Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
                         this._madeInteraction = false;
-                        Thread.Sleep(20);
-                        //Listing slots - if a slot in the allocated list is not in the requested list - then this is considered unwanted and will be listed
-                        List<int> slotsToList = new List<int>();
-                        foreach (int slot in AllocatedSlots)
-                        {
-                            if (!RequestedSlots.Contains(slot))
-                            {
-                                slotsToList.Add(slot);
-                            }
-                        }
 
-                        if (slotsToList.Count == 0)
+                        string advertiseSlots = ListUnwantedSlots();
+
+                        //If no slots unwanted - then don't send message to advertiser
+                        if (string.IsNullOrWhiteSpace(advertiseSlots))
                         {
                             break;
                         }
 
-                        string advertiseSlots = string.Join(" ", slotsToList.ToArray()); //Turning slots to advertise in to string format so they can be sent to advertiser through message passing
                         Send("advertiser", $"list {advertiseSlots}");
                         break;
                     case "notify":
                         //advertising agent lets house agents know when there is a slot available to exchange
 
-                        Thread.Sleep(50);
+                        //Thread.Sleep(50);
                         //Only do this if madeInteraction is true - if false then break
                         if (this._madeInteraction)
                         {
@@ -294,6 +286,30 @@ namespace HonoursProject
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        //! Function that will create a list of unwanted slots that the house will send to the advertiser
+        /*!
+         \return String of unwanted time slots to send to advertiser.
+         */
+        public string ListUnwantedSlots()
+        {
+            //Listing slots - if a slot in the allocated list is not in the requested list - then this is considered unwanted and will be listed
+            List<int> slotsToList = new List<int>();
+            foreach (int slot in AllocatedSlots)
+            {
+                if (!RequestedSlots.Contains(slot))
+                {
+                    slotsToList.Add(slot);
+                }
+            }
+
+            if (slotsToList.Count == 0)
+            {
+                return "";
+            }
+
+            return string.Join(" ", slotsToList.ToArray()); //Turning slots to advertise in to string format so they can be sent to advertiser through message passing
         }
 
         //! Function that will be used to calculate the satisfaction of house agents.

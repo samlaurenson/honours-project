@@ -51,7 +51,7 @@ namespace HonoursProject.behaviours
          */
         private void AllocateSlots()
         {
-            Thread.Sleep(20);
+            //Thread.Sleep(20);
             int curve = 0;
             foreach (HouseAgent agent in _dataStore.HouseAgents)
             {
@@ -117,14 +117,14 @@ namespace HonoursProject.behaviours
                 {
                     _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
 
-                    Thread.Sleep(20);
+                    //Thread.Sleep(20);
                     this._numOfDays++;
                     this._readyAgents.Clear();
 
                     EndOfDaySocialLearning();
 
                     Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
-                    Thread.Sleep(200);
+                    //Thread.Sleep(200);
 
                     AllocateSlots();
                                     

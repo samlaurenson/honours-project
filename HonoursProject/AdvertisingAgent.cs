@@ -13,7 +13,7 @@ namespace HonoursProject
      This agent is responsible for notifying house agents of slots that are currently available for exchange.
      Once this agent receives a request for an exchange, the advertiser agent will notify the agent with the desired slot of the request, where the decision will be made to accept or deny the exchange.
      */
-    class AdvertisingAgent : Agent
+    public class AdvertisingAgent : Agent
     {
         private int _numberOfExchangeRounds; /*!< variable that will store the number of exchange rounds that will take place per day */
         private Dictionary<string, List<int>> _advertisedTimeSlots = new Dictionary<string, List<int>>(); /*!< Dictionary that will store the name of the house agent and the list of time slots they wish to advertise */
@@ -35,6 +35,13 @@ namespace HonoursProject
         public AdvertisingAgent(int numberOfExchangeRounds)
         {
             this._numberOfExchangeRounds = numberOfExchangeRounds;
+        }
+
+        //! Getter and setter for advertised slots.
+        public Dictionary<string, List<int>> AdvertisedSlots
+        {
+            get { return _advertisedTimeSlots; }
+            set { _advertisedTimeSlots = value; }
         }
 
         //! Function to reset the values of the advertising agent.

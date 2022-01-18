@@ -99,3 +99,4 @@ G:\Honours project\FINAL SOFTWARE\HonoursProject\bin\Debug\netcoreapp3.1\Microso
 G:\Honours project\FINAL SOFTWARE\HonoursProject\bin\Debug\netcoreapp3.1\System.IO.Pipelines.dll
 G:\Honours project\FINAL SOFTWARE\HonoursProject\bin\Debug\netcoreapp3.1\runtimes\win-x64\nativeassets\netcoreapp2.2\aspnetcorev2_inprocess.dll
 G:\Honours project\FINAL SOFTWARE\HonoursProject\bin\Debug\netcoreapp3.1\runtimes\win-x86\nativeassets\netcoreapp2.2\aspnetcorev2_inprocess.dll
+G:\Honours project\FINAL SOFTWARE\HonoursProject\bin\Debug\netcoreapp3.1\appsettings.json
