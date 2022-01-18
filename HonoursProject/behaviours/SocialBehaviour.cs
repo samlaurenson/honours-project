@@ -4,6 +4,7 @@ using System.Text;
 
 namespace HonoursProject.behaviours
 {
+    //! Class that implements the Social behavioural strategy.
     public class SocialBehaviour : IBehaviour
     {
         //! Function that will decide whether the agent accepts the exchange request.

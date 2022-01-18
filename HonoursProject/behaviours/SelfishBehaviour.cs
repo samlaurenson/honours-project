@@ -4,6 +4,7 @@ using System.Text;
 
 namespace HonoursProject.behaviours
 {
+    //! Class that implements the Selfish behavioural strategy.
     public class SelfishBehaviour : IBehaviour
     {
         //! Function that will decide whether the agent accepts the exchange request.

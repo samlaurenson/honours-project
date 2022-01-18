@@ -4,6 +4,7 @@ using System.Text;
 
 namespace HonoursProject.behaviours
 {
+    //! Interface for behavioural strategies.
     public interface IBehaviour
     {
         //Agent will be used for calculating satisfaction function (which will be public in houseagent class) as well as getting list of favours owed (if required)

@@ -85,13 +85,96 @@ Inheritance diagram for HonoursProject.behaviours.IBehaviour:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a15723c0d2935b718d0e396f0c8234a9c"><td class="memItemLeft" align="right" valign="top"><a id="a15723c0d2935b718d0e396f0c8234a9c" name="a15723c0d2935b718d0e396f0c8234a9c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConsiderRequest</b> (<a class="el" href="class_honours_project_1_1_house_agent.html">HouseAgent</a> agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot)</td></tr>
+<tr class="memitem:a15723c0d2935b718d0e396f0c8234a9c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_honours_project_1_1behaviours_1_1_i_behaviour.html#a15723c0d2935b718d0e396f0c8234a9c">ConsiderRequest</a> (<a class="el" href="class_honours_project_1_1_house_agent.html">HouseAgent</a> agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot)</td></tr>
+<tr class="memdesc:a15723c0d2935b718d0e396f0c8234a9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will decide whether the agent accepts the exchange request.  <a href="interface_honours_project_1_1behaviours_1_1_i_behaviour.html#a15723c0d2935b718d0e396f0c8234a9c">More...</a><br /></td></tr>
 <tr class="separator:a15723c0d2935b718d0e396f0c8234a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5a8e6539a35507df2f29cf80578feae"><td class="memItemLeft" align="right" valign="top"><a id="ab5a8e6539a35507df2f29cf80578feae" name="ab5a8e6539a35507df2f29cf80578feae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SwitchStrategy</b> (<a class="el" href="class_honours_project_1_1_house_agent.html">HouseAgent</a> agent)</td></tr>
+<tr class="memitem:ab5a8e6539a35507df2f29cf80578feae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_honours_project_1_1behaviours_1_1_i_behaviour.html#ab5a8e6539a35507df2f29cf80578feae">SwitchStrategy</a> (<a class="el" href="class_honours_project_1_1_house_agent.html">HouseAgent</a> agent)</td></tr>
+<tr class="memdesc:ab5a8e6539a35507df2f29cf80578feae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will switch the behaviour strategy of the agent.  <a href="interface_honours_project_1_1behaviours_1_1_i_behaviour.html#ab5a8e6539a35507df2f29cf80578feae">More...</a><br /></td></tr>
 <tr class="separator:ab5a8e6539a35507df2f29cf80578feae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a15723c0d2935b718d0e396f0c8234a9c" name="a15723c0d2935b718d0e396f0c8234a9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15723c0d2935b718d0e396f0c8234a9c">&#9670;&nbsp;</a></span>ConsiderRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool HonoursProject.behaviours.IBehaviour.ConsiderRequest </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_honours_project_1_1_house_agent.html">HouseAgent</a>&#160;</td>
+          <td class="paramname"><em>agent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>requestingAgentName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>requestingAgentSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>requestedSlot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function that will decide whether the agent accepts the exchange request. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">agent</td><td>The house agent that is considering the exchange request. </td></tr>
+    <tr><td class="paramname">requestingAgentName</td><td>The name of the house agent that is requesting the exchange. </td></tr>
+    <tr><td class="paramname">requestingAgentSlot</td><td>The slot the requesting agent is wanting to trade. </td></tr>
+    <tr><td class="paramname">requestedSlot</td><td>The slot that the requesting agent want desires. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Decision if the exchange was successful (true) or not (false). </dd></dl>
+
+<p>Implemented in <a class="el" href="class_honours_project_1_1behaviours_1_1_selfish_behaviour.html#a5359f4f4f5d27af42c6cfe3fc0631fcf">HonoursProject.behaviours.SelfishBehaviour</a>, and <a class="el" href="class_honours_project_1_1behaviours_1_1_social_behaviour.html#a8e11bc8414160f9236fa5202c7611cd5">HonoursProject.behaviours.SocialBehaviour</a>.</p>
+
+</div>
+</div>
+<a id="ab5a8e6539a35507df2f29cf80578feae" name="ab5a8e6539a35507df2f29cf80578feae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5a8e6539a35507df2f29cf80578feae">&#9670;&nbsp;</a></span>SwitchStrategy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HonoursProject.behaviours.IBehaviour.SwitchStrategy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_honours_project_1_1_house_agent.html">HouseAgent</a>&#160;</td>
+          <td class="paramname"><em>agent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function that will switch the behaviour strategy of the agent. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">agent</td><td>The house agent that will be switching their behaviour strategy. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="class_honours_project_1_1behaviours_1_1_selfish_behaviour.html#a3b5d9b91911053643b7dca8d50b79c25">HonoursProject.behaviours.SelfishBehaviour</a>, and <a class="el" href="class_honours_project_1_1behaviours_1_1_social_behaviour.html#ad145d2055054ff11df1f9a3d63e32526">HonoursProject.behaviours.SocialBehaviour</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this interface was generated from the following file:<ul>
 <li>G:/Honours project/FINAL SOFTWARE/HonoursProject/behaviours/IBehaviour.cs</li>
 </ul>
