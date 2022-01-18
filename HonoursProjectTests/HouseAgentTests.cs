@@ -105,15 +105,19 @@ namespace HonoursProject.Tests
         public void HandleAcceptRequest()
         {
             //Checking that the slots are being replaced properly when an exchange has been successful
-            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            var agent = new HouseAgent(new SocialBehaviour(), 0);
             agent.AgentFlexibility = new List<double>() { 1.0 };
-            agent.AllocatedSlots = new List<int>() { 1, 2, 3, 4 };
+            agent.AllocatedSlots = new List<int>() { 1, 6, 3, 4 };
             agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
 
             //Swapping slot 4 in allocated slots for slot 5 (the slot that the desired agent had)
             agent.HandleAcceptedRequest(4, 5, "agent1");
 
-            CollectionAssert.AreEqual(new List<int>() { 1, 2, 3, 5 }, agent.AllocatedSlots);
+            //Swapping slot 6 for slot 2 -- repeating this to test the favours owed dictionary works correctly
+            agent.HandleAcceptedRequest(6, 2, "agent1");
+
+            //Slots added in at end of array since the element of current slot index is not modified but removed completely, then desired slot is added in at end
+            CollectionAssert.AreEqual(new List<int>() { 1, 3, 5, 2 }, agent.AllocatedSlots);
         }
     }
 }
