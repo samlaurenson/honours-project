@@ -86,7 +86,19 @@ namespace HonoursProject.Tests
 
             //Slots in allocated list that are not in requested list are slots 7 and 4
             Assert.AreEqual("7 4", slotCheck);
+        }
 
+        [TestMethod()]
+        public void ListUnwantedSlotsTest_NoUnwanted()
+        {
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            agent.AgentFlexibility = new List<double>() { 1.0 };
+            agent.AllocatedSlots = new List<int>() { 1, 2, 3, 5 };
+            agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
+
+            string slotCheck = agent.ListUnwantedSlots();
+
+            Assert.AreEqual("", slotCheck);
         }
     }
 }
