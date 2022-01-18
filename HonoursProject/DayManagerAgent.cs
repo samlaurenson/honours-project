@@ -8,43 +8,47 @@ using ActressMas;
 
 namespace HonoursProject.behaviours
 {
+    //! DayManager Agent
+    /*!
+     The day manager agent is responsible for managing the progression of days in a model.
+     This agent will be responsible for providing house agents with allocated and requested slots as well as progressing the day in the model.
+     At the end of each day, this agent will run the function for social learning and will calculate agent satisfactions which will be stored in the DataStore class.
+     */
     class DayManagerAgent : Agent
     {
-        private int _numOfDays; //Increment for how many days have passed in the model
-        private int _maxDays;
-        private List<int> availableTimeSlots = new List<int>();
-        private int _numberOfEvolvingAgents;
-        private DataStore _dataStore = DataStore.Instance;
-        private List<string> _readyAgents = new List<string>();
+        private int _numOfDays; /*!< Increment for how many days have passed in the model. */
+        private int _maxDays; /*!< The number of days that the model will run for. */
+        private List<int> availableTimeSlots = new List<int>(); /*!< A list of available time slots that agents can be allocated. */
+        private int _numberOfEvolvingAgents; /*!< Number of agents that will evolve at the end of a day. */
+        private DataStore _dataStore = DataStore.Instance; /*!< Reference to the DataStore instance. */
+        private List<string> _readyAgents = new List<string>(); /*!< List of agents that are ready to progress to next day in the model. */
 
+        //! Constructor for the day manager agent.
+        /*!
+         \param numberOfEvolvingAgents The number of agents that will evolve every day.
+         \param days The number of days that the model will run for.
+         */
         public DayManagerAgent(int numberOfEvolvingAgents, int days)
         {
             this._numberOfEvolvingAgents = numberOfEvolvingAgents;
             this._maxDays = days;
         }
 
+        //! Setup function
+        /*!
+         Will execute when environment starts.
+         */
         public override void Setup()
         {
             CreateAvailableSlots();
             AllocateSlots();
-
-            /*Thread.Sleep(20);
-            int curve = 0;
-            foreach (HouseAgent agent in _dataStore.HouseAgents)
-            {
-                //Could try moving this back in to environment memory
-                agent.RequestingSlotHandler(_dataStore.BucketedDemandCurve[curve], _dataStore.TotalDemand[curve]);
-                agent.RandomSlotAllocationHandler();
-                curve++;
-                if (curve >= _dataStore.BucketedDemandCurve.Count)
-                {
-                    curve = 0;
-                }
-            }
-
-            Broadcast("allocate");*/
         }
 
+        //! Function to allocate slots to house agents.
+        /*!
+         Function to allocate slots to house agents.
+         Function will allocate slots to each agent in the environment based on a demand curve.
+         */
         private void AllocateSlots()
         {
             Thread.Sleep(20);
@@ -67,6 +71,12 @@ namespace HonoursProject.behaviours
             Broadcast("allocate");
         }
 
+        //! Act function.
+        /*!
+         Will run whenever agent receives a message.
+         Accepted message is the "readyNextDay" message - which will add an agents name to a list of agents that are ready to progress to next day.
+         \param message The message that the agent has received.
+         */
         public override void Act(Message message)
         {
             try
@@ -87,6 +97,12 @@ namespace HonoursProject.behaviours
             }
         }
 
+        //! Act default function.
+        /*!
+         Function will execute whenever agent has not done anything in a turn.
+         This is where the day manager will check if all agents are ready to progress to the next day.
+         If agents are ready to progress, then satisfactions will be calculated, social learning will take place and day counter will be incremented and agents notified that next day has started.
+         */
         public override void ActDefault()
         {
             if (_dataStore.HouseAgents.Count == 0)
@@ -124,7 +140,10 @@ namespace HonoursProject.behaviours
             }
         }
 
-        //Function that will create available time slots for agents for the day
+        //! Create available slots function.
+        /*!
+         Function that will create available time slots for agents for the day.
+         */
         private void CreateAvailableSlots()
         {
             int populationSize = Environment.Memory["NoOfAgents"];
@@ -163,7 +182,10 @@ namespace HonoursProject.behaviours
             //Environment.Memory.Add("AvailableSlots", availableTimeSlots);
         }
 
-        //Function that will handle the social learning of agents after all exchanges have been made for a day
+        //! End of day social learning function.
+        /*!
+         Function that will handle the social learning of agents after all exchanges have been made for a day
+         */
         private void EndOfDaySocialLearning()
         {
             List<HouseAgent> houseAgents = _dataStore.HouseAgents;

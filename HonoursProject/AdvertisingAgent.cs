@@ -8,28 +8,39 @@ using ActressMas;
 
 namespace HonoursProject
 {
+    //! Class for the Advertising agent.
+    /*!
+     This agent is responsible for notifying house agents of slots that are currently available for exchange.
+     Once this agent receives a request for an exchange, the advertiser agent will notify the agent with the desired slot of the request, where the decision will be made to accept or deny the exchange.
+     */
     class AdvertisingAgent : Agent
     {
-        private int _numberOfExchangeRounds = 3;
-        private Dictionary<string, List<int>> _advertisedTimeSlots = new Dictionary<string, List<int>>();
-        private string _currentAdvertisingHouse;
-        private int _currentExchangeRound;
-        private int lastChances = 0; //Not sure if required - but will be used to re-advertise a households slots if their list has not been emptied.
-                                        //households will have 3 last chances before the next household in the list is advertised
+        private int _numberOfExchangeRounds; /*!< variable that will store the number of exchange rounds that will take place per day */
+        private Dictionary<string, List<int>> _advertisedTimeSlots = new Dictionary<string, List<int>>(); /*!< Dictionary that will store the name of the house agent and the list of time slots they wish to advertise */
+        private string _currentAdvertisingHouse; /*!< variable that will store the name of the house that has been selected to have their slots advertised */
+        private int _currentExchangeRound; /*!< variable that will store the current exchange round */
 
-        private List<Tuple<string, int, int>> requests = new List<Tuple<string, int, int>>();
- 
-        private int _turnsToWait;
-        private int _exchangeWaitTimer;
-        private int _endTimer;
-        private bool _pickedReq = false;
-        private bool _exchangeInProgress = false;
+        private List<Tuple<string, int, int>> requests = new List<Tuple<string, int, int>>(); /*!< variable that will store a list of requests for an agents advertised slots - including the requesting agent name, the desired slot and the slot to exchange for desired slot */
 
+        private int _turnsToWait; /*!< variable that will be the timer which will wait for requesting agents to make a request for an advertised slot */
+        private int _exchangeWaitTimer; /*!< variable that will be the timer which will wait for agents to be ready to receive advertisements for the day */
+        private int _endTimer; /*!< variable that will be the timer which will wait for agents to make a decision on the exchange request received */
+        private bool _pickedReq = false; /*!< variable that will be a flag for signalling a requesting agent process has completed */
+        private bool _exchangeInProgress = false; /*!< variable that will be a flag for signalling that the advertiser has started advertising for the day */
+
+        //! Constructor for the advertising agent.
+        /*!
+         \param numberOfExchangeRounds The maximum number of exchange rounds that will take place in a day.
+         */
         public AdvertisingAgent(int numberOfExchangeRounds)
         {
             this._numberOfExchangeRounds = numberOfExchangeRounds;
         }
 
+        //! Function to reset the values of the advertising agent.
+        /*!
+         Function will reset the timers of the advertising agent, the current exchange round counter and flags that determine what point in the exchange the agent is at.
+         */
         public void DayResetAdvertiser()
         {
             this._currentExchangeRound = 0;
@@ -40,6 +51,10 @@ namespace HonoursProject
             this._pickedReq = false;
         }
 
+        //! Setup function
+        /*!
+         Will execute when environment starts.
+         */
         public override void Setup()
         {
             this._exchangeWaitTimer = 3;
@@ -47,6 +62,12 @@ namespace HonoursProject
             this._endTimer = 6;
         }
 
+        //! Act function.
+        /*!
+         Will run whenever agent receives a message.
+         Accepted messages include - "list", "request", "requestUnsuccessful", "newDay", "Stop"
+         \param message The message that the agent has received.
+         */
         public override void Act(Message message)
         {
             try
@@ -104,6 +125,11 @@ namespace HonoursProject
             }
         }
 
+        //! Function that will handle incoming requests for time slots
+        /*!
+         This function will select an agent that will have their exchange request considered.
+         The agents that were not selected for consideration will have their made interaction flag reset as they would have not made an interaction.
+         */
         private void RequestHandler()
         {
 
@@ -135,6 +161,11 @@ namespace HonoursProject
             }
         }
 
+        //! Act default function.
+        /*!
+         Function will execute whenever agent has not done anything in a turn.
+         This is where advertising agent will check if there are still house agents that are able to have their slots advertised. If so, then that agent will be selected to have their slots advertised.
+         */
         public override void ActDefault()
         {
             //Inital timer to start the advertising process for the round
@@ -168,6 +199,11 @@ namespace HonoursProject
             }
         }
 
+        //! Handle end function.
+        /*!
+         Function will execute when advertising agent has to remove the current advertised house from advertising and select a new house to advertise for.
+         Will do this as long as there are still exchange rounds to take place in a day.
+         */
         private void HandleEnd()
         {
             if (string.IsNullOrWhiteSpace(this._currentAdvertisingHouse))
@@ -178,7 +214,6 @@ namespace HonoursProject
 
             this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
             this._currentAdvertisingHouse = "";
-            this.lastChances = 0;
 
             SelectNextAdvertiser();
 
@@ -203,8 +238,11 @@ namespace HonoursProject
             }
         }
 
-        //Function to help select a house agent to advertise slots for
-        //If the house agent has already made an interaction then they will not be selected for advertising
+        //! Function to select the next house to advertise for.
+        /*!
+         This function will go through the dictionary of time slots to advertise.
+         If the agent in the dictionary has already made an interaction this day, then do not advertise the slots for this agent.
+         */
         private void SelectNextAdvertiser()
         {
             if (this._advertisedTimeSlots.Count == 0)

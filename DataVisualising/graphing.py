@@ -96,6 +96,7 @@ def calculateAverageSimulation(data):
     dayAverages = [[0 for x in range(dayEntries)] for y in range(numOfDays)]
 
     #For every simulation - Add each day and the data for that day to the dayAverages array
+    #Currently only doing this for 1 of the evolving agent model runs - add another loop above this to go over each evolving agent model as well?
     for simulation in data['Value']:
         for i in range(len(simulation)):
             #for each day
