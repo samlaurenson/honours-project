@@ -253,22 +253,7 @@ namespace HonoursProject
                         Console.WriteLine(Name + " had a successful trade with " + message.Sender);
                         int currentSlot = Int32.Parse(parameters[0]);
                         int desiredSlot = Int32.Parse(parameters[1]);
-
-                        //If requesting agent is a social agent, then remember that they owe a favour to the agent that accepted the request
-                        if (_agentBehaviour is SocialBehaviour)
-                        {
-                            if (!FavoursOwed.ContainsKey(message.Sender))
-                            {
-                                FavoursOwed.Add(message.Sender, 1);
-                            }
-                            else
-                            {
-                                FavoursOwed[message.Sender]++;
-                            }
-                        }
-
-                        this.AllocatedSlots.Remove(currentSlot);
-                        this.AllocatedSlots.Add(desiredSlot);
+                        HandleAcceptedRequest(currentSlot, desiredSlot, message.Sender);
                         break;
                     case "prepareForNextDay":
                         //This message will come from the advertising agent who will send this after all the exchange rounds have been completed
@@ -286,6 +271,32 @@ namespace HonoursProject
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        //! Function to handle case where exchange was successful and agent receives the slot they wanted.
+        /*!
+         Function will replace the current slot the agent has in their allocated slot list with their desired slot provided by the other agent in the exchange.
+         \param currentSlot The slot the agent has and wants to exchange.
+         \param desiredSlot The slot the agent wants from another agent.
+         \param agentWithDesiredSlot The name of the agent who has the desired slot.
+         */
+        public void HandleAcceptedRequest(int currentSlot, int desiredSlot, string agentWithDesiredSlot)
+        {
+            //If requesting agent is a social agent, then remember that they owe a favour to the agent that accepted the request
+            if (_agentBehaviour is SocialBehaviour)
+            {
+                if (!FavoursOwed.ContainsKey(agentWithDesiredSlot))
+                {
+                    FavoursOwed.Add(agentWithDesiredSlot, 1);
+                }
+                else
+                {
+                    FavoursOwed[agentWithDesiredSlot]++;
+                }
+            }
+
+            this.AllocatedSlots.Remove(currentSlot);
+            this.AllocatedSlots.Add(desiredSlot);
         }
 
         //! Function that will create a list of unwanted slots that the house will send to the advertiser

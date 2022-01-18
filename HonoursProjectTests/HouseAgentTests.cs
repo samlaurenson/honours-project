@@ -100,5 +100,20 @@ namespace HonoursProject.Tests
 
             Assert.AreEqual("", slotCheck);
         }
+
+        [TestMethod()]
+        public void HandleAcceptRequest()
+        {
+            //Checking that the slots are being replaced properly when an exchange has been successful
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            agent.AgentFlexibility = new List<double>() { 1.0 };
+            agent.AllocatedSlots = new List<int>() { 1, 2, 3, 4 };
+            agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
+
+            //Swapping slot 4 in allocated slots for slot 5 (the slot that the desired agent had)
+            agent.HandleAcceptedRequest(4, 5, "agent1");
+
+            CollectionAssert.AreEqual(new List<int>() { 1, 2, 3, 5 }, agent.AllocatedSlots);
+        }
     }
 }
