@@ -28,7 +28,7 @@ namespace HonoursProject
         private static int curve = 0;
         private static int numberOfTimeSlotsWanted = 4; /*!< The number of time slots each agent will have. */
 
-        private List<double> _agentFlexibility; /*!< List of values that determines the flexibility of the agent - used to calculate the agent's satisfaction. */
+        private List<double> _agentFlexibility = new List<double>(); /*!< List of values that determines the flexibility of the agent - used to calculate the agent's satisfaction. */
         //Using 2 entries for agent flexibility so that unit tests could be made to fully test the satisfaction calculation function
 
         //! Constructor for the house agent.
