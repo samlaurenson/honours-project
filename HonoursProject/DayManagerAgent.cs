@@ -14,7 +14,7 @@ namespace HonoursProject.behaviours
      This agent will be responsible for providing house agents with allocated and requested slots as well as progressing the day in the model.
      At the end of each day, this agent will run the function for social learning and will calculate agent satisfactions which will be stored in the DataStore class.
      */
-    class DayManagerAgent : Agent
+    public class DayManagerAgent : Agent
     {
         private int _numOfDays; /*!< Increment for how many days have passed in the model. */
         private int _maxDays; /*!< The number of days that the model will run for. */
@@ -32,6 +32,12 @@ namespace HonoursProject.behaviours
         {
             this._numberOfEvolvingAgents = numberOfEvolvingAgents;
             this._maxDays = days;
+        }
+
+        //! Getter for current day in the model.
+        public int CurrentDay
+        {
+            get { return _numOfDays; }
         }
 
         //! Setup function
@@ -115,19 +121,9 @@ namespace HonoursProject.behaviours
             {
                 if (this._numOfDays < this._maxDays-1)
                 {
-                    _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
+                    EndOfDayManager();
 
-                    //Thread.Sleep(20);
-                    this._numOfDays++;
-                    this._readyAgents.Clear();
-
-                    EndOfDaySocialLearning();
-
-                    Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
-                    //Thread.Sleep(200);
-
-                    AllocateSlots();
-                                    
+                    AllocateSlots(); //Allocating slots for new day
                     Send("advertiser", "newDay");
                 }
                 else
@@ -138,6 +134,16 @@ namespace HonoursProject.behaviours
                     Stop();
                 }
             }
+        }
+
+        //! Function that will run functions that are to be executed at the end of a day and increment day counter.
+        public void EndOfDayManager()
+        {
+            _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
+            this._numOfDays++;
+            this._readyAgents.Clear();
+            EndOfDaySocialLearning();
+            Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
         }
 
         //! Create available slots function.
