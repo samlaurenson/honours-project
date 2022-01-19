@@ -18,7 +18,7 @@ namespace HonoursProject
         private DataStore _dataStore = DataStore.Instance; /*!< Reference to the DataStore instance. */
         private int _id; /*!< variable that is the ID of the house agent. */
         private int _satisfaction;
-        private bool _madeInteraction; /*!< variable that is used as a flag to signal whether the agent has made an interaction this day or not. */
+        private bool _madeInteraction; /*!< variable that is used as a flag to signal whether the agent has made an interaction this round or not. */
         private bool _useSocialCapital; /*!< variable that will be used to determine whether the model will use social capital or not. */
         private List<int> _allocatedSlots = new List<int>(); /*!< List of time slots the agent has been allocated. */
         private List<int> _requestedSlots = new List<int>(); /*!< List of requested slots the agent desires. */
@@ -244,7 +244,10 @@ namespace HonoursProject
                             //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
                             Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
                         }
-                        else { Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}"); }
+                        else
+                        {
+                            Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");
+                        }
 
                         break;
                     case "acceptRequest":

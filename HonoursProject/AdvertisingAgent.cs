@@ -44,6 +44,20 @@ namespace HonoursProject
             set { _advertisedTimeSlots = value; }
         }
 
+        //! Getter and setter for time slot requests
+        public List<Tuple<string, int, int>> Requests
+        {
+            get { return requests; }
+            set { requests = value; }
+        }
+
+        //! Getter and setter for current advertising house
+        public string CurrentAdvertisingHouse
+        {
+            get { return _currentAdvertisingHouse; }
+            set { _currentAdvertisingHouse = value; }
+        }
+
         //! Function to reset the values of the advertising agent.
         /*!
          Function will reset the timers of the advertising agent, the current exchange round counter and flags that determine what point in the exchange the agent is at.
@@ -154,13 +168,14 @@ namespace HonoursProject
         /*!
          This function will select an agent that will have their exchange request considered.
          The agents that were not selected for consideration will have their made interaction flag reset as they would have not made an interaction.
+         \return Message that will be sent to agent who has the desired slot containing the requesting agent name, their proposed slot and what slot they want
          */
-        private void RequestHandler()
+        public string RequestHandler()
         {
-
+            string message = "";
             if (requests.Count == 0)
             {
-                return;
+                return message;
             }
 
             //Method to select first requester from the list of requests. This requester will have the chance for their request to be considered by the house that is currently being advertised
@@ -168,13 +183,7 @@ namespace HonoursProject
             if (this._advertisedTimeSlots[this._currentAdvertisingHouse].Contains(requests[0].Item2) &&
                 this._currentAdvertisingHouse != requests[0].Item1)
             {
-                Send(this._currentAdvertisingHouse, $"sendRequest {requests[0].Item1} {requests[0].Item3} {requests[0].Item2}");
-
-                //Letting all unsuccessful agents know that they can request again this round
-                /*for (int i = 1; i < requests.Count; i++)
-                {
-                    Send(requests[i].Item1, "undoInteraction");
-                }*/
+                message = $"sendRequest {requests[0].Item1} {requests[0].Item3} {requests[0].Item2}";
 
                 //Letting all unsuccessful agents know that they can request again this round -- Accessing the agent variables directly to bypass the computational expense of message passing
                 for (int i = 1; i < requests.Count; i++)
@@ -182,8 +191,14 @@ namespace HonoursProject
                     DataStore.Instance.HouseAgents.Find(agent => agent.Name == requests[i].Item1).MadeInteraction = false;
                 }
 
+                this._advertisedTimeSlots[this._currentAdvertisingHouse].Remove(requests[0].Item2);
+
                 requests.Clear();
+
+                return message;
             }
+
+            return message;
         }
 
         //! Act default function.
@@ -214,7 +229,7 @@ namespace HonoursProject
                 {
                     this._pickedReq = true;
                     this._turnsToWait = 6;
-                    RequestHandler();
+                    Send(this._currentAdvertisingHouse, RequestHandler());
                 } else if(--this._endTimer<=0 && _pickedReq)
                 {
                     //After waiting for agents to accept or decline spots - advertising agent will now pick next house agent to advertise for
