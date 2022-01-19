@@ -17,13 +17,13 @@ namespace HonoursProject.Tests
             var sel = new HouseAgent(new SelfishBehaviour(), 0);
             sel.AgentFlexibility = new List<double>() { 1.0 };
             sel.AllocatedSlots = new List<int>() { 1, 6, 3, 4 };
-            sel.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
+            sel.RequestedSlots = new List<int>() { 1, 4, 3, 5 };
             sel.Name = "house0";
 
             var soc = new HouseAgent(new SocialBehaviour(), 1);
             soc.AgentFlexibility = new List<double>() { 1.0 };
-            soc.AllocatedSlots = new List<int>() { 1, 6, 3, 4 };
-            soc.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
+            soc.AllocatedSlots = new List<int>() { 2, 5, 7, 8 };
+            soc.RequestedSlots = new List<int>() { 1, 2, 7, 5 };
             soc.Name = "house1";
 
 
@@ -36,11 +36,11 @@ namespace HonoursProject.Tests
             List<List<double>> expected = new List<List<double>>();
             expected.Add(new List<double>()
             {
-                0.125,
-                0.625,
-                0.5,
-                0.4629100498862757,
-                0.5,
+                0.1875,
+                0.75,
+                0.75,
+                0.6943650748294136,
+                0.75,
                 0
             });
 
