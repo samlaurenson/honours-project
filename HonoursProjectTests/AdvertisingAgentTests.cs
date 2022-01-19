@@ -54,6 +54,7 @@ namespace HonoursProject.Tests
 
             //Adding houses to list of house agents in datastore
             DataStore dataStore = DataStore.Instance;
+            dataStore.HouseAgents.Clear();
             dataStore.HouseAgents.Add(house0);
             dataStore.HouseAgents.Add(house1);
             dataStore.HouseAgents.Add(house2);
@@ -92,6 +93,7 @@ namespace HonoursProject.Tests
 
             //Adding houses to list of house agents in datastore
             DataStore dataStore = DataStore.Instance;
+            dataStore.HouseAgents.Clear();
             dataStore.HouseAgents.Add(house0);
             dataStore.HouseAgents.Add(house1);
             dataStore.HouseAgents.Add(house2);

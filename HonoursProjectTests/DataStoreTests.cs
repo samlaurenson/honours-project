@@ -28,6 +28,10 @@ namespace HonoursProject.Tests
 
 
             DataStore dataStore = DataStore.Instance;
+
+            dataStore.HouseAgents.Clear();
+            dataStore.EndOfDaySatisfaction.Clear();
+
             dataStore.HouseAgents.Add(sel);
             dataStore.HouseAgents.Add(soc);
 
@@ -36,10 +40,10 @@ namespace HonoursProject.Tests
             List<List<double>> expected = new List<List<double>>();
             expected.Add(new List<double>()
             {
-                0.1875,
                 0.75,
                 0.75,
-                0.6943650748294136,
+                0.75,
+                0.0,
                 0.75,
                 0
             });
