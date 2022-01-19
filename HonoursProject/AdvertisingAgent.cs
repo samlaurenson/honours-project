@@ -91,12 +91,14 @@ namespace HonoursProject
                         _exchangeInProgress = false;
                         _pickedReq = false;
 
-                        List<int> advertisedSlots = new List<int>();
+                        ListHouseTimeSlots(message.Sender, parameters);
+
+                        /*List<int> advertisedSlots = new List<int>();
                         for (int i = 0; i < parameters.Count; i++)
                         {
                             advertisedSlots.Add(Int32.Parse(parameters[i]));
                         }
-                        this._advertisedTimeSlots.Add(message.Sender, advertisedSlots);
+                        this._advertisedTimeSlots.Add(message.Sender, advertisedSlots);*/
                         break;
                     case "request":
                         //Could change this so that the advertising agent has a public function that will return if there has been a request made or not
@@ -131,6 +133,21 @@ namespace HonoursProject
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        //! Function that will add slots to advertise to a dictionary of households and their unwanted slots
+        /*!
+         \param sender The household that is listing their unwanted time slots.
+         \param parameters The contents of the "list" message sent by the household listing their slots. The message contents contain all the unwanted time slots for the agent.
+         */
+        public void ListHouseTimeSlots(string sender, List<string> parameters)
+        {
+            List<int> advertisedSlots = new List<int>();
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                advertisedSlots.Add(Int32.Parse(parameters[i]));
+            }
+            this._advertisedTimeSlots.Add(sender, advertisedSlots);
         }
 
         //! Function that will handle incoming requests for time slots
