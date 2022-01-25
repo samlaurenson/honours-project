@@ -91,7 +91,7 @@ namespace HonoursProject
                     env.Memory.Add("NoOfAgents", numberOfHouseholds);
 
                     var advertAgent = new AdvertisingAgent(50);
-                    var dayManager = new DayManagerAgent(0, numberOfDays);
+                    var dayManager = new DayManagerAgent(25, numberOfDays);
 
                     for (int k = 0; k < numberOfHouseholds/2; k++)
                     {

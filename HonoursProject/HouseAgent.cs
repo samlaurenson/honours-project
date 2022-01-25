@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -288,6 +289,47 @@ namespace HonoursProject
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+
+        //https://github.com/NathanABrooks/ResourceExchangeArena/blob/53e518c4a11ef769756a01bd666df07d01ebc899/src/resource_exchange_arena/Agent.java
+        public void RSH()
+        {
+            if (_requestedSlots.Count > 0)
+            {
+                _requestedSlots.Clear();
+            }
+
+            for (int i = 1; i <= numberOfTimeSlotsWanted; i++)
+            {
+                Random rand = _dataStore.EnvironmentRandom;
+
+                int timeslot = rand.Next(24) + 1;
+
+                if (_requestedSlots.Contains(timeslot))
+                {
+                    i--;
+                }
+                else
+                {
+                    _requestedSlots.Add(timeslot);
+                }
+            }
+        }
+
+        public void RSA()
+        {
+            for (int requestedTimeSlot = 1; requestedTimeSlot <= _requestedSlots.Count; requestedTimeSlot++)
+            {
+                if (_dataStore.AvailableSlots.Count > 0)
+                {
+                    int selector = _dataStore.EnvironmentRandom.Next(_dataStore.AvailableSlots.Count);
+                    int timeslot = _dataStore.AvailableSlots[selector];
+
+                    _allocatedSlots.Add(timeslot);
+                    _dataStore.AvailableSlots.Remove(selector);
+                }
             }
         }
 

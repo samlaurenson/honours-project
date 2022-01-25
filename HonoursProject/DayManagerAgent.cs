@@ -46,9 +46,41 @@ namespace HonoursProject.behaviours
          */
         public override void Setup()
         {
-            CreateAvailableSlots();
-            AllocateSlots();
+            /*CreateAvailableSlots();
+            AllocateSlots();*/
+
+            createslots();
+            allocate();
+
             _dataStore.addStartOfDaySatisfactions();
+            Broadcast("allocate");
+        }
+
+        //https://github.com/NathanABrooks/ResourceExchangeArena/blob/53e518c4a11ef769756a01bd666df07d01ebc899/src/resource_exchange_arena/Day.java
+        private void createslots()
+        {
+            availableTimeSlots.Clear();
+            for (int timeslot = 1; timeslot <= 24; timeslot++)
+            {
+                for (int unit = 1; unit <= 16; unit++)
+                {
+                    availableTimeSlots.Add(timeslot);
+                }
+            }
+
+            _dataStore.AvailableSlots = availableTimeSlots;
+        }
+
+        private void allocate()
+        {
+            foreach (HouseAgent agent in _dataStore.HouseAgents)
+            {
+                agent.RequestedSlots.Clear();
+                agent.AllocatedSlots.Clear();
+
+                agent.RSH();
+                agent.RSA();
+            }
         }
 
         //! Function to allocate slots to house agents.
@@ -124,12 +156,15 @@ namespace HonoursProject.behaviours
                 {
                     EndOfDayManager();
 
-                    CreateAvailableSlots();
-                    AllocateSlots(); //Allocating slots for new day
+                    /*CreateAvailableSlots();
+                    AllocateSlots(); //Allocating slots for new day*/
+                    createslots();
+                    allocate();
 
                     _dataStore.addStartOfDaySatisfactions(); //Calculating satisfactions of agents at start of new day
 
                     Send("advertiser", "newDay");
+                    Broadcast("allocate");
                 }
                 else
                 {
