@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HonoursProject.behaviours
@@ -45,7 +46,7 @@ namespace HonoursProject.behaviours
          */
         public void SwitchStrategy(HouseAgent agent)
         {
-            Console.WriteLine(agent.Name + " is switching from selfish to social");
+            //Console.WriteLine(agent.Name + " is switching from selfish to social");
             agent.Behaviour = new SocialBehaviour();
         }
     }

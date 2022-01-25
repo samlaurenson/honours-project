@@ -16,16 +16,78 @@ def graph():
     day = simulation[0][0]
 
     averageSimulationData = calculateAverageSimulation(evolving_index) #doing this with just the first evolving array as trial - will need to loop this for each evolving agent
-    
     days = []
     #Number of days to array for graphing
     for i in range(len(evolving_index['Value'][0])):
         days.append(i)
-    
+
+
+    averageOptimum = averageOptimumSatis(evolving_index)
+
     print(days)
-    plotEODAverage(days, averageSimulationData)
+    #plotEODAverage(days, averageSimulationData)
+    test(days, averageSimulationData, averageOptimum)
     print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "The average agent satisfaction for 1st day of 1st simulation is " + str(day)
+
+def test(days, simDat, averageOptimum):
+    selfish = []
+    social = []
+    optimal = []
+    random = []
+
+    #Extracting data for selfish and social agent satisfactions from the average model data
+    for i in range(len(simDat)):
+        selfish.append(simDat[i][2])
+        social.append(simDat[i][4])
+        optimal.append(simDat[i][1])
+        random.append(simDat[i][0])
+
+    fig = py.graph_objects.Figure()
+
+    fig.add_trace(py.graph_objects.Scatter(
+        x=days,
+        y=selfish,
+        mode='lines',
+        name='Selfish',
+    ))
+
+    fig.add_trace(py.graph_objects.Scatter(
+        x=days,
+        y=social,
+        mode='lines',
+        name='Social',
+    ))
+
+    fig.add_trace(py.graph_objects.Scatter(
+        x=days,
+        y=optimal,
+        mode='lines',
+        name='Optimal',
+    ))
+
+    fig.add_trace(py.graph_objects.Scatter(
+        x=days,
+        y=random,
+        mode='lines',
+        name='Random',
+    ))
+
+    fig.update_layout(
+        xaxis=dict(
+            title='Day'
+        ),
+        yaxis=dict(
+            title='Average consumer satisfaction'
+        )
+    )
+
+    fig.update_layout(
+        title_text="Average consumer satisfaction at end of each day",
+        title_x=0.5
+    )
+
+    fig.write_image("./avg3.pdf")
 
 def plotEODAverage(days, endOfDaySatisfactions):
     satisf = []
@@ -103,6 +165,8 @@ def calculateAverageSimulation(data):
             for j in range(len(simulation[i])):
                 #For day data
                 dayAverages[i][j] += simulation[i][j]
+                # selfish.append(simulation[i][2])
+                # social.append(simulation[i][4])
     
     #Getting the averages for days in the simulation
     for i in range(len(dayAverages)):
@@ -111,7 +175,15 @@ def calculateAverageSimulation(data):
 
     return dayAverages
 
-
+def averageOptimumSatis(data):
+    optimumSatisfactions = []
+    for simulation in data['Value']:
+        for i in range(len(simulation)):
+            #for each day
+            for j in range(len(simulation[i])):
+                #For day data
+                optimumSatisfactions.append(simulation[i][1])
+    return np.average(optimumSatisfactions)
 
 
 

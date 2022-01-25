@@ -48,6 +48,7 @@ namespace HonoursProject.behaviours
         {
             CreateAvailableSlots();
             AllocateSlots();
+            _dataStore.addStartOfDaySatisfactions();
         }
 
         //! Function to allocate slots to house agents.
@@ -123,13 +124,17 @@ namespace HonoursProject.behaviours
                 {
                     EndOfDayManager();
 
+                    CreateAvailableSlots();
                     AllocateSlots(); //Allocating slots for new day
+
+                    _dataStore.addStartOfDaySatisfactions(); //Calculating satisfactions of agents at start of new day
+
                     Send("advertiser", "newDay");
                 }
                 else
                 {
                     _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
-                    Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
+                    //Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
                     Broadcast("Stop");
                     Stop();
                 }
@@ -137,13 +142,17 @@ namespace HonoursProject.behaviours
         }
 
         //! Function that will run functions that are to be executed at the end of a day and increment day counter.
+        /*!
+          The AllocatedSlots function is not included in this handler function as the AllocatedSlots function requires randomness, which is difficult to unit test, and also
+          requires an ActressMAS environment to be running since the AllocatedSlots function will broadcast messages to agents, if there is no environment running then this would cause an issue.
+         */
         public void EndOfDayManager()
         {
             _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
             this._numOfDays++;
             this._readyAgents.Clear();
             EndOfDaySocialLearning();
-            Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
+            //Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
         }
 
         //! Create available slots function.
@@ -154,6 +163,10 @@ namespace HonoursProject.behaviours
         {
             int populationSize = Environment.Memory["NoOfAgents"];
             int uniqueTimeSlots = Environment.Memory["UniqueTimeSlots"];
+
+            int maxCapacityPerSlot = 16;
+
+            List<int> slotCapacity = Enumerable.Repeat(0, uniqueTimeSlots).ToList();
 
             int requiredTimeSlots = populationSize * uniqueTimeSlots;
             List<int> possibleTimeSlots = new List<int>();
@@ -175,6 +188,20 @@ namespace HonoursProject.behaviours
                         int timeSlot = possibleTimeSlots[selector];
                         availableTimeSlots.Add(timeSlot);
                         possibleTimeSlots.Remove(selector);
+
+                        //Ensuring that no more than 16 instances of a time slot are generated per day
+                        //Since time slots are in the range of 1 to 24 (included) then will have to take 1 away so that the time slot corresponds to correct capacity in slotCapacity list
+                        /*if (slotCapacity[selector]-1 >= maxCapacityPerSlot)
+                        {
+                            //If slot is already at maximum capacity - then do not add to available slots
+                            possibleTimeSlots.Remove(selector);
+                        }
+                        else
+                        {
+                            int timeSlot = possibleTimeSlots[selector];
+                            availableTimeSlots.Add(timeSlot);
+                            possibleTimeSlots.Remove(selector);
+                        }*/
                     }
                     else
                     {
@@ -185,6 +212,11 @@ namespace HonoursProject.behaviours
             }
 
             _dataStore.AvailableSlots = availableTimeSlots;
+
+            //Check that number of slot '22' generated each time is different
+
+            //List<int> test = _dataStore.AvailableSlots.Where(slot => slot == 22).ToList();
+            //Console.WriteLine(test.Count);
             //Environment.Memory.Add("AvailableSlots", availableTimeSlots);
         }
 
@@ -223,6 +255,8 @@ namespace HonoursProject.behaviours
 
                 HouseAgent learningAgent = unselectedAgents[rand.Next(unselectedAgents.Count)];
 
+                unselectedAgents.Remove(learningAgent);
+
                 //Method to ensure that the learning agent selects an agent to learn from that is not itself
                 while (learningAgent.GetID == observedPerformance)
                 {
@@ -235,7 +269,7 @@ namespace HonoursProject.behaviours
                     Math.Round(observedAgentSatisfaction * numberOfTimeSlots))
                 {
                     double difference = observedAgentSatisfaction - learningAgentSatisfaction;
-                    double threshold = rand.NextDouble();
+                    double threshold = rand.NextDouble() * (1.0 - 0.0) + 0.0;
 
                     //Agent will swap strategy if behaviour is not the same as how the agent is currently behaving and if the difference is greater than the threshold
                     if (difference > threshold && learningAgent.Behaviour != previousPerformances[observedPerformance].Item1)
@@ -244,7 +278,7 @@ namespace HonoursProject.behaviours
                     }
                 }
 
-                unselectedAgents.Remove(learningAgent);
+                //unselectedAgents.Remove(learningAgent);
             }
         }
     }

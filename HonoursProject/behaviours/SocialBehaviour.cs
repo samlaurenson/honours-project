@@ -35,36 +35,50 @@ namespace HonoursProject.behaviours
                     return true;
                 }
 
-                if (Equals(potentialSatisfaction, currentSatisfaction))
+                if (DataStore.Instance.HouseAgents.Find(agent => agent.Name == requestingAgentName).Behaviour is SocialBehaviour)
                 {
-                    if (agent.SocialCapital)
+                    /*if (potentialSatisfaction > currentSatisfaction)
                     {
-                        int favoursOwedToRequester = 0;
-                        int favoursGivenToRequester = 0;
+                        return true;
+                    }*/
 
-                        if (agent.FavoursOwed.ContainsKey(requestingAgentName))
+                    if (Equals(potentialSatisfaction, currentSatisfaction))
+                    {
+                        if (agent.SocialCapital)
                         {
-                            favoursOwedToRequester = agent.FavoursOwed[requestingAgentName];
+                            int favoursOwedToRequester = 0;
+                            int favoursGivenToRequester = 0;
+
+                            if (agent.FavoursOwed.ContainsKey(requestingAgentName))
+                            {
+                                favoursOwedToRequester = agent.FavoursOwed[requestingAgentName];
+                            }
+
+                            if (agent.FavoursGiven.ContainsKey(requestingAgentName))
+                            {
+                                favoursGivenToRequester = agent.FavoursGiven[requestingAgentName];
+                            }
+
+                            //If agent owes a favour, then request will be accepted
+                            if (favoursOwedToRequester > favoursGivenToRequester)
+                            {
+                                //Console.WriteLine($"||||||||||||| {agent.Name} REPAID A FAVOUR TO {requestingAgentName} |||||||||||||");
+                                return true;
+                            }
                         }
-
-                        if (agent.FavoursGiven.ContainsKey(requestingAgentName))
+                        else
                         {
-                            favoursGivenToRequester = agent.FavoursGiven[requestingAgentName];
-                        }
-
-                        //If agent owes a favour, then request will be accepted
-                        if (favoursOwedToRequester > favoursGivenToRequester)
-                        {
-                            Console.WriteLine($"||||||||||||| {agent.Name} REPAID A FAVOUR TO {requestingAgentName} |||||||||||||");
+                            //When social capital is not used, social agents always accept neutral exchanges
                             return true;
                         }
                     }
-                    else
-                    {
-                        //When social capital is not used, social agents always accept neutral exchanges
-                        return true;
-                    }
                 }
+
+                /*if (potentialSatisfaction > currentSatisfaction)
+                {
+                    return true;
+                }*/
+
             }
             return false;
         }
@@ -75,7 +89,7 @@ namespace HonoursProject.behaviours
          */
         public void SwitchStrategy(HouseAgent agent)
         {
-            Console.WriteLine(agent.Name + " is switching from social to selfish");
+            //Console.WriteLine(agent.Name + " is switching from social to selfish");
             agent.Behaviour = new SelfishBehaviour();
         }
     }

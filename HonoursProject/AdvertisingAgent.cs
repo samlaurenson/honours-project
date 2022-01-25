@@ -99,8 +99,8 @@ namespace HonoursProject
                 switch (action)
                 {
                     case "list":
-                        this._exchangeWaitTimer = 3;
-                        this._turnsToWait = 3;
+                        this._exchangeWaitTimer = 6;
+                        this._turnsToWait = 6;
                         this._endTimer = 6;
                         _exchangeInProgress = false;
                         _pickedReq = false;
@@ -178,20 +178,23 @@ namespace HonoursProject
                 return message;
             }
 
+            //Shuffling list of requesting agents
+            List<Tuple<string, int, int>> shuffled = new List<Tuple<string, int, int>>(requests.OrderBy(req => DataStore.Instance.EnvironmentRandom.Next()));
+
             //Method to select first requester from the list of requests. This requester will have the chance for their request to be considered by the house that is currently being advertised
             //Other agents who were not selected will be notified and have their status changed back to "not made interaction"
-            if (this._advertisedTimeSlots[this._currentAdvertisingHouse].Contains(requests[0].Item2) &&
-                this._currentAdvertisingHouse != requests[0].Item1)
+            if (this._advertisedTimeSlots[this._currentAdvertisingHouse].Contains(shuffled[0].Item2) &&
+                this._currentAdvertisingHouse != shuffled[0].Item1)
             {
-                message = $"sendRequest {requests[0].Item1} {requests[0].Item3} {requests[0].Item2}";
+                message = $"sendRequest {shuffled[0].Item1} {shuffled[0].Item3} {shuffled[0].Item2}";
 
                 //Letting all unsuccessful agents know that they can request again this round -- Accessing the agent variables directly to bypass the computational expense of message passing
-                for (int i = 1; i < requests.Count; i++)
+                for (int i = 1; i < shuffled.Count; i++)
                 {
-                    DataStore.Instance.HouseAgents.Find(agent => agent.Name == requests[i].Item1).MadeInteraction = false;
+                    DataStore.Instance.HouseAgents.Find(agent => agent.Name == shuffled[i].Item1).MadeInteraction = false;
                 }
 
-                this._advertisedTimeSlots[this._currentAdvertisingHouse].Remove(requests[0].Item2);
+                this._advertisedTimeSlots[this._currentAdvertisingHouse].Remove(shuffled[0].Item2);
 
                 requests.Clear();
 
@@ -217,6 +220,13 @@ namespace HonoursProject
                 if (this._advertisedTimeSlots.Count > 0)
                 {
                     SelectNextAdvertiser();
+
+                    if (_currentAdvertisingHouse == "")
+                    {
+                        Broadcast("prepareForNextDay");
+                        return;
+                    }
+
                     string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
 
                     Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
@@ -225,7 +235,7 @@ namespace HonoursProject
             else if (this._exchangeInProgress)
             {
                 //Waiting for agents to finish their exchange before broadcasting another time slot
-                if (--this._turnsToWait <= 0)
+                if (--this._turnsToWait <= 0 && !_pickedReq)
                 {
                     this._pickedReq = true;
                     this._turnsToWait = 6;
@@ -248,6 +258,7 @@ namespace HonoursProject
         {
             if (string.IsNullOrWhiteSpace(this._currentAdvertisingHouse))
             {
+                //Broadcast("prepareForNextDay"); //here or no?
                 return;
             }
             //Thread.Sleep(50);
@@ -260,7 +271,7 @@ namespace HonoursProject
             //Checking to see if there is an agent being advertised. If there is no agent being advertised then round has ended
             if (string.IsNullOrWhiteSpace(this._currentAdvertisingHouse))
             {
-                Console.WriteLine($"----------- End of Round {this._currentExchangeRound} -------------------------");
+                //Console.WriteLine($"----------- End of Round {this._currentExchangeRound} -------------------------");
                 this._currentExchangeRound++;
                 if (this._currentExchangeRound < _numberOfExchangeRounds)
                 {
@@ -275,6 +286,11 @@ namespace HonoursProject
             {
                 string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
                 Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+
+                this._exchangeWaitTimer = 6;
+                this._turnsToWait = 6;
+                this._endTimer = 6;
+                this._pickedReq = false;
             }
         }
 
@@ -290,7 +306,11 @@ namespace HonoursProject
                 return;
             }
 
-            this._currentAdvertisingHouse = this._advertisedTimeSlots.First().Key;
+            //this._currentAdvertisingHouse = this._advertisedTimeSlots.First().Key;
+
+            //Randomly selecting next house to advertise from list of houses to advertise for
+            this._currentAdvertisingHouse = this._advertisedTimeSlots
+                .ElementAt(DataStore.Instance.EnvironmentRandom.Next(0, this._advertisedTimeSlots.Count)).Key;
 
             //If agent has already made an interaction - find another agent to advertise
             if (DataStore.Instance

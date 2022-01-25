@@ -35,6 +35,8 @@ namespace HonoursProject.Tests
             dataStore.HouseAgents.Add(sel);
             dataStore.HouseAgents.Add(soc);
 
+            dataStore.addStartOfDaySatisfactions();
+
             dataStore.CalculateEndOfDaySatisfactions(0);
 
             List<List<double>> expected = new List<List<double>>();

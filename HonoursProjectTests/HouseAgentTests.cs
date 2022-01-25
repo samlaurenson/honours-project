@@ -119,5 +119,27 @@ namespace HonoursProject.Tests
             //Slots added in at end of array since the element of current slot index is not modified but removed completely, then desired slot is added in at end
             CollectionAssert.AreEqual(new List<int>() { 1, 3, 5, 2 }, agent.AllocatedSlots);
         }
+
+        [TestMethod()]
+        public void SlotToRequestTest()
+        {
+            //Test to ensure agent will select a slot to request that will bring them satisfaction
+            var agent = new HouseAgent(new SelfishBehaviour(), 0);
+            agent.AgentFlexibility = new List<double>() { 1.0 };
+            agent.AllocatedSlots = new List<int>() { 1, 2, 7, 3 };
+            agent.RequestedSlots = new List<int>() { 1, 2, 3, 5 };
+
+            List<int> advertisedSlots = new List<int>() { 5, 7, 8 };
+
+            Tuple<int?, int?> outputTuple = agent.SlotToRequest(advertisedSlots);
+
+            //Desired slot -> 5, proposed slot to exchange for desired -> 7
+            Tuple<int?, int?> expectedTuple = new Tuple<int?, int?>(5, 7);
+
+            string actual = $"{outputTuple.Item1} {outputTuple.Item2}";
+            string expected = $"{expectedTuple.Item1} {expectedTuple.Item2}";
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

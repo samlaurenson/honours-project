@@ -18,6 +18,8 @@ namespace HonoursProject
                                                                                                                            * - Data for every evolving agent value in list of evolving agents
                                                                                                                            * - Data for every model executed for each evolving agent execution
                                                                                                                            * - Data for each day in the model*/
+        private double randomStart;
+        private double optimalStart;
 
         private List<List<double>> _endOfDaySatisfactions = new List<List<double>>(); /*!< List that stores the end of day satisfactions of agents for each day */
 
@@ -96,6 +98,12 @@ namespace HonoursProject
             set { _simulations = value; }
         }
 
+        public void addStartOfDaySatisfactions()
+        {
+            randomStart = averageAgentSatisfaction();
+            optimalStart = optimumAgentSatisfaction();
+        }
+
         //! Function that will be used to calculate the end of day satisfaction of agents.
         /*!
          Involves the calculation of - average agent satisfaction, optimum agent satisfaction, selfish agent satisfaction, elfish agent satisfaction variance, social agent satisfaction, social agent satisfaction variance
@@ -106,8 +114,13 @@ namespace HonoursProject
             //_endOfDaySatisfactions.Clear();
             List<double> satisfactions = new List<double>();
 
-            satisfactions.Add(averageAgentSatisfaction());
-            satisfactions.Add(optimumAgentSatisfaction());
+            //satisfactions.Add(averageAgentSatisfaction());
+            //satisfactions.Add(optimumAgentSatisfaction());
+            satisfactions.Add(randomStart);
+            satisfactions.Add(optimalStart);
+
+            randomStart = 0;
+            optimalStart = 0;
 
             var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour.GetType()).ToList();
 
@@ -159,8 +172,10 @@ namespace HonoursProject
 
             foreach (var agent in HouseAgents)
             {
-                agent.RequestedSlots.ForEach(x => allRequestedSlots.Add(x));
-                agent.AllocatedSlots.ForEach(x => allAllocatedSlots.Add(x));
+                //agent.RequestedSlots.ForEach(x => allRequestedSlots.Add(x));
+                //agent.AllocatedSlots.ForEach(x => allAllocatedSlots.Add(x));
+                allRequestedSlots.AddRange(agent.RequestedSlots);
+                allAllocatedSlots.AddRange(agent.AllocatedSlots);
             }
 
             //Stores number of slots that could potentially be fulfilled with perfect trading
@@ -198,7 +213,7 @@ namespace HonoursProject
                 satisfaction += agent.CalculateSatisfaction(null);
             }
 
-            return satisfaction;
+            return satisfaction / agents.Count;
         }
 
         //! Function that will calculate the end of day satisfaction standard deviation.

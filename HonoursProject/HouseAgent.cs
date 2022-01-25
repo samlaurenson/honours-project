@@ -136,7 +136,7 @@ namespace HonoursProject
                 {
                     case "allocate":
                         //initial allocation of slots for the day
-                        Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
+                        //Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
                         this._madeInteraction = false;
 
                         string advertiseSlots = ListUnwantedSlots();
@@ -152,6 +152,12 @@ namespace HonoursProject
                     case "notify":
                         //advertising agent lets house agents know when there is a slot available to exchange
 
+                        //Don't process own advertised slots
+                        if (parameters[0] == Name)
+                        {
+                            break;
+                        }
+
                         //Thread.Sleep(50);
                         //Only do this if madeInteraction is true - if false then break
                         if (this._madeInteraction)
@@ -163,31 +169,39 @@ namespace HonoursProject
                             string advertisedHouse = parameters[0];
 
 
-                            /*if (_dataStore.HouseAgents[_dataStore.HouseAgents.FindIndex(agent => agent.Name == advertisedHouse)]
-                                .MadeInteraction)
-                            {
-                                return;
-                            }*/
-
                             List<int> advertisingAgentSlots = new List<int>();
                             for (int i = 1; i < parameters.Count; i++)
                             {
                                 advertisingAgentSlots.Add(Int32.Parse(parameters[i]));
                             }
 
-                            int? slotToExchange = null;
+                            Tuple<int?, int?> requestInfo = null;
+
+                            if (advertisingAgentSlots.Count > 0)
+                            {
+                                requestInfo = SlotToRequest(advertisingAgentSlots);
+                            }
+
+                            if (requestInfo != null)
+                            {
+                                Send("advertiser", $"request {requestInfo.Item1} {requestInfo.Item2}");
+                            }
+
+
+
+                            //int? slotToExchange = null;
                             //Getting an unwanted slot to swap for a desired slot
-                            for (int i = 0; i < AllocatedSlots.Count; i++)
+                            /*for (int i = 0; i < AllocatedSlots.Count; i++)
                             {
                                 if (!RequestedSlots.Contains(AllocatedSlots[i]))
                                 {
                                     slotToExchange = AllocatedSlots[i];
                                 }
-                            }
+                            }*/
 
                             //Getting a desired slot
                             //If the agent advertising their slot has a slot that is in this agents requested slots - then this will be the desired slot
-                            foreach (int requestSlot in RequestedSlots)
+                            /*foreach (int requestSlot in RequestedSlots)
                             {
                                 if (advertisingAgentSlots.Contains(requestSlot) && slotToExchange != null)
                                 {
@@ -195,7 +209,7 @@ namespace HonoursProject
                                     this._madeInteraction = true;
                                     break;
                                 }
-                            }
+                            }*/
                         }
 
                         break;
@@ -246,6 +260,7 @@ namespace HonoursProject
                         }
                         else
                         {
+                            //Console.WriteLine($"{Name} has declined {requestingAgentName}'s request");
                             Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");
                         }
 
@@ -253,7 +268,7 @@ namespace HonoursProject
                     case "acceptRequest":
                         //Exchange was successful -- so will need to replace current slot with the desired slot
                         //Message parameters : P0 -> slot this agent currently has, P1 -> agents desired slot
-                        Console.WriteLine(Name + " had a successful trade with " + message.Sender);
+                        //Console.WriteLine(Name + " had a successful trade with " + message.Sender);
                         int currentSlot = Int32.Parse(parameters[0]);
                         int desiredSlot = Int32.Parse(parameters[1]);
                         HandleAcceptedRequest(currentSlot, desiredSlot, message.Sender);
@@ -274,6 +289,66 @@ namespace HonoursProject
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        //! Function that will determine the slots that the agent will propose for the exchange and the slot they desire
+        /*!
+         \param advertisingAgentSlots The list of slots that is being advertised
+         \return A Tuple which contains the desired slot (Item 1) and the slot that will be proposed in exchange (Item 2)
+         */
+        public Tuple<int?, int?> SlotToRequest(List<int> advertisingAgentSlots)
+        {
+            int? slotToRequest = null;
+            int? slotToPropose = null;
+
+            List<int> allocated = new List<int>(AllocatedSlots);
+            List<int> targetSlots = new List<int>();
+            foreach (int slot in RequestedSlots)
+            {
+                if (!allocated.Contains(slot))
+                {
+                    targetSlots.Add(slot);
+                }
+                else
+                {
+                    allocated.Remove(slot);
+                }
+            }
+
+            foreach (int slot in advertisingAgentSlots)
+            {
+                if (targetSlots.Contains(slot))
+                {
+                    List<int> unwantedSlots = new List<int>();
+                    List<string> unwantedSlotsString = new List<string>(ListUnwantedSlots().Split(' '));
+                    foreach (string str in unwantedSlotsString)
+                    {
+                        unwantedSlots.Add(Int32.Parse(str));
+                    }
+
+                    double currentSatisfaction = CalculateSatisfaction(null);
+                    foreach (int unwanted in unwantedSlots)
+                    {
+                        List<int> potentialSwitch = new List<int>(AllocatedSlots);
+                        potentialSwitch.Remove(unwanted);
+                        potentialSwitch.Add(slot);
+                        double calculatedSatisfaction = CalculateSatisfaction(potentialSwitch);
+
+                        if (calculatedSatisfaction > currentSatisfaction)
+                        {
+                            slotToPropose = unwanted;
+                            slotToRequest = slot;
+                        }
+
+                        if (slotToRequest != null)
+                        {
+                            return new Tuple<int?, int?>(slotToRequest, slotToPropose);
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         //! Function to handle case where exchange was successful and agent receives the slot they wanted.
@@ -310,11 +385,16 @@ namespace HonoursProject
         {
             //Listing slots - if a slot in the allocated list is not in the requested list - then this is considered unwanted and will be listed
             List<int> slotsToList = new List<int>();
+            List<int> slotsToAvoid = new List<int>(RequestedSlots);
             foreach (int slot in AllocatedSlots)
             {
-                if (!RequestedSlots.Contains(slot))
+                if (!slotsToAvoid.Contains(slot))
                 {
                     slotsToList.Add(slot);
+                }
+                else
+                {
+                    slotsToAvoid.Remove(slot);
                 }
             }
 
@@ -447,15 +527,15 @@ namespace HonoursProject
         //! Function that will randomly allocate slots for this agent.
         public void RandomSlotAllocationHandler()
         {
-            List<int> availableTimeSlots = _dataStore.AvailableSlots;
             for (int requestedTimeSlot = 1; requestedTimeSlot <= _requestedSlots.Count; requestedTimeSlot++)
             {
-                if (availableTimeSlots.Count > 0)
+                if (_dataStore.AvailableSlots.Count > 0)
                 {
                     Random rand = DataStore.Instance.EnvironmentRandom;
-                    int selector = rand.Next(availableTimeSlots.Count);
-                    int timeSlot = availableTimeSlots[selector];
+                    int selector = rand.Next(_dataStore.AvailableSlots.Count);
+                    int timeSlot = _dataStore.AvailableSlots[selector];
                     _allocatedSlots.Add(timeSlot);
+                    _dataStore.AvailableSlots.Remove(selector);
                 }
                 else
                 {
