@@ -88,12 +88,17 @@ namespace HonoursProject.Tests
             house1.Name = "house1";
             house1.MadeInteraction = false;
 
+            var house2 = new HouseAgent(new SelfishBehaviour(), 1);
+            house2.Name = "house2";
+            house2.MadeInteraction = false;
+
             //Adding houses to list of house agents in datastore
             DataStore dataStore = DataStore.Instance;
 
             dataStore.HouseAgents.Clear();
             dataStore.HouseAgents.Add(house0);
             dataStore.HouseAgents.Add(house1);
+            dataStore.HouseAgents.Add(house2);
 
             //Setting up advertising agent
             var advert = new AdvertisingAgent(3);

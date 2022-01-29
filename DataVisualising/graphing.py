@@ -17,20 +17,21 @@ def graph():
 
     averageSimulationData = calculateAverageSimulation(evolving_index) #doing this with just the first evolving array as trial - will need to loop this for each evolving agent
     days = []
+
     #Number of days to array for graphing
     for i in range(len(evolving_index['Value'][0])):
         days.append(i)
 
-
-    averageOptimum = averageOptimumSatis(evolving_index)
-
-    print(days)
-    #plotEODAverage(days, averageSimulationData)
-    test(days, averageSimulationData, averageOptimum)
+    visualiseEndOfDaySatisfactions(days, averageSimulationData, averageOptimum)
     print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "The average agent satisfaction for 1st day of 1st simulation is " + str(day)
 
-def test(days, simDat, averageOptimum):
+#Function that will graph the end of day average satisfactions for agent types in the model
+#Optimal - The highest satisfaction rate agents could achieve if desired were fulfilled as best as could be
+#Random - The average satisfaction of agents at the beginning of each day with the slots they were randomly allocated
+#Selfish - The average satisfaction of selfish agents
+#Social - The average satisfaction of social agents
+def visualiseEndOfDaySatisfactions(days, simDat, averageOptimum):
     selfish = []
     social = []
     optimal = []
@@ -89,67 +90,8 @@ def test(days, simDat, averageOptimum):
 
     fig.write_image("./avg3.pdf")
 
-def plotEODAverage(days, endOfDaySatisfactions):
-    satisf = []
-    for i in range(len(endOfDaySatisfactions)):
-        satisf.append(endOfDaySatisfactions[i][0])
 
-    data = []
-    data.append(
-        py.graph_objs.Scatter(
-            x = days,
-            y = satisf,
-        )
-    )
-
-    layout: any = dict(
-        title=dict(
-            text='Average consumer satisfaction at the end of each day',
-            xanchor='center',
-            x=0.5,
-        ),
-        xaxis=dict(
-            title='Day',
-            showline=True,
-            linecolor='black',
-            linewidth=1,
-            gridcolor='rgb(225, 225, 225)',
-            gridwidth=1,
-            range=[days[0], days[-1]],
-            tickmode='linear',
-            tick0=0,
-            dtick=100,
-        ),
-        yaxis=dict(
-            title='Average consumer satisfaction',
-            showline=True,
-            linecolor='black',
-            linewidth=1,
-            gridcolor='rgb(225, 225, 225)',
-            gridwidth=1,
-            range=[0, 1],
-            tickmode='linear',
-            tick0=0,
-            dtick=0.2,
-        ),
-        margin=dict(
-            l=40,
-            r=30,
-            b=80,
-            t=100,
-        ),
-        paper_bgcolor='rgb(255, 255, 255)',
-        plot_bgcolor='rgb(255, 255, 255)',
-        font=dict(
-            size=19
-        )
-    )
-
-    graph = dict(data=data, layout=layout)
-    path = os.path.join('.', "avg.pdf")
-    py.io.write_image(graph, path)
-
-
+#Function to go over the data for a running of the model and get the average values for each day over each repeated run
 def calculateAverageSimulation(data):
     numOfDays = len(data['Value'][0])
     dayEntries = len(data['Value'][0][0])
@@ -174,16 +116,6 @@ def calculateAverageSimulation(data):
             dayAverages[i][j] /= len(data['Value'])
 
     return dayAverages
-
-def averageOptimumSatis(data):
-    optimumSatisfactions = []
-    for simulation in data['Value']:
-        for i in range(len(simulation)):
-            #for each day
-            for j in range(len(simulation[i])):
-                #For day data
-                optimumSatisfactions.append(simulation[i][1])
-    return np.average(optimumSatisfactions)
 
 
 
