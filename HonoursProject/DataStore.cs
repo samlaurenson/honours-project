@@ -24,7 +24,9 @@ namespace HonoursProject
         private List<List<double>> _endOfDaySatisfactions = new List<List<double>>(); /*!< List that stores the end of day satisfactions of agents for each day */
 
         private List<int> _availableSlots = new List<int>(); /*!< List of available slots that can be allocated to agents. */
-        private Random _random; /*!< Environment random. */
+
+        private static readonly Random _random = new Random(); /*!< Environment random. */
+        [ThreadStatic] private static Random _local; //Creating a thread safe random. Using same instance of random on multiple threads can cause it to break and always return 0
 
         private List<List<double>> bucketedDemandCurves;  /*!< List of bucketed demand curves. Used to generate allocated and requested slots for agents. */
         private List<double> totalDemandValues; /*!< List of total demand values. Used to generate allocated and requested slots for agents. */
@@ -66,8 +68,19 @@ namespace HonoursProject
         //! Getter and setter for the environment random variable.
         public Random EnvironmentRandom
         {
-            get { return _random; }
-            set { _random = value; }
+            get
+            {
+                if (_local == null)
+                {
+                    int seed;
+                    lock (_random)
+                    {
+                        seed = _random.Next();
+                    }
+                    _local = new Random(seed);
+                }
+                return _local;
+            }
         }
 
         //! Getter and setter for list of total demand values.
@@ -98,8 +111,26 @@ namespace HonoursProject
             set { _simulations = value; }
         }
 
+        /*public int GetRandomInteger(int max)
+        {
+            lock (_random)
+            {
+                return _random.Next(max);
+            }
+        }
+
+        public double GetRandomDouble()
+        {
+            lock (_random)
+            {
+                return _random.NextDouble();
+            }
+        }*/
+
         public void addStartOfDaySatisfactions()
         {
+            randomStart = 0.0;
+            optimalStart = 0.0;
             randomStart = averageAgentSatisfaction();
             optimalStart = optimumAgentSatisfaction();
         }
@@ -122,17 +153,36 @@ namespace HonoursProject
             randomStart = 0;
             optimalStart = 0;
 
-            var agentTypes = HouseAgents.GroupBy(agent => agent.Behaviour.GetType()).ToList();
+            var socialAgents = HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).ToList();
+            var selfishAgents = HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).ToList();
 
             //Calculating average satisfaction and variance for each agent type
-            foreach (var type in agentTypes)
+            /*foreach (var type in agentTypes)
             {
                 //Adding average satisfaction of each agent type to list
                 satisfactions.Add(calculateSatisfactionForAgentTypes(type.ToList()));
 
                 //Getting the average variance for each agent type
                 satisfactions.Add(endOfDaySatisfactionStandardDeviation(type.ToList()));
-            }
+            }*/
+
+
+            //Not using loop to go over agent type calculations to avoid behaviours getting mixed when generating output file 
+            //This could be what was causing the selfish and social behaviours to have such a strong correlation and why the difference was only
+            //visible on graphs which only ran 1 instance of the model
+
+            //Adding average satisfaction of each agent type to list
+            satisfactions.Add(calculateSatisfactionForAgentTypes(selfishAgents));
+
+            //Getting the average variance for each agent type
+            satisfactions.Add(endOfDaySatisfactionStandardDeviation(selfishAgents));
+
+
+            //Adding average satisfaction of each agent type to list
+            satisfactions.Add(calculateSatisfactionForAgentTypes(socialAgents));
+
+            //Getting the average variance for each agent type
+            satisfactions.Add(endOfDaySatisfactionStandardDeviation(socialAgents));
 
             //First 2 elements in list will be the average and optimum agent satisfactions
             //After the first 2 elements, then elements will be the average satisfaction for agent type followed by average variance for agent type
@@ -157,7 +207,7 @@ namespace HonoursProject
                 agentSatisfactions.Add(agent.CalculateSatisfaction(null));
             }
 
-            return agentSatisfactions.Average();
+            return agentSatisfactions.Count > 0 ? agentSatisfactions.Average() : 0.0;
         }
 
         //! Function that will calculate the optimum agent satisfaction.
@@ -206,14 +256,15 @@ namespace HonoursProject
          */
         private double calculateSatisfactionForAgentTypes(List<HouseAgent> agents)
         {
-            double satisfaction = 0.0;
+            //double satisfaction = 0.0;
+            List<double> satisfaction = new List<double>();
 
             foreach (var agent in agents)
             {
-                satisfaction += agent.CalculateSatisfaction(null);
+                satisfaction.Add(agent.CalculateSatisfaction(null));
             }
 
-            return satisfaction / agents.Count;
+            return satisfaction.Count > 0 ? satisfaction.Average() : 0.0;
         }
 
         //! Function that will calculate the end of day satisfaction standard deviation.
@@ -236,6 +287,11 @@ namespace HonoursProject
             }
 
             double populationVariance = sumDiffsSquared / (double)groupSize;
+
+            if (Double.IsNaN(Math.Sqrt(populationVariance)))
+            {
+                return 0.0;
+            }
             return Math.Sqrt(populationVariance);
         }
     }

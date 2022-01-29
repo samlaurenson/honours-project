@@ -18,6 +18,7 @@ namespace HonoursProject.behaviours
          */
         public bool ConsiderRequest(HouseAgent agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot)
         {
+            bool accept = false;
             double currentSatisfaction = agent.CalculateSatisfaction(null);
 
             List<int> potentialAllocatedTimeSlots = new List<int>(agent.AllocatedSlots);
@@ -34,10 +35,10 @@ namespace HonoursProject.behaviours
                 //Selfish agents only accept offers that improve their current satisfaction
                 if (potentialSatisfaction > currentSatisfaction)
                 {
-                    return true;
+                    accept = true;
                 }
             }
-            return false;
+            return accept;
         }
 
         //! Function that will switch the behaviour strategy of the agent.

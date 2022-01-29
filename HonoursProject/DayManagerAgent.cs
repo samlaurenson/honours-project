@@ -46,23 +46,29 @@ namespace HonoursProject.behaviours
          */
         public override void Setup()
         {
-            /*CreateAvailableSlots();
-            AllocateSlots();*/
+            CreateSlots();
+            AllocateSlots();
 
-            createslots();
-            allocate();
-
-            _dataStore.addStartOfDaySatisfactions();
+            _dataStore.addStartOfDaySatisfactions(); //getting optimal and random allocation values
             Broadcast("allocate");
         }
 
-        //https://github.com/NathanABrooks/ResourceExchangeArena/blob/53e518c4a11ef769756a01bd666df07d01ebc899/src/resource_exchange_arena/Day.java
-        private void createslots()
+        //! Create available slots function.
+        /*!
+         Function that will create available time slots for agents for the day.
+         Will fill the capacity for each unique time slot. 
+         So, if there are 24 unique time slots with a maximum capacity of 16 slots, then 16 instances of time slots 1 through 24 will be created and available for allocation.
+         */
+        private void CreateSlots()
         {
             availableTimeSlots.Clear();
-            for (int timeslot = 1; timeslot <= 24; timeslot++)
+
+            int uniqueTimeSlots = Environment.Memory["UniqueTimeSlots"];
+            int maxCapacity = Environment.Memory["MaxSlotCapacity"];
+
+            for (int timeslot = 1; timeslot <= uniqueTimeSlots; timeslot++)
             {
-                for (int unit = 1; unit <= 16; unit++)
+                for (int unit = 1; unit <= maxCapacity; unit++)
                 {
                     availableTimeSlots.Add(timeslot);
                 }
@@ -71,51 +77,22 @@ namespace HonoursProject.behaviours
             _dataStore.AvailableSlots = availableTimeSlots;
         }
 
-        private void allocate()
-        {
-            foreach (HouseAgent agent in _dataStore.HouseAgents)
-            {
-                agent.RequestedSlots.Clear();
-                agent.AllocatedSlots.Clear();
-
-                agent.RSH();
-                agent.RSA();
-            }
-        }
-
         //! Function to allocate slots to house agents.
         /*!
-         Function to allocate slots to house agents.
-         Function will allocate slots to each agent in the environment based on a demand curve.
+         Function to allocate slots to house agents at the beginning of each day.
          */
         private void AllocateSlots()
         {
-            //Thread.Sleep(20);
-            int curve = 0;
             foreach (HouseAgent agent in _dataStore.HouseAgents)
             {
                 agent.RequestedSlots.Clear();
                 agent.AllocatedSlots.Clear();
 
-                //Could try moving this back in to environment memory
-                agent.RequestingSlotHandler(_dataStore.BucketedDemandCurve[curve], _dataStore.TotalDemand[curve]);
+                agent.RequestedSlotAllocationHandler();
                 agent.RandomSlotAllocationHandler();
-                curve++;
-                if (curve >= _dataStore.BucketedDemandCurve.Count)
-                {
-                    curve = 0;
-                }
             }
-
-            Broadcast("allocate");
         }
 
-        //! Act function.
-        /*!
-         Will run whenever agent receives a message.
-         Accepted message is the "readyNextDay" message - which will add an agents name to a list of agents that are ready to progress to next day.
-         \param message The message that the agent has received.
-         */
         public override void Act(Message message)
         {
             try
@@ -156,10 +133,8 @@ namespace HonoursProject.behaviours
                 {
                     EndOfDayManager();
 
-                    /*CreateAvailableSlots();
-                    AllocateSlots(); //Allocating slots for new day*/
-                    createslots();
-                    allocate();
+                    CreateSlots();
+                    AllocateSlots(); //Allocating slots for new day
 
                     _dataStore.addStartOfDaySatisfactions(); //Calculating satisfactions of agents at start of new day
 
@@ -168,6 +143,7 @@ namespace HonoursProject.behaviours
                 }
                 else
                 {
+                    //EndOfDayManager();
                     _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
                     //Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
                     Broadcast("Stop");
@@ -186,73 +162,72 @@ namespace HonoursProject.behaviours
             _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
             this._numOfDays++;
             this._readyAgents.Clear();
+
+            //debugging
+            /*double socialsat = 0;
+            List<double> selfish = new List<double>();
+            List<double> social = new List<double>();
+            double selfishsat = 0;
+
+            foreach (HouseAgent agent in _dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour))
+            {
+                socialsat += agent.CalculateSatisfaction(null);
+                social.Add(agent.CalculateSatisfaction(null));
+            }
+
+            foreach (HouseAgent agent in _dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour))
+            {
+                selfishsat += agent.CalculateSatisfaction(null);
+                selfish.Add(agent.CalculateSatisfaction(null));
+            }
+
+            double socialsatavg = socialsat /
+                               _dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count();
+            double selfishsatavg = selfishsat /
+                                   _dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count();
+
+            Console.WriteLine($"Number social: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count()} -- avg satisfaction: {socialsatavg} || test {social.Average()}");
+            Console.WriteLine($"Number selfish: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count()} -- avg satisfaction: {selfishsatavg} || test {selfish.Average()}");*/
+
             EndOfDaySocialLearning();
+
+            Console.WriteLine($"Number social AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count()}");
+            Console.WriteLine($"Number selfish AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count()}");
+
+
             //Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
         }
 
-        //! Create available slots function.
-        /*!
-         Function that will create available time slots for agents for the day.
-         */
-        private void CreateAvailableSlots()
+        private void EndOfDaySocialLearning2()
         {
-            int populationSize = Environment.Memory["NoOfAgents"];
-            int uniqueTimeSlots = Environment.Memory["UniqueTimeSlots"];
+            if (_dataStore.HouseAgents.Count == 0) { return; }
 
-            int maxCapacityPerSlot = 16;
+            List<HouseAgent> unselected = new List<HouseAgent>(_dataStore.HouseAgents);
 
-            List<int> slotCapacity = Enumerable.Repeat(0, uniqueTimeSlots).ToList();
-
-            int requiredTimeSlots = populationSize * uniqueTimeSlots;
-            List<int> possibleTimeSlots = new List<int>();
-
-            while (availableTimeSlots.Count < requiredTimeSlots)
+            for (int i = 0; i < _numberOfEvolvingAgents; i++)
             {
-                for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++)
+                int randomID = _dataStore.EnvironmentRandom.Next(unselected.Count);
+                HouseAgent learningAgent = unselected[randomID];
+
+                unselected.Remove(learningAgent);
+
+                int randomObservedID = _dataStore.EnvironmentRandom.Next(unselected.Count);
+
+                /*while (randomObservedID == randomID)
                 {
-                    possibleTimeSlots.Add(timeSlot);
+                    randomObservedID = _dataStore.EnvironmentRandom.Next(unselected.Count);
+                }*/
+
+                HouseAgent observedAgent = unselected[randomObservedID];
+
+                while (observedAgent.GetID == learningAgent.GetID)
+                {
+                    randomObservedID = _dataStore.EnvironmentRandom.Next(unselected.Count);
+                    observedAgent = unselected[randomObservedID];
                 }
 
-                while (possibleTimeSlots.Count > 0)
-                {
-                    if (availableTimeSlots.Count < requiredTimeSlots)
-                    {
-                        //Random rand = Environment.Memory["EnvRandom"];
-                        Random rand = _dataStore.EnvironmentRandom;
-                        int selector = rand.Next(possibleTimeSlots.Count);
-                        int timeSlot = possibleTimeSlots[selector];
-                        availableTimeSlots.Add(timeSlot);
-                        possibleTimeSlots.Remove(selector);
-
-                        //Ensuring that no more than 16 instances of a time slot are generated per day
-                        //Since time slots are in the range of 1 to 24 (included) then will have to take 1 away so that the time slot corresponds to correct capacity in slotCapacity list
-                        /*if (slotCapacity[selector]-1 >= maxCapacityPerSlot)
-                        {
-                            //If slot is already at maximum capacity - then do not add to available slots
-                            possibleTimeSlots.Remove(selector);
-                        }
-                        else
-                        {
-                            int timeSlot = possibleTimeSlots[selector];
-                            availableTimeSlots.Add(timeSlot);
-                            possibleTimeSlots.Remove(selector);
-                        }*/
-                    }
-                    else
-                    {
-                        possibleTimeSlots.Clear();
-                        break;
-                    }
-                }
+                learningAgent.learn(observedAgent);
             }
-
-            _dataStore.AvailableSlots = availableTimeSlots;
-
-            //Check that number of slot '22' generated each time is different
-
-            //List<int> test = _dataStore.AvailableSlots.Where(slot => slot == 22).ToList();
-            //Console.WriteLine(test.Count);
-            //Environment.Memory.Add("AvailableSlots", availableTimeSlots);
         }
 
         //! End of day social learning function.
@@ -263,15 +238,73 @@ namespace HonoursProject.behaviours
         {
             List<HouseAgent> houseAgents = _dataStore.HouseAgents;
             //Random rand = Environment.Memory["EnvRandom"];
-            Random rand = _dataStore.EnvironmentRandom;
+            //Random rand = _dataStore.EnvironmentRandom;
 
             //If list is empty, do nothing and exit function
-            if (houseAgents.Count == 0) { return; }
+            if (_dataStore.HouseAgents.Count == 0) { return; }
 
-            int numberOfTimeSlots = houseAgents[0].GetNumberOfTimeSlots; //Every agent will have same number of time slots - so using first agent in list to retrieve this value
-            int numberOfAgents = houseAgents.Count;
+            int numberOfTimeSlots = _dataStore.HouseAgents[0].GetNumberOfTimeSlots; //Every agent will have same number of time slots - so using first agent in list to retrieve this value
+            int numberOfAgents = _dataStore.HouseAgents.Count;
 
-            List<Tuple<IBehaviour, double>> previousPerformances = Enumerable.Repeat(new Tuple<IBehaviour, double>(null, 0), houseAgents.Count).ToList(); //Filling list of previous agent performances
+            List<Tuple<int, IBehaviour, double>> previousPerformances = Enumerable.Repeat(new Tuple<int, IBehaviour, double>(0, null, 0), _dataStore.HouseAgents.Count).ToList();
+
+            List<int> unselectedAgents = new List<int>();
+
+            foreach (HouseAgent agent in _dataStore.HouseAgents)
+            {
+                double currentSatisfaction =
+                    (int)(Math.Round(agent.CalculateSatisfaction(null) * agent.GetNumberOfTimeSlots));
+
+                previousPerformances[agent.GetID] =
+                    new Tuple<int, IBehaviour, double>(agent.GetID, agent.Behaviour, currentSatisfaction);
+
+                unselectedAgents.Add(agent.GetID);
+            }
+
+            for (int i = 0; i < _numberOfEvolvingAgents; i++)
+            {
+                int randomID = _dataStore.EnvironmentRandom.Next(unselectedAgents.Count);
+                HouseAgent agent = _dataStore.HouseAgents.Find(agent => agent.GetID == randomID);
+
+                int random = _dataStore.EnvironmentRandom.Next(_dataStore.HouseAgents.Count);
+
+                Tuple<int, IBehaviour, double> agentToCopy = previousPerformances[random];
+
+                //Make sure the agent is not observing themselves
+                while (agent.GetID == agentToCopy.Item1)
+                {
+                    random = _dataStore.EnvironmentRandom.Next(_dataStore.HouseAgents.Count);
+                    agentToCopy = previousPerformances[random];
+                }
+
+                double agentSatisfaction = agent.CalculateSatisfaction(null);
+                double observedSatisfaction = (double)agentToCopy.Item3 / numberOfTimeSlots;
+                if (agentSatisfaction < observedSatisfaction)
+                {
+                    double difference = observedSatisfaction - agentSatisfaction;
+                    double threshold = _dataStore.EnvironmentRandom.NextDouble();
+                    if (difference > threshold)
+                    {
+                        if (agentToCopy.Item2 is SocialBehaviour)
+                        {
+                            agent.Behaviour = new SocialBehaviour();
+                        }
+                        else
+                        {
+                            agent.Behaviour = new SelfishBehaviour();
+                        }
+                    }
+
+                    /*if (difference > threshold && !agent.Behaviour.Equals(agentToCopy.Item2))
+                    {
+                        agent.Behaviour.SwitchStrategy(agent);
+                    }*/
+                }
+
+                unselectedAgents.Remove(agent.GetID);
+            }
+
+            /*List<Tuple<IBehaviour, double>> previousPerformances = Enumerable.Repeat(new Tuple<IBehaviour, double>(null, 0), houseAgents.Count).ToList(); //Filling list of previous agent performances
 
             foreach (HouseAgent agent in houseAgents)
             {
@@ -290,7 +323,7 @@ namespace HonoursProject.behaviours
 
                 HouseAgent learningAgent = unselectedAgents[rand.Next(unselectedAgents.Count)];
 
-                unselectedAgents.Remove(learningAgent);
+                //unselectedAgents.Remove(learningAgent);
 
                 //Method to ensure that the learning agent selects an agent to learn from that is not itself
                 while (learningAgent.GetID == observedPerformance)
@@ -300,21 +333,21 @@ namespace HonoursProject.behaviours
 
                 double learningAgentSatisfaction = learningAgent.CalculateSatisfaction(null);
                 double observedAgentSatisfaction = previousPerformances[observedPerformance].Item2;
-                if (Math.Round(learningAgentSatisfaction * numberOfTimeSlots) <
-                    Math.Round(observedAgentSatisfaction * numberOfTimeSlots))
+                if (Math.Round(learningAgentSatisfaction * 4) <
+                    Math.Round(observedAgentSatisfaction * 4))
                 {
                     double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                     double threshold = rand.NextDouble() * (1.0 - 0.0) + 0.0;
 
                     //Agent will swap strategy if behaviour is not the same as how the agent is currently behaving and if the difference is greater than the threshold
-                    if (difference > threshold && learningAgent.Behaviour != previousPerformances[observedPerformance].Item1)
+                    if (difference > threshold && !learningAgent.Behaviour.Equals(previousPerformances[observedPerformance].Item1))
                     {
                         learningAgent.Behaviour.SwitchStrategy(learningAgent);
                     }
                 }
 
-                //unselectedAgents.Remove(learningAgent);
-            }
+                unselectedAgents.Remove(learningAgent);
+            }*/
         }
     }
 }

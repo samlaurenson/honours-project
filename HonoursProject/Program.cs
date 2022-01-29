@@ -54,17 +54,18 @@ namespace HonoursProject
             };*/
 
             int uniqueTimeSlots = 24; //Also to go in config file - 1 hour slots
+            int maximumSlotCapacity = 16;
 
             //Creating demand curves and filling them with default values so that they can be accessed through indexes
             List<List<double>> bucketedDemandCurves = Enumerable.Repeat(new List<double>(uniqueTimeSlots), DEMAND_CURVE.Count).ToList();
             List<double> totalDemandValues = Enumerable.Repeat(new double(), DEMAND_CURVE.Count).ToList();
 
-            Random rand = new Random();
-            DataStore.Instance.EnvironmentRandom = rand;
+            //Random rand = new Random();
+            //DataStore.Instance.EnvironmentRandom = rand;
             int numberOfSimulationRuns = 10;
 
-            int numberOfHouseholds = 50;
-            int numberOfDays = 50;
+            int numberOfHouseholds = 96;
+            int numberOfDays = 150;
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
@@ -89,14 +90,15 @@ namespace HonoursProject
                     DataStore.Instance.TotalDemand = totalDemandValues;
                     env.Memory.Add("UniqueTimeSlots", uniqueTimeSlots);
                     env.Memory.Add("NoOfAgents", numberOfHouseholds);
+                    env.Memory.Add("MaxSlotCapacity", maximumSlotCapacity);
 
-                    var advertAgent = new AdvertisingAgent(50);
-                    var dayManager = new DayManagerAgent(25, numberOfDays);
+                    var advertAgent = new AdvertisingAgent(100);
+                    var dayManager = new DayManagerAgent(48, numberOfDays);
 
                     for (int k = 0; k < numberOfHouseholds/2; k++)
                     {
                         var houseAg = new HouseAgent(new SelfishBehaviour(), k);
-                        houseAg.AgentFlexibility = new List<double>() { 1.0 };
+                        //houseAg.AgentFlexibility = new List<double>() { 1.0 };
                         houseAg.SocialCapital = true;
                         DataStore.Instance.HouseAgents.Add(houseAg);
                         env.Add(houseAg, $"house{k}");
@@ -105,7 +107,7 @@ namespace HonoursProject
                     for (int k = numberOfHouseholds / 2; k < numberOfHouseholds; k++)
                     {
                         var houseAg = new HouseAgent(new SocialBehaviour(), k);
-                        houseAg.AgentFlexibility = new List<double>() { 1.0 };
+                        //houseAg.AgentFlexibility = new List<double>() { 1.0 };
                         houseAg.SocialCapital = true;
                         DataStore.Instance.HouseAgents.Add(houseAg);
                         env.Add(houseAg, $"house{k}");

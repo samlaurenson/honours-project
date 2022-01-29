@@ -17,6 +17,7 @@ namespace HonoursProject.behaviours
          */
         public bool ConsiderRequest(HouseAgent agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot)
         {
+            bool accept = false;
             double currentSatisfaction = agent.CalculateSatisfaction(null);
 
             List<int> potentialAllocatedTimeSlots = new List<int>(agent.AllocatedSlots);
@@ -32,15 +33,44 @@ namespace HonoursProject.behaviours
 
                 if (potentialSatisfaction > currentSatisfaction)
                 {
-                    return true;
+                    accept = true;
+                } else if (Equals(potentialSatisfaction, currentSatisfaction))
+                {
+                    if (agent.SocialCapital)
+                    {
+                        int favoursOwedToRequester = 0;
+                        int favoursGivenToRequester = 0;
+
+                        if (agent.FavoursOwed.ContainsKey(requestingAgentName))
+                        {
+                            favoursOwedToRequester = agent.FavoursOwed[requestingAgentName];
+                        }
+
+                        if (agent.FavoursGiven.ContainsKey(requestingAgentName))
+                        {
+                            favoursGivenToRequester = agent.FavoursGiven[requestingAgentName];
+                        }
+
+                        //If agent owes a favour, then request will be accepted
+                        if (favoursOwedToRequester > favoursGivenToRequester)
+                        {
+                            //Console.WriteLine($"||||||||||||| {agent.Name} REPAID A FAVOUR TO {requestingAgentName} |||||||||||||");
+                            accept = true;
+                        }
+                    }
+                    else
+                    {
+                        //When social capital is not used, social agents always accept neutral exchanges
+                        accept = true;
+                    }
                 }
 
-                if (DataStore.Instance.HouseAgents.Find(agent => agent.Name == requestingAgentName).Behaviour is SocialBehaviour)
+                /*if (DataStore.Instance.HouseAgents.Find(agent => agent.Name == requestingAgentName).Behaviour is SocialBehaviour)
                 {
                     /*if (potentialSatisfaction > currentSatisfaction)
                     {
                         return true;
-                    }*/
+                    }#1#
 
                     if (Equals(potentialSatisfaction, currentSatisfaction))
                     {
@@ -72,7 +102,7 @@ namespace HonoursProject.behaviours
                             return true;
                         }
                     }
-                }
+                }*/
 
                 /*if (potentialSatisfaction > currentSatisfaction)
                 {
@@ -80,7 +110,7 @@ namespace HonoursProject.behaviours
                 }*/
 
             }
-            return false;
+            return accept;
         }
 
         //! Function that will switch the behaviour strategy of the agent.

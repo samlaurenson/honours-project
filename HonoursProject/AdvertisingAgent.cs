@@ -65,9 +65,9 @@ namespace HonoursProject
         public void DayResetAdvertiser()
         {
             this._currentExchangeRound = 0;
-            this._exchangeWaitTimer = 6;
-            this._turnsToWait = 6;
-            this._endTimer = 6;
+            this._exchangeWaitTimer = 10;
+            this._turnsToWait = 10;
+            this._endTimer = 10;
             this._exchangeInProgress = false;
             this._pickedReq = false;
         }
@@ -79,9 +79,9 @@ namespace HonoursProject
          */
         public override void Setup()
         {
-            this._exchangeWaitTimer = 3;
-            this._turnsToWait = 3;
-            this._endTimer = 6;
+            this._exchangeWaitTimer = 10;
+            this._turnsToWait = 10;
+            this._endTimer = 10;
         }
 
         //! Act function.
@@ -99,11 +99,13 @@ namespace HonoursProject
                 switch (action)
                 {
                     case "list":
-                        this._exchangeWaitTimer = 6;
+                        this._exchangeWaitTimer = 10;
                         this._turnsToWait = 6;
                         this._endTimer = 6;
                         _exchangeInProgress = false;
                         _pickedReq = false;
+                        //this._exchangeWaitTimer = 6;
+                       // _pickedReq = false;
 
                         ListHouseTimeSlots(message.Sender, parameters);
 
@@ -129,11 +131,12 @@ namespace HonoursProject
                     case "requestUnsuccessful":
                         //If the exchange did not happen, then a message will be sent back to the advertising agent which contains the slot
                         //to add back to the list of advertised slots of the agent that had the desired slot
-                        int slotToReAdd = Int32.Parse(parameters[0]);
+
+                        /*int slotToReAdd = Int32.Parse(parameters[0]);
                         if (this._advertisedTimeSlots.ContainsKey(message.Sender))
                         {
                             this._advertisedTimeSlots[message.Sender].Add(slotToReAdd);
-                        }
+                        }*/
                         break;
                     case "newDay":
                         DayResetAdvertiser();
@@ -175,6 +178,7 @@ namespace HonoursProject
             string message = "";
             if (requests.Count == 0)
             {
+                this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
                 return message;
             }
 
@@ -194,7 +198,10 @@ namespace HonoursProject
                     DataStore.Instance.HouseAgents.Find(agent => agent.Name == shuffled[i].Item1).MadeInteraction = false;
                 }
 
-                this._advertisedTimeSlots[this._currentAdvertisingHouse].Remove(shuffled[0].Item2);
+                //If they can only make 1 interaction per round - maybe just remove the advertiser entirely?
+                this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
+
+                //this._advertisedTimeSlots[this._currentAdvertisingHouse].Remove(shuffled[0].Item2);
 
                 requests.Clear();
 
@@ -214,14 +221,47 @@ namespace HonoursProject
             //Inital timer to start the advertising process for the round
             if (!this._exchangeInProgress && --this._exchangeWaitTimer <= 0)
             {
-                //Sending message to agents then waiting for response
+
                 this._exchangeInProgress = true;
+
+                SelectNextAdvertiser();
+
+                if (string.IsNullOrWhiteSpace(this._currentAdvertisingHouse))
+                {
+                    if (this._currentExchangeRound < _numberOfExchangeRounds)
+                    {
+                        Broadcast("allocate"); //begin next round
+                        this._exchangeWaitTimer = 10;
+                        this._turnsToWait = 10;
+                        this._endTimer = 10;
+                        _exchangeInProgress = false;
+                        _pickedReq = false;
+                    }
+                    else
+                    {
+                        Broadcast("prepareForNextDay");
+                    }
+
+                    this._exchangeInProgress = false;
+                    return;
+                }
+                else
+                {
+                    string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
+
+                    Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+                    _pickedReq = false;
+                    this._exchangeWaitTimer = 10;
+                }
+
+                //Sending message to agents then waiting for response
+                /*this._exchangeInProgress = true;
 
                 if (this._advertisedTimeSlots.Count > 0)
                 {
                     SelectNextAdvertiser();
 
-                    if (_currentAdvertisingHouse == "")
+                    if (string.IsNullOrWhiteSpace(_currentAdvertisingHouse))
                     {
                         Broadcast("prepareForNextDay");
                         return;
@@ -230,21 +270,35 @@ namespace HonoursProject
                     string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
 
                     Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+                    _pickedReq = false;
                 }
+
+                this._exchangeWaitTimer = 10;*/
             }  
             else if (this._exchangeInProgress)
             {
                 //Waiting for agents to finish their exchange before broadcasting another time slot
-                if (--this._turnsToWait <= 0 && !_pickedReq)
+                if (!_pickedReq)
                 {
-                    this._pickedReq = true;
-                    this._turnsToWait = 6;
-                    Send(this._currentAdvertisingHouse, RequestHandler());
-                } else if(--this._endTimer<=0 && _pickedReq)
+                    if (--this._turnsToWait <= 0)
+                    {
+                        string toSend = RequestHandler();
+                        if (!string.IsNullOrWhiteSpace(toSend))
+                        {
+                            Send(this._currentAdvertisingHouse, toSend);
+                        }
+                        this._turnsToWait = 10;
+                        this._endTimer = 10;
+                        this._pickedReq = true;
+                    }
+                } else if(_pickedReq)
                 {
-                    //After waiting for agents to accept or decline spots - advertising agent will now pick next house agent to advertise for
-                    this._endTimer = 6;
-                    HandleEnd();
+                    if (--this._endTimer <= 0)
+                    {
+                        //After waiting for agents to accept or decline spots - advertising agent will now pick next house agent to advertise for
+                        this._endTimer = 10;
+                        HandleEnd();
+                    }
                 }
             }
         }
@@ -263,8 +317,8 @@ namespace HonoursProject
             }
             //Thread.Sleep(50);
 
-            this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
-            this._currentAdvertisingHouse = "";
+            //this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
+            //this._currentAdvertisingHouse = "";
 
             SelectNextAdvertiser();
 
@@ -276,6 +330,11 @@ namespace HonoursProject
                 if (this._currentExchangeRound < _numberOfExchangeRounds)
                 {
                     Broadcast("allocate"); //begin next round
+                    this._exchangeWaitTimer = 10;
+                    this._turnsToWait = 10;
+                    this._endTimer = 10;
+                    _exchangeInProgress = false;
+                    _pickedReq = false;
                 }
                 else
                 {
@@ -287,9 +346,9 @@ namespace HonoursProject
                 string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
                 Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
 
-                this._exchangeWaitTimer = 6;
-                this._turnsToWait = 6;
-                this._endTimer = 6;
+                this._exchangeWaitTimer = 10;
+                this._turnsToWait = 10;
+                this._endTimer = 10;
                 this._pickedReq = false;
             }
         }
@@ -301,6 +360,8 @@ namespace HonoursProject
          */
         private void SelectNextAdvertiser()
         {
+            this._currentAdvertisingHouse = "";
+
             if (this._advertisedTimeSlots.Count == 0)
             {
                 return;
@@ -310,10 +371,18 @@ namespace HonoursProject
 
             //Randomly selecting next house to advertise from list of houses to advertise for
             this._currentAdvertisingHouse = this._advertisedTimeSlots
-                .ElementAt(DataStore.Instance.EnvironmentRandom.Next(0, this._advertisedTimeSlots.Count)).Key;
+                .ElementAt(DataStore.Instance.EnvironmentRandom.Next(this._advertisedTimeSlots.Count)).Key;
+
+            if (DataStore.Instance.HouseAgents.Find(agent => agent.Name == this._currentAdvertisingHouse)
+                .MadeInteraction)
+            {
+                this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
+                this._currentAdvertisingHouse = "";
+                SelectNextAdvertiser();
+            }
 
             //If agent has already made an interaction - find another agent to advertise
-            if (DataStore.Instance
+            /*if (DataStore.Instance
                 .HouseAgents[
                     DataStore.Instance.HouseAgents.FindIndex(agent => agent.Name == this._currentAdvertisingHouse)]
                 .MadeInteraction)
@@ -321,7 +390,7 @@ namespace HonoursProject
                 this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
                 this._currentAdvertisingHouse = "";
                 SelectNextAdvertiser();
-            }
+            }*/
         }
     }
 }
