@@ -53,7 +53,6 @@ namespace HonoursProject.Tests
 
             //Adding houses to list of house agents in datastore
             DataStore dataStore = DataStore.Instance;
-            dataStore.EnvironmentRandom = new Random();
             dataStore.HouseAgents.Clear();
             dataStore.HouseAgents.Add(house0);
             dataStore.HouseAgents.Add(house1);
@@ -76,7 +75,7 @@ namespace HonoursProject.Tests
         [TestMethod()]
         public void SendRequestTest_ListLengthCheck()
         {
-            //Testing that requests are removing the requested slot from the list of advertised slots -- ensures that the slot cannot be requested more than once
+            //Tests that if request has been made - then the advertiser will be removed from list of advertising agents since they can only make 1 interaction per round
 
             //Initialising house agents 
             var house0 = new HouseAgent(new SelfishBehaviour(), 0);
@@ -86,7 +85,6 @@ namespace HonoursProject.Tests
 
             var house1 = new HouseAgent(new SelfishBehaviour(), 1);
             house1.Name = "house1";
-
 
             //Adding houses to list of house agents in datastore
             DataStore dataStore = DataStore.Instance;
@@ -102,11 +100,46 @@ namespace HonoursProject.Tests
             advert.ListHouseTimeSlots("house0", new List<string>() { "1", "4" });
 
             advert.Requests.Add(new Tuple<string, int, int>("house1", 1, 6));   //House 1 sent request for slot 1 that House 0 has in exchange for slot 6
-            
+            advert.Requests.Add(new Tuple<string, int, int>("house2", 4, 9));
+
             string message = advert.RequestHandler();
 
-            //Should only have 1 slot left after requested slot was removed from the advertised slot list
-            Assert.AreEqual(1, advert.AdvertisedSlots["house0"].Count);
+            //Advertising agent should be removed from list of agents to advertise for since they will not be able to make another interaction this round
+            Assert.AreEqual(0, advert.AdvertisedSlots.Count);
+        }
+
+        [TestMethod()]
+        public void SendRequestTest_NoRequests()
+        {
+            //Test to ensure that when an agent gets no requests - they will be removed from the list of agents to advertise for so that
+            //advertsising agent may progress to advertise for the next house agent
+
+            //Initialising house agents 
+            var house0 = new HouseAgent(new SelfishBehaviour(), 0);
+            house0.Name = "house0";
+            house0.AllocatedSlots = new List<int>() { 1, 2, 3, 4 };
+            house0.RequestedSlots = new List<int>() { 6, 2, 3, 9 };
+
+            var house1 = new HouseAgent(new SelfishBehaviour(), 1);
+            house1.Name = "house1";
+
+            //Adding houses to list of house agents in datastore
+            DataStore dataStore = DataStore.Instance;
+
+            dataStore.HouseAgents.Clear();
+            dataStore.HouseAgents.Add(house0);
+            dataStore.HouseAgents.Add(house1);
+
+            //Setting up advertising agent
+            var advert = new AdvertisingAgent(3);
+            advert.CurrentAdvertisingHouse = "house0";
+
+            advert.ListHouseTimeSlots("house0", new List<string>() { "1", "4" });
+
+            string message = advert.RequestHandler();
+
+            //Advertising agent should be removed from list of agents to advertise for since they will not be able to make another interaction this round
+            Assert.AreEqual(0, advert.AdvertisedSlots.Count);
         }
     }
 }
