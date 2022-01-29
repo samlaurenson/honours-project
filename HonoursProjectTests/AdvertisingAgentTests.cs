@@ -82,9 +82,11 @@ namespace HonoursProject.Tests
             house0.Name = "house0";
             house0.AllocatedSlots = new List<int>() { 1, 2, 3, 4 };
             house0.RequestedSlots = new List<int>() { 6, 2, 3, 9 };
+            house0.MadeInteraction = false;
 
             var house1 = new HouseAgent(new SelfishBehaviour(), 1);
             house1.Name = "house1";
+            house1.MadeInteraction = false;
 
             //Adding houses to list of house agents in datastore
             DataStore dataStore = DataStore.Instance;
