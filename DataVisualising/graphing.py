@@ -22,7 +22,7 @@ def graph():
     for i in range(len(evolving_index['Value'][0])):
         days.append(i)
 
-    visualiseEndOfDaySatisfactions(days, averageSimulationData, averageOptimum)
+    visualiseEndOfDaySatisfactions(days, averageSimulationData)
     print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "The average agent satisfaction for 1st day of 1st simulation is " + str(day)
 
@@ -31,7 +31,7 @@ def graph():
 #Random - The average satisfaction of agents at the beginning of each day with the slots they were randomly allocated
 #Selfish - The average satisfaction of selfish agents
 #Social - The average satisfaction of social agents
-def visualiseEndOfDaySatisfactions(days, simDat, averageOptimum):
+def visualiseEndOfDaySatisfactions(days, simDat):
     selfish = []
     social = []
     optimal = []
