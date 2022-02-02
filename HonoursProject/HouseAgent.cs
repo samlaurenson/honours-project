@@ -117,8 +117,7 @@ namespace HonoursProject
          */
         public override void Setup()
         {
-            //Thread.Sleep(50); 
-            //_dataStore.HouseAgents.Add(this);
+
         }
 
         //! Act function.
@@ -137,7 +136,7 @@ namespace HonoursProject
                 {
                     case "allocate":
                         //initial allocation of slots for the day
-                        //Console.WriteLine(Name + " Satisfaction: " + CalculateSatisfaction(null));
+
                         this._madeInteraction = false;
 
                         string advertiseSlots = ListUnwantedSlots();
@@ -159,7 +158,6 @@ namespace HonoursProject
                             break;
                         }
 
-                        //Thread.Sleep(50);
                         //Only do this if madeInteraction is true - if not made interaction then continue
                         if (this._madeInteraction)
                         {
@@ -242,12 +240,6 @@ namespace HonoursProject
                             //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
                             Send(requestingAgentName, $"acceptRequest {requestingAgentSlot} {requestingAgentDesiredSlot}");
                         }
-                        else
-                        {
-                            //Console.WriteLine($"{Name} has declined {requestingAgentName}'s request");
-
-                            //Send("advertiser", $"requestUnsuccessful {requestingAgentDesiredSlot}");
-                        }
 
                         break;
                     case "acceptRequest":
@@ -258,13 +250,6 @@ namespace HonoursProject
                         int desiredSlot = Int32.Parse(parameters[1]);
                         HandleAcceptedRequest(currentSlot, desiredSlot, message.Sender);
                         break;
-                    case "prepareForNextDay":
-                        //This message will come from the advertising agent who will send this after all the exchange rounds have been completed
-                        //Will need to calculate and store end of day satisfaction and then notify day manager that agents are ready to proceed
-
-                        //this._madeInteraction = false;
-                        Send("daymanager", "readyNextDay");
-                        break;
                     case "Stop":
                         Stop();
                         break;
@@ -274,57 +259,6 @@ namespace HonoursProject
             {
                 Console.WriteLine(e.Message);
             }
-        }
-
-        private bool consider(string requestingAgentName, int requestingAgentSlot, int requestingAgentDesiredSlot)
-        {
-            double current = CalculateSatisfaction(null);
-
-            List<int> potential = new List<int>(AllocatedSlots);
-
-            if (potential.Contains(requestingAgentDesiredSlot))
-            {
-                potential.Remove(requestingAgentDesiredSlot);
-                potential.Add(requestingAgentSlot);
-
-                double potentialsat = CalculateSatisfaction(potential);
-
-                if (_agentBehaviour is SocialBehaviour)
-                {
-                    if (potentialsat > current)
-                    {
-                        return true;
-                    } else if (potentialsat == current)
-                    {
-                        int favoursowed = 0;
-                        int favoursgiven = 0;
-
-                        if (FavoursGiven.ContainsKey(requestingAgentName))
-                        {
-                            favoursgiven = FavoursGiven[requestingAgentName];
-                        }
-
-                        if (FavoursOwed.ContainsKey(requestingAgentName))
-                        {
-                            favoursowed = FavoursOwed[requestingAgentName];
-                        }
-
-                        if (favoursowed > favoursgiven)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                else
-                {
-                    if (potentialsat > current)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         //! Function that will handle the allocation of requested slots for this agent.
@@ -375,19 +309,25 @@ namespace HonoursProject
             }
         }
 
-        private List<int> timeSlotsToAvoid(List<int> potential, List<int> toAvoid)
+        //! Function that will return a List of time slots that are present in the 'extract' list but not in the 'target'
+        /*!
+         \param extract List of time slots - Will use this to identify slots in this list that are not in the target list
+         \param target List of time slots to compare with extract
+         \return List of time slots that appear in the extract list but are not present in the target list
+         */
+        private List<int> ExtractTimeSlots(List<int> extract, List<int> target)
         {
-            List<int> localAvoid = new List<int>(toAvoid);
+            List<int> localList = new List<int>(target);
             List<int> slots = new List<int>();
-            foreach(int slot in potential)
+            foreach(int slot in extract)
             {
-                if (!localAvoid.Contains(slot))
+                if (!localList.Contains(slot))
                 {
                     slots.Add(slot);
                 }
                 else
                 {
-                    localAvoid.Remove(slot);
+                    localList.Remove(slot);
                 }
             }
 
@@ -404,8 +344,8 @@ namespace HonoursProject
             int? slotToRequest = null;
             int? slotToPropose = null;
 
-            List<int> targetTimeSlots = timeSlotsToAvoid(RequestedSlots, AllocatedSlots);
-            List<int> unwantedSlots = timeSlotsToAvoid(AllocatedSlots, RequestedSlots);
+            List<int> targetTimeSlots = ExtractTimeSlots(RequestedSlots, AllocatedSlots);
+            List<int> unwantedSlots = ExtractTimeSlots(AllocatedSlots, RequestedSlots);
 
             if (targetTimeSlots.Count > 0)
             {
@@ -418,19 +358,6 @@ namespace HonoursProject
                         {
                             return null;
                         }
-
-                        /*List<string> unwantedSlotsString = new List<string>(ListUnwantedSlots().Split(' '));
-
-                        //Does not want to exchange any slot - so will leave the function and not request any slots
-                        if (unwantedSlotsString.Count <= 0)
-                        {
-                            return null;
-                        }*/
-
-                        /*foreach (string str in unwantedSlotsString)
-                        {
-                            unwantedSlots.Add(Int32.Parse(str));
-                        }*/
 
                         slotToRequest = slot;
                         slotToPropose = unwantedSlots[_dataStore.EnvironmentRandom.Next(unwantedSlots.Count)];
@@ -513,12 +440,6 @@ namespace HonoursProject
                 timeSlots = this._allocatedSlots;
             }
 
-            //Precaution in case both lists are empty. This should not happen but this has been put here to prevent the program crashing if this case does happen.
-            /*if (this._requestedSlots.Count == 0 && timeSlots.Count == 0)
-            {
-                return 0;
-            }*/
-
             List<int> tempRequestedTimeSlots = new List<int>(RequestedSlots);
 
             double satisfiedslots = 0;
@@ -532,26 +453,8 @@ namespace HonoursProject
             }
 
             List<int> gotSlots = RequestedSlots.Where(reqSlot => timeSlots.Any(allocSlot => allocSlot == reqSlot)).ToList();
-            //return gotSlots.Count / numberofTimeSlotsWanted;
 
             return satisfiedslots / numberOfTimeSlotsWanted;
-        }
-
-        public void learn(HouseAgent observedAgent)
-        {
-            double satisfaction = CalculateSatisfaction(AllocatedSlots);
-
-            double observed = observedAgent.CalculateSatisfaction(observedAgent.AllocatedSlots);
-
-            if (satisfaction < observed)
-            {
-                double difference = observed - satisfaction;
-                double threshold = _dataStore.EnvironmentRandom.NextDouble();
-                if (difference > threshold && !Behaviour.Equals(observedAgent.Behaviour))
-                {
-                    Behaviour.SwitchStrategy(this);
-                }
-            }
         }
     }
 }

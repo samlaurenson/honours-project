@@ -100,9 +100,6 @@ namespace HonoursProject.behaviours
                 message.Parse(out string action, out List<string> parameters);
                 switch (action)
                 {
-                    case "readyNextDay":
-                        this._readyAgents.Add(message.Sender);
-                        break;
                     case "prepareForNextDay":
                         NextDayHandler();
                         break;
@@ -116,6 +113,12 @@ namespace HonoursProject.behaviours
             }
         }
 
+        //! Function that will handle the progression of days in the model.
+        /*!
+          This function will execute when the day manager agent receives a "prepareForNextDay" message which comes from the advertising agent.
+          Upon receiving this message, the day manager will increment the day counter, create and allocate the slots to house agents for the next day as well as run the calculations that are required
+          at the start and end of each day in the model.
+         */
         private void NextDayHandler()
         {
             if (this._numOfDays < this._maxDays - 1)
@@ -143,40 +146,14 @@ namespace HonoursProject.behaviours
         //! Act default function.
         /*!
          Function will execute whenever agent has not done anything in a turn.
-         This is where the day manager will check if all agents are ready to progress to the next day.
-         If agents are ready to progress, then satisfactions will be calculated, social learning will take place and day counter will be incremented and agents notified that next day has started.
+         Day manager will use this in the case where no house agents are present in the model. If there are no house agents, then the day manager will leave the environment.
          */
         public override void ActDefault()
         {
             if (_dataStore.HouseAgents.Count == 0)
             {
-                Stop();
-            } //If there are no agents in the model - leave the model
-
-            /*//If all agents are ready to proceed to next day - then agents will be activated for next day
-            if (this._readyAgents.Count == _dataStore.HouseAgents.Count)
-            {
-                if (this._numOfDays < this._maxDays-1)
-                {
-                    EndOfDayManager();
-
-                    CreateSlots();
-                    AllocateSlots(); //Allocating slots for new day
-
-                    _dataStore.addStartOfDaySatisfactions(); //Calculating satisfactions of agents at start of new day
-
-                    Send("advertiser", "newDay");
-                    Broadcast("allocate");
-                }
-                else
-                {
-                    //EndOfDayManager();
-                    _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
-                    //Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
-                    Broadcast("Stop");
-                    Stop();
-                }
-            }*/
+                Stop(); //If there are no agents in the model - leave the model
+            } 
         }
 
         //! Function that will run functions that are to be executed at the end of a day and increment day counter.
@@ -191,44 +168,6 @@ namespace HonoursProject.behaviours
             this._readyAgents.Clear();
 
             EndOfDaySocialLearning();
-
-            //Console.WriteLine($"Number social AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count()}");
-            //Console.WriteLine($"Number selfish AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count()}");
-
-
-            //Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");
-        }
-
-        private void EndOfDaySocialLearning2()
-        {
-            if (_dataStore.HouseAgents.Count == 0) { return; }
-
-            List<HouseAgent> unselected = new List<HouseAgent>(_dataStore.HouseAgents);
-
-            for (int i = 0; i < _numberOfEvolvingAgents; i++)
-            {
-                int randomID = _dataStore.EnvironmentRandom.Next(unselected.Count);
-                HouseAgent learningAgent = unselected[randomID];
-
-                unselected.Remove(learningAgent);
-
-                int randomObservedID = _dataStore.EnvironmentRandom.Next(unselected.Count);
-
-                /*while (randomObservedID == randomID)
-                {
-                    randomObservedID = _dataStore.EnvironmentRandom.Next(unselected.Count);
-                }*/
-
-                HouseAgent observedAgent = unselected[randomObservedID];
-
-                while (observedAgent.GetID == learningAgent.GetID)
-                {
-                    randomObservedID = _dataStore.EnvironmentRandom.Next(unselected.Count);
-                    observedAgent = unselected[randomObservedID];
-                }
-
-                learningAgent.learn(observedAgent);
-            }
         }
 
         //! End of day social learning function.
@@ -237,10 +176,6 @@ namespace HonoursProject.behaviours
          */
         private void EndOfDaySocialLearning()
         {
-            List<HouseAgent> houseAgents = _dataStore.HouseAgents;
-            //Random rand = Environment.Memory["EnvRandom"];
-            //Random rand = _dataStore.EnvironmentRandom;
-
             //If list is empty, do nothing and exit function
             if (_dataStore.HouseAgents.Count == 0) { return; }
 
@@ -249,7 +184,7 @@ namespace HonoursProject.behaviours
 
             List<Tuple<int, IBehaviour, double>> previousPerformances = Enumerable.Repeat(new Tuple<int, IBehaviour, double>(0, null, 0), _dataStore.HouseAgents.Count).ToList();
 
-            List<int> unselectedAgents = new List<int>();
+            List<int> unselectedAgents = new List<int>();   //List of agent ID's that have not been selected for learning
 
             foreach (HouseAgent agent in _dataStore.HouseAgents)
             {
@@ -295,60 +230,9 @@ namespace HonoursProject.behaviours
                             agent.Behaviour = new SelfishBehaviour();
                         }
                     }
-
-                    /*if (difference > threshold && !agent.Behaviour.Equals(agentToCopy.Item2))
-                    {
-                        agent.Behaviour.SwitchStrategy(agent);
-                    }*/
                 }
-
                 unselectedAgents.Remove(agent.GetID);
             }
-
-            /*List<Tuple<IBehaviour, double>> previousPerformances = Enumerable.Repeat(new Tuple<IBehaviour, double>(null, 0), houseAgents.Count).ToList(); //Filling list of previous agent performances
-
-            foreach (HouseAgent agent in houseAgents)
-            {
-                IBehaviour type = agent.Behaviour;
-                double satisfaction = agent.CalculateSatisfaction(null);
-
-                previousPerformances[agent.GetID] = new Tuple<IBehaviour, double>(type, satisfaction);
-            }
-
-            //Copying agents to store all agents that have not been selected for social learning
-            List<HouseAgent> unselectedAgents = new List<HouseAgent>(houseAgents);
-
-            for (int i = 0; i < this._numberOfEvolvingAgents; i++)
-            {
-                int observedPerformance = rand.Next(houseAgents.Count);
-
-                HouseAgent learningAgent = unselectedAgents[rand.Next(unselectedAgents.Count)];
-
-                //unselectedAgents.Remove(learningAgent);
-
-                //Method to ensure that the learning agent selects an agent to learn from that is not itself
-                while (learningAgent.GetID == observedPerformance)
-                {
-                    observedPerformance = rand.Next(houseAgents.Count);
-                }
-
-                double learningAgentSatisfaction = learningAgent.CalculateSatisfaction(null);
-                double observedAgentSatisfaction = previousPerformances[observedPerformance].Item2;
-                if (Math.Round(learningAgentSatisfaction * 4) <
-                    Math.Round(observedAgentSatisfaction * 4))
-                {
-                    double difference = observedAgentSatisfaction - learningAgentSatisfaction;
-                    double threshold = rand.NextDouble() * (1.0 - 0.0) + 0.0;
-
-                    //Agent will swap strategy if behaviour is not the same as how the agent is currently behaving and if the difference is greater than the threshold
-                    if (difference > threshold && !learningAgent.Behaviour.Equals(previousPerformances[observedPerformance].Item1))
-                    {
-                        learningAgent.Behaviour.SwitchStrategy(learningAgent);
-                    }
-                }
-
-                unselectedAgents.Remove(learningAgent);
-            }*/
         }
     }
 }

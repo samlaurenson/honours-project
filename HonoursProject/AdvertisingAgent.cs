@@ -99,45 +99,12 @@ namespace HonoursProject
                 switch (action)
                 {
                     case "list":
-                        /*this._exchangeWaitTimer = 4;
-                        this._turnsToWait = 4;
-                        this._endTimer = 4;
-                        _exchangeInProgress = false;
-                        _pickedReq = false;*/
-
-                        //this._exchangeWaitTimer = 6;
-                       // _pickedReq = false;
-
                         ListHouseTimeSlots(message.Sender, parameters);
-
-                        /*List<int> advertisedSlots = new List<int>();
-                        for (int i = 0; i < parameters.Count; i++)
-                        {
-                            advertisedSlots.Add(Int32.Parse(parameters[i]));
-                        }
-                        this._advertisedTimeSlots.Add(message.Sender, advertisedSlots);*/
                         break;
                     case "request":
-                        //Could change this so that the advertising agent has a public function that will return if there has been a request made or not
-                        //and house agents could check this before they request. This could help overcome the problem of adding agents to a list, selecting the first one and 
-                        //then having to access and change the unselected agents back to not having made an interaction
-                        
-                        //could even shuffle the request list before picking who will be considered?
-
                         int desiredSlot = Int32.Parse(parameters[0]);
                         int slotToExchange = Int32.Parse(parameters[1]);
-
                         requests.Add(new Tuple<string, int, int>(message.Sender, desiredSlot, slotToExchange));
-                        break;
-                    case "requestUnsuccessful":
-                        //If the exchange did not happen, then a message will be sent back to the advertising agent which contains the slot
-                        //to add back to the list of advertised slots of the agent that had the desired slot
-
-                        /*int slotToReAdd = Int32.Parse(parameters[0]);
-                        if (this._advertisedTimeSlots.ContainsKey(message.Sender))
-                        {
-                            this._advertisedTimeSlots[message.Sender].Add(slotToReAdd);
-                        }*/
                         break;
                     case "newDay":
                         DayResetAdvertiser();
@@ -234,14 +201,6 @@ namespace HonoursProject
                         this._advertisedTimeSlots.Clear();
                         Broadcast("allocate"); //begin next round
 
-                        /*foreach(HouseAgent agent in DataStore.Instance.HouseAgents)
-                        {
-                            if (!agent.MadeInteraction)
-                            {
-                                Send(agent.Name, "allocate");
-                            }
-                        }*/
-
                         this._exchangeWaitTimer = 4;
                         this._turnsToWait = 4;
                         this._endTimer = 4;
@@ -251,7 +210,6 @@ namespace HonoursProject
                     else
                     {
                         this._advertisedTimeSlots.Clear();
-                        //Broadcast("prepareForNextDay");
                         Send("daymanager", "prepareForNextDay");
                     }
 
@@ -271,31 +229,9 @@ namespace HonoursProject
                         }
                     }
 
-                    //Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
                     _pickedReq = false;
                     this._exchangeWaitTimer = 4;
                 }
-
-                //Sending message to agents then waiting for response
-                /*this._exchangeInProgress = true;
-
-                if (this._advertisedTimeSlots.Count > 0)
-                {
-                    SelectNextAdvertiser();
-
-                    if (string.IsNullOrWhiteSpace(_currentAdvertisingHouse))
-                    {
-                        Broadcast("prepareForNextDay");
-                        return;
-                    }
-
-                    string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
-
-                    Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
-                    _pickedReq = false;
-                }
-
-                this._exchangeWaitTimer = 10;*/
             }  
             else if (this._exchangeInProgress)
             {
@@ -337,10 +273,6 @@ namespace HonoursProject
                 //Broadcast("prepareForNextDay"); //here or no?
                 return;
             }
-            //Thread.Sleep(50);
-
-            //this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
-            //this._currentAdvertisingHouse = "";
 
             SelectNextAdvertiser();
 
@@ -354,13 +286,6 @@ namespace HonoursProject
                     this._advertisedTimeSlots.Clear();
                     Broadcast("allocate"); //begin next round
 
-                    /*foreach (HouseAgent agent in DataStore.Instance.HouseAgents)
-                    {
-                        if (!agent.MadeInteraction)
-                        {
-                            Send(agent.Name, "allocate");
-                        }
-                    }*/
 
                     this._exchangeWaitTimer = 4;
                     this._turnsToWait = 4;
@@ -377,7 +302,6 @@ namespace HonoursProject
             else
             {
                 string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
-                //Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
 
                 //Only notifying agents of advertised slots if they are available to make an interaction - avoid sending extra messages to agents who won't do anything with the message
                 foreach (HouseAgent agent in DataStore.Instance.HouseAgents)
@@ -409,8 +333,6 @@ namespace HonoursProject
                 return;
             }
 
-            //this._currentAdvertisingHouse = this._advertisedTimeSlots.First().Key;
-
             //Randomly selecting next house to advertise from list of houses to advertise for
             this._currentAdvertisingHouse = this._advertisedTimeSlots
                 .ElementAt(DataStore.Instance.EnvironmentRandom.Next(this._advertisedTimeSlots.Count)).Key;
@@ -422,17 +344,6 @@ namespace HonoursProject
                 this._currentAdvertisingHouse = "";
                 SelectNextAdvertiser();
             }
-
-            //If agent has already made an interaction - find another agent to advertise
-            /*if (DataStore.Instance
-                .HouseAgents[
-                    DataStore.Instance.HouseAgents.FindIndex(agent => agent.Name == this._currentAdvertisingHouse)]
-                .MadeInteraction)
-            {
-                this._advertisedTimeSlots.Remove(this._currentAdvertisingHouse);
-                this._currentAdvertisingHouse = "";
-                SelectNextAdvertiser();
-            }*/
         }
     }
 }

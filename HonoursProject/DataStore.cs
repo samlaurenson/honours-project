@@ -111,22 +111,6 @@ namespace HonoursProject
             set { _simulations = value; }
         }
 
-        /*public int GetRandomInteger(int max)
-        {
-            lock (_random)
-            {
-                return _random.Next(max);
-            }
-        }
-
-        public double GetRandomDouble()
-        {
-            lock (_random)
-            {
-                return _random.NextDouble();
-            }
-        }*/
-
         public void addStartOfDaySatisfactions()
         {
             randomStart = 0.0;
@@ -145,8 +129,7 @@ namespace HonoursProject
             //_endOfDaySatisfactions.Clear();
             List<double> satisfactions = new List<double>();
 
-            //satisfactions.Add(averageAgentSatisfaction());
-            //satisfactions.Add(optimumAgentSatisfaction());
+
             satisfactions.Add(randomStart);
             satisfactions.Add(optimalStart);
 
@@ -155,16 +138,6 @@ namespace HonoursProject
 
             var socialAgents = HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).ToList();
             var selfishAgents = HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).ToList();
-
-            //Calculating average satisfaction and variance for each agent type
-            /*foreach (var type in agentTypes)
-            {
-                //Adding average satisfaction of each agent type to list
-                satisfactions.Add(calculateSatisfactionForAgentTypes(type.ToList()));
-
-                //Getting the average variance for each agent type
-                satisfactions.Add(endOfDaySatisfactionStandardDeviation(type.ToList()));
-            }*/
 
 
             //Not using loop to go over agent type calculations to avoid behaviours getting mixed when generating output file 
@@ -222,8 +195,6 @@ namespace HonoursProject
 
             foreach (var agent in HouseAgents)
             {
-                //agent.RequestedSlots.ForEach(x => allRequestedSlots.Add(x));
-                //agent.AllocatedSlots.ForEach(x => allAllocatedSlots.Add(x));
                 allRequestedSlots.AddRange(agent.RequestedSlots);
                 allAllocatedSlots.AddRange(agent.AllocatedSlots);
             }
