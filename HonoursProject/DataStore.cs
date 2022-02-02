@@ -31,6 +31,9 @@ namespace HonoursProject
         private List<List<double>> bucketedDemandCurves;  /*!< List of bucketed demand curves. Used to generate allocated and requested slots for agents. */
         private List<double> totalDemandValues; /*!< List of total demand values. Used to generate allocated and requested slots for agents. */
 
+        private Dictionary<string, int> _globalFavoursGiven = new Dictionary<string, int>();
+        private Dictionary<string, int> _globalFavoursOwed = new Dictionary<string, int>();
+
         //! Constructor for DataStore.
         private DataStore() {}
 
@@ -49,6 +52,18 @@ namespace HonoursProject
 
                 return _instance;
             }
+        }
+
+        public Dictionary<string, int> GlobalFavoursGiven
+        {
+            get { return _globalFavoursGiven; }
+            set { _globalFavoursGiven = value; }
+        }
+
+        public Dictionary<string, int> GlobalFavoursOwed
+        {
+            get { return _globalFavoursOwed; }
+            set { _globalFavoursOwed = value; }
         }
 
         //! Getter and setter for list of house agents.

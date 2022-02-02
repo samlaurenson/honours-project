@@ -62,7 +62,7 @@ namespace HonoursProject
 
             //Random rand = new Random();
             //DataStore.Instance.EnvironmentRandom = rand;
-            int numberOfSimulationRuns = 10;
+            int numberOfSimulationRuns = 4;
 
             int numberOfHouseholds = 96;
             int numberOfDays = 150;
