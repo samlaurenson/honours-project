@@ -94,16 +94,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a18271b25428ddaae4543b3b3e3b62af9"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#a18271b25428ddaae4543b3b3e3b62af9">Act</a> (Message message)</td></tr>
 <tr class="memdesc:a18271b25428ddaae4543b3b3e3b62af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Act function.  <a href="class_honours_project_1_1_house_agent.html#a18271b25428ddaae4543b3b3e3b62af9">More...</a><br /></td></tr>
 <tr class="separator:a18271b25428ddaae4543b3b3e3b62af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11afe129df7777e1223025775deefb75"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#a11afe129df7777e1223025775deefb75">CalculateSatisfaction</a> (List&lt; int &gt; timeSlots)</td></tr>
-<tr class="memdesc:a11afe129df7777e1223025775deefb75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will be used to calculate the satisfaction of house agents.  <a href="class_honours_project_1_1_house_agent.html#a11afe129df7777e1223025775deefb75">More...</a><br /></td></tr>
-<tr class="separator:a11afe129df7777e1223025775deefb75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41badf92f9c922e1f2aa73f340a5fea1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#a41badf92f9c922e1f2aa73f340a5fea1">RequestingSlotHandler</a> (List&lt; double &gt; demandCurve, double totalDemand)</td></tr>
-<tr class="memdesc:a41badf92f9c922e1f2aa73f340a5fea1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will determine the slots the agent will request.  <a href="class_honours_project_1_1_house_agent.html#a41badf92f9c922e1f2aa73f340a5fea1">More...</a><br /></td></tr>
-<tr class="separator:a41badf92f9c922e1f2aa73f340a5fea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a6db8d19fcd7c7e3a5a6a68db1c5022"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#a8a6db8d19fcd7c7e3a5a6a68db1c5022">RequestedSlotAllocationHandler</a> ()</td></tr>
+<tr class="memdesc:a8a6db8d19fcd7c7e3a5a6a68db1c5022"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will handle the allocation of requested slots for this agent.  <a href="class_honours_project_1_1_house_agent.html#a8a6db8d19fcd7c7e3a5a6a68db1c5022">More...</a><br /></td></tr>
+<tr class="separator:a8a6db8d19fcd7c7e3a5a6a68db1c5022"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace26262b275c458babdbc8e3522d0c01"><td class="memItemLeft" align="right" valign="top"><a id="ace26262b275c458babdbc8e3522d0c01" name="ace26262b275c458babdbc8e3522d0c01"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>RandomSlotAllocationHandler</b> ()</td></tr>
 <tr class="memdesc:ace26262b275c458babdbc8e3522d0c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will randomly allocate slots for this agent. <br /></td></tr>
 <tr class="separator:ace26262b275c458babdbc8e3522d0c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8908b0fd11b6b244a8fcc9dab336298b"><td class="memItemLeft" align="right" valign="top">Tuple&lt; int?, int?&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#a8908b0fd11b6b244a8fcc9dab336298b">SlotToRequest</a> (List&lt; int &gt; advertisingAgentSlots)</td></tr>
+<tr class="memdesc:a8908b0fd11b6b244a8fcc9dab336298b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will determine the slots that the agent will propose for the exchange and the slot they desire.  <a href="class_honours_project_1_1_house_agent.html#a8908b0fd11b6b244a8fcc9dab336298b">More...</a><br /></td></tr>
+<tr class="separator:a8908b0fd11b6b244a8fcc9dab336298b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d584ae29ce1a98d3fd1fc9ec754c3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#ad6d584ae29ce1a98d3fd1fc9ec754c3d">HandleAcceptedRequest</a> (int currentSlot, int desiredSlot, string agentWithDesiredSlot)</td></tr>
+<tr class="memdesc:ad6d584ae29ce1a98d3fd1fc9ec754c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to handle case where exchange was successful and agent receives the slot they wanted.  <a href="class_honours_project_1_1_house_agent.html#ad6d584ae29ce1a98d3fd1fc9ec754c3d">More...</a><br /></td></tr>
+<tr class="separator:ad6d584ae29ce1a98d3fd1fc9ec754c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba55af94f86cb9360ec5e4c7153fd5f5"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#aba55af94f86cb9360ec5e4c7153fd5f5">ListUnwantedSlots</a> ()</td></tr>
+<tr class="memdesc:aba55af94f86cb9360ec5e4c7153fd5f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will create a list of unwanted slots that the house will send to the advertiser.  <a href="class_honours_project_1_1_house_agent.html#aba55af94f86cb9360ec5e4c7153fd5f5">More...</a><br /></td></tr>
+<tr class="separator:aba55af94f86cb9360ec5e4c7153fd5f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11afe129df7777e1223025775deefb75"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1_house_agent.html#a11afe129df7777e1223025775deefb75">CalculateSatisfaction</a> (List&lt; int &gt; timeSlots)</td></tr>
+<tr class="memdesc:a11afe129df7777e1223025775deefb75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will be used to calculate the satisfaction of house agents.  <a href="class_honours_project_1_1_house_agent.html#a11afe129df7777e1223025775deefb75">More...</a><br /></td></tr>
+<tr class="separator:a11afe129df7777e1223025775deefb75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
 Properties</h2></td></tr>
@@ -242,23 +251,29 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>GetNumberOfTimeSlots</
 
 </div>
 </div>
-<a id="a41badf92f9c922e1f2aa73f340a5fea1" name="a41badf92f9c922e1f2aa73f340a5fea1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a41badf92f9c922e1f2aa73f340a5fea1">&#9670;&nbsp;</a></span>RequestingSlotHandler()</h2>
+<a id="ad6d584ae29ce1a98d3fd1fc9ec754c3d" name="ad6d584ae29ce1a98d3fd1fc9ec754c3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d584ae29ce1a98d3fd1fc9ec754c3d">&#9670;&nbsp;</a></span>HandleAcceptedRequest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HonoursProject.HouseAgent.RequestingSlotHandler </td>
+          <td class="memname">void HonoursProject.HouseAgent.HandleAcceptedRequest </td>
           <td>(</td>
-          <td class="paramtype">List&lt; double &gt;&#160;</td>
-          <td class="paramname"><em>demandCurve</em>, </td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>currentSlot</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>totalDemand</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>desiredSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>agentWithDesiredSlot</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -268,14 +283,55 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>GetNumberOfTimeSlots</
       </table>
 </div><div class="memdoc">
 
-<p>Function that will determine the slots the agent will request. </p>
-<p >Determines the slots the agent will request based on the demand curve. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Function to handle case where exchange was successful and agent receives the slot they wanted. </p>
+<p >Function will replace the current slot the agent has in their allocated slot list with their desired slot provided by the other agent in the exchange. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">demandCurve</td><td>The list of demand curve values. </td></tr>
-    <tr><td class="paramname">totalDemand</td><td>Value of demand based on demand curve. </td></tr>
+    <tr><td class="paramname">currentSlot</td><td>The slot the agent has and wants to exchange. </td></tr>
+    <tr><td class="paramname">desiredSlot</td><td>The slot the agent wants from another agent. </td></tr>
+    <tr><td class="paramname">agentWithDesiredSlot</td><td>The name of the agent who has the desired slot. </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="aba55af94f86cb9360ec5e4c7153fd5f5" name="aba55af94f86cb9360ec5e4c7153fd5f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba55af94f86cb9360ec5e4c7153fd5f5">&#9670;&nbsp;</a></span>ListUnwantedSlots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string HonoursProject.HouseAgent.ListUnwantedSlots </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function that will create a list of unwanted slots that the house will send to the advertiser. </p>
+<dl class="section return"><dt>Returns</dt><dd>String of unwanted time slots to send to advertiser. </dd></dl>
+
+</div>
+</div>
+<a id="a8a6db8d19fcd7c7e3a5a6a68db1c5022" name="a8a6db8d19fcd7c7e3a5a6a68db1c5022"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a6db8d19fcd7c7e3a5a6a68db1c5022">&#9670;&nbsp;</a></span>RequestedSlotAllocationHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HonoursProject.HouseAgent.RequestedSlotAllocationHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function that will handle the allocation of requested slots for this agent. </p>
+<p >Will randomly generate time slots that will be added to the requested time slots list and will do this until the requested slot list is full (determined by number of slots agents can have) </p>
 
 </div>
 </div>
@@ -299,8 +355,35 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>GetNumberOfTimeSlots</
 
 </div>
 </div>
+<a id="a8908b0fd11b6b244a8fcc9dab336298b" name="a8908b0fd11b6b244a8fcc9dab336298b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8908b0fd11b6b244a8fcc9dab336298b">&#9670;&nbsp;</a></span>SlotToRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Tuple&lt; int?, int?&gt; HonoursProject.HouseAgent.SlotToRequest </td>
+          <td>(</td>
+          <td class="paramtype">List&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>advertisingAgentSlots</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function that will determine the slots that the agent will propose for the exchange and the slot they desire. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">advertisingAgentSlots</td><td>The list of slots that is being advertised </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A Tuple which contains the desired slot (Item 1) and the slot that will be proposed in exchange (Item 2) </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>G:/Honours project/FINAL SOFTWARE/HonoursProject/HouseAgent.cs</li>
+<li>FINAL SOFTWARE/HonoursProject/HouseAgent.cs</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

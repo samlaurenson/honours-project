@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['simulationdata_0',['SimulationData',['../class_honours_project_1_1_data_store.html#ac9e47224ac2c15ffef4a92f43fbbd27e',1,'HonoursProject::DataStore']]],
-  ['socialcapital_1',['SocialCapital',['../class_honours_project_1_1_house_agent.html#a3c79de47815e1392dc2de4c6876ae0a4',1,'HonoursProject::HouseAgent']]]
+  ['requestedslots_0',['RequestedSlots',['../class_honours_project_1_1_house_agent.html#a015cb085c9dc21bc5e0e6da2281bb6f9',1,'HonoursProject::HouseAgent']]],
+  ['requests_1',['Requests',['../class_honours_project_1_1_advertising_agent.html#a548cc7c9a01c459f9c48ca3818b3920f',1,'HonoursProject::AdvertisingAgent']]]
 ];
