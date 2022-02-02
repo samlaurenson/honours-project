@@ -103,6 +103,9 @@ namespace HonoursProject.behaviours
                     case "readyNextDay":
                         this._readyAgents.Add(message.Sender);
                         break;
+                    case "prepareForNextDay":
+                        NextDayHandler();
+                        break;
                     default:
                         break;
                 }
@@ -110,6 +113,30 @@ namespace HonoursProject.behaviours
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        private void NextDayHandler()
+        {
+            if (this._numOfDays < this._maxDays - 1)
+            {
+                EndOfDayManager();
+
+                CreateSlots();
+                AllocateSlots(); //Allocating slots for new day
+
+                _dataStore.addStartOfDaySatisfactions(); //Calculating satisfactions of agents at start of new day
+
+                Send("advertiser", "newDay");
+                Broadcast("allocate");
+            }
+            else
+            {
+                //EndOfDayManager();
+                _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
+                //Console.WriteLine($"***************** END OF DAY {this._numOfDays+1} (MAXIMUM) *********************");
+                Broadcast("Stop");
+                Stop();
             }
         }
 
@@ -126,7 +153,7 @@ namespace HonoursProject.behaviours
                 Stop();
             } //If there are no agents in the model - leave the model
 
-            //If all agents are ready to proceed to next day - then agents will be activated for next day
+            /*//If all agents are ready to proceed to next day - then agents will be activated for next day
             if (this._readyAgents.Count == _dataStore.HouseAgents.Count)
             {
                 if (this._numOfDays < this._maxDays-1)
@@ -149,7 +176,7 @@ namespace HonoursProject.behaviours
                     Broadcast("Stop");
                     Stop();
                 }
-            }
+            }*/
         }
 
         //! Function that will run functions that are to be executed at the end of a day and increment day counter.
@@ -163,36 +190,10 @@ namespace HonoursProject.behaviours
             this._numOfDays++;
             this._readyAgents.Clear();
 
-            //debugging
-            /*double socialsat = 0;
-            List<double> selfish = new List<double>();
-            List<double> social = new List<double>();
-            double selfishsat = 0;
-
-            foreach (HouseAgent agent in _dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour))
-            {
-                socialsat += agent.CalculateSatisfaction(null);
-                social.Add(agent.CalculateSatisfaction(null));
-            }
-
-            foreach (HouseAgent agent in _dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour))
-            {
-                selfishsat += agent.CalculateSatisfaction(null);
-                selfish.Add(agent.CalculateSatisfaction(null));
-            }
-
-            double socialsatavg = socialsat /
-                               _dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count();
-            double selfishsatavg = selfishsat /
-                                   _dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count();
-
-            Console.WriteLine($"Number social: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count()} -- avg satisfaction: {socialsatavg} || test {social.Average()}");
-            Console.WriteLine($"Number selfish: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count()} -- avg satisfaction: {selfishsatavg} || test {selfish.Average()}");*/
-
             EndOfDaySocialLearning();
 
-            Console.WriteLine($"Number social AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count()}");
-            Console.WriteLine($"Number selfish AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count()}");
+            //Console.WriteLine($"Number social AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SocialBehaviour).Count()}");
+            //Console.WriteLine($"Number selfish AFTER LEARNING: {_dataStore.HouseAgents.Where(agent => agent.Behaviour is SelfishBehaviour).Count()}");
 
 
             //Console.WriteLine($"***************** END OF DAY {this._numOfDays} *********************");

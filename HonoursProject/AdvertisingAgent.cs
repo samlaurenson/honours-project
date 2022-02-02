@@ -65,9 +65,9 @@ namespace HonoursProject
         public void DayResetAdvertiser()
         {
             this._currentExchangeRound = 0;
-            this._exchangeWaitTimer = 10;
-            this._turnsToWait = 10;
-            this._endTimer = 10;
+            this._exchangeWaitTimer = 4;
+            this._turnsToWait = 4;
+            this._endTimer = 4;
             this._exchangeInProgress = false;
             this._pickedReq = false;
         }
@@ -79,9 +79,9 @@ namespace HonoursProject
          */
         public override void Setup()
         {
-            this._exchangeWaitTimer = 10;
-            this._turnsToWait = 10;
-            this._endTimer = 10;
+            this._exchangeWaitTimer = 6;
+            this._turnsToWait = 6;
+            this._endTimer = 6;
         }
 
         //! Act function.
@@ -99,11 +99,12 @@ namespace HonoursProject
                 switch (action)
                 {
                     case "list":
-                        this._exchangeWaitTimer = 10;
-                        this._turnsToWait = 6;
-                        this._endTimer = 6;
+                        /*this._exchangeWaitTimer = 4;
+                        this._turnsToWait = 4;
+                        this._endTimer = 4;
                         _exchangeInProgress = false;
-                        _pickedReq = false;
+                        _pickedReq = false;*/
+
                         //this._exchangeWaitTimer = 6;
                        // _pickedReq = false;
 
@@ -230,16 +231,28 @@ namespace HonoursProject
                 {
                     if (this._currentExchangeRound < _numberOfExchangeRounds)
                     {
+                        this._advertisedTimeSlots.Clear();
                         Broadcast("allocate"); //begin next round
-                        this._exchangeWaitTimer = 10;
-                        this._turnsToWait = 10;
-                        this._endTimer = 10;
+
+                        /*foreach(HouseAgent agent in DataStore.Instance.HouseAgents)
+                        {
+                            if (!agent.MadeInteraction)
+                            {
+                                Send(agent.Name, "allocate");
+                            }
+                        }*/
+
+                        this._exchangeWaitTimer = 4;
+                        this._turnsToWait = 4;
+                        this._endTimer = 4;
                         _exchangeInProgress = false;
                         _pickedReq = false;
                     }
                     else
                     {
-                        Broadcast("prepareForNextDay");
+                        this._advertisedTimeSlots.Clear();
+                        //Broadcast("prepareForNextDay");
+                        Send("daymanager", "prepareForNextDay");
                     }
 
                     this._exchangeInProgress = false;
@@ -249,9 +262,18 @@ namespace HonoursProject
                 {
                     string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
 
-                    Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+                    //Only notifying agents of advertised slots if they are available to make an interaction - avoids sending extra messages to agents who won't do anything with the message
+                    foreach (HouseAgent agent in DataStore.Instance.HouseAgents)
+                    {
+                        if (!agent.MadeInteraction)
+                        {
+                            Send(agent.Name, $"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+                        }
+                    }
+
+                    //Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
                     _pickedReq = false;
-                    this._exchangeWaitTimer = 10;
+                    this._exchangeWaitTimer = 4;
                 }
 
                 //Sending message to agents then waiting for response
@@ -287,8 +309,8 @@ namespace HonoursProject
                         {
                             Send(this._currentAdvertisingHouse, toSend);
                         }
-                        this._turnsToWait = 10;
-                        this._endTimer = 10;
+                        this._turnsToWait = 4;
+                        this._endTimer = 4;
                         this._pickedReq = true;
                     }
                 } else if(_pickedReq)
@@ -296,7 +318,7 @@ namespace HonoursProject
                     if (--this._endTimer <= 0)
                     {
                         //After waiting for agents to accept or decline spots - advertising agent will now pick next house agent to advertise for
-                        this._endTimer = 10;
+                        this._endTimer = 4;
                         HandleEnd();
                     }
                 }
@@ -329,26 +351,46 @@ namespace HonoursProject
                 this._currentExchangeRound++;
                 if (this._currentExchangeRound < _numberOfExchangeRounds)
                 {
+                    this._advertisedTimeSlots.Clear();
                     Broadcast("allocate"); //begin next round
-                    this._exchangeWaitTimer = 10;
-                    this._turnsToWait = 10;
-                    this._endTimer = 10;
+
+                    /*foreach (HouseAgent agent in DataStore.Instance.HouseAgents)
+                    {
+                        if (!agent.MadeInteraction)
+                        {
+                            Send(agent.Name, "allocate");
+                        }
+                    }*/
+
+                    this._exchangeWaitTimer = 4;
+                    this._turnsToWait = 4;
+                    this._endTimer = 4;
                     _exchangeInProgress = false;
                     _pickedReq = false;
                 }
                 else
                 {
-                    Broadcast("prepareForNextDay");
+                    //Broadcast("prepareForNextDay");
+                    Send("daymanager", "prepareForNextDay");
                 }
             }
             else
             {
                 string currentlyAdvertising = string.Join(" ", this._advertisedTimeSlots[this._currentAdvertisingHouse].ToArray());
-                Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+                //Broadcast($"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
 
-                this._exchangeWaitTimer = 10;
-                this._turnsToWait = 10;
-                this._endTimer = 10;
+                //Only notifying agents of advertised slots if they are available to make an interaction - avoid sending extra messages to agents who won't do anything with the message
+                foreach (HouseAgent agent in DataStore.Instance.HouseAgents)
+                {
+                    if (!agent.MadeInteraction)
+                    {
+                        Send(agent.Name, $"notify {this._currentAdvertisingHouse} {currentlyAdvertising}");
+                    }
+                }
+
+                this._exchangeWaitTimer = 4;
+                this._turnsToWait = 4;
+                this._endTimer = 4;
                 this._pickedReq = false;
             }
         }

@@ -142,12 +142,6 @@ namespace HonoursProject
 
                         string advertiseSlots = ListUnwantedSlots();
 
-                        // https://github.com/NathanABrooks/ResourceExchangeArena/blob/53e518c4a11ef769756a01bd666df07d01ebc899/src/resource_exchange_arena/Exchange.java
-                        // Maybe agents should also list slots they may be willing to exchange under certain circumstances? Rather than slots they just do not wants?
-                        //List<int> test1 = new List<int>() { 1, 2, 3, 4 };
-                        //List<int> test2 = new List<int>() { 1, 2, 3, 4 };
-                        //List<int> output = timeSlotsToAvoid(test1, test2);
-
                         //If no slots unwanted - then don't send message to advertiser
                         if (string.IsNullOrWhiteSpace(advertiseSlots))
                         {

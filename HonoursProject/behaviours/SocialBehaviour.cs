@@ -17,7 +17,7 @@ namespace HonoursProject.behaviours
          */
         public bool ConsiderRequest(HouseAgent agent, string requestingAgentName, int requestingAgentSlot, int requestedSlot)
         {
-            bool accept = false;
+            //bool accept = false;
             double currentSatisfaction = agent.CalculateSatisfaction(null);
 
             List<int> potentialAllocatedTimeSlots = new List<int>(agent.AllocatedSlots);
@@ -33,8 +33,10 @@ namespace HonoursProject.behaviours
 
                 if (potentialSatisfaction > currentSatisfaction)
                 {
-                    accept = true;
-                } else if (Equals(potentialSatisfaction, currentSatisfaction))
+                    //accept = true;
+                    return true;
+                } 
+                if (Equals(potentialSatisfaction, currentSatisfaction))
                 {
                     if (agent.SocialCapital)
                     {
@@ -55,13 +57,16 @@ namespace HonoursProject.behaviours
                         if (favoursOwedToRequester > favoursGivenToRequester)
                         {
                             //Console.WriteLine($"||||||||||||| {agent.Name} REPAID A FAVOUR TO {requestingAgentName} |||||||||||||");
-                            accept = true;
+
+                            return true;
+                            //accept = true;
                         }
                     }
                     else
                     {
                         //When social capital is not used, social agents always accept neutral exchanges
-                        accept = true;
+                        return true;
+                        //accept = true;
                     }
                 }
 
@@ -110,7 +115,9 @@ namespace HonoursProject.behaviours
                 }*/
 
             }
-            return accept;
+
+            return false;
+            //return accept;
         }
 
         //! Function that will switch the behaviour strategy of the agent.

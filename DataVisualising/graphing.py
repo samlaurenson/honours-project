@@ -24,7 +24,7 @@ def graph():
 
     visualiseEndOfDaySatisfactions(days, averageSimulationData)
     print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
-    return "The average agent satisfaction for 1st day of 1st simulation is " + str(day)
+    return "Data visualisation complete!"
 
 #Function that will graph the end of day average satisfactions for agent types in the model
 #Optimal - The highest satisfaction rate agents could achieve if desired were fulfilled as best as could be
@@ -43,14 +43,78 @@ def visualiseEndOfDaySatisfactions(days, simDat):
         social.append(simDat[i][4])
         optimal.append(simDat[i][1])
         random.append(simDat[i][0])
+    
+    errorBarsDays = []
 
-    fig = py.graph_objects.Figure()
+    selfishPosError = []
+    socialPosError = []
+
+    selfishNegError = []
+    socialNegError = []
+
+    socialSpecificDays = []
+    selfishSpecificDays = []
+    
+    #Getting the days where error bars will be added - every 50 days
+    # for i in range(len(days)):
+    #     if(i > 5 and i % 50 == 0):
+    #         errorBarsDays.append(i)
+
+    #Also need to add in one for the last day (since this only goes to 149)
+    #So check that if day+1 == len(days) and day % 50 then add to errorBarsDays
+    for day in days:
+        if(day > 0 and day % 50 == 0):
+            errorBarsDays.append(day)
+
+    # Adding in last day error bar
+    # if (days[len(days)-1] + 1) % 50 == 0:
+    #     print("good")
+    #     errorBarsDays.append(days[len(days)-1])
+
+    for day in errorBarsDays:
+        #Selfish error bars
+        selfishSD = simDat[day][3]
+
+        if selfishSD + selfish[day] >= 1:
+            selfishPosError.append(1 - selfish[day])
+        else:
+            selfishPosError.append(selfishSD)
+        
+        if selfish[day] - selfishSD <= 0:
+            selfishNegError.append(selfish[day])
+        else:
+            selfishNegError.append(selfishSD)
+
+        selfishSpecificDays.append(selfish[day])
+
+        #Social error bars
+        socialSD = simDat[day][5]
+
+        if socialSD + social[day] >= 1:
+            socialPosError.append(1 - social[day])
+        else:
+            socialPosError.append(socialSD)
+        
+        if social[day] - socialSD <= 0:
+            socialNegError.append(social[day])
+        else:
+            socialNegError.append(socialSD)
+
+        socialSpecificDays.append(social[day])
+
+
+
+
+    fig = py.graph_objects.Figure(layout_yaxis_range=[0,1])
 
     fig.add_trace(py.graph_objects.Scatter(
         x=days,
         y=selfish,
         mode='lines',
         name='Selfish',
+        line=dict(
+            color='blue'
+        )
     ))
 
     fig.add_trace(py.graph_objects.Scatter(
@@ -58,6 +122,9 @@ def visualiseEndOfDaySatisfactions(days, simDat):
         y=social,
         mode='lines',
         name='Social',
+        line=dict(
+            color='red'
+        )
     ))
 
     fig.add_trace(py.graph_objects.Scatter(
@@ -65,6 +132,9 @@ def visualiseEndOfDaySatisfactions(days, simDat):
         y=optimal,
         mode='lines',
         name='Optimal',
+        line=dict(
+            color='green'
+        )
     ))
 
     fig.add_trace(py.graph_objects.Scatter(
@@ -72,6 +142,41 @@ def visualiseEndOfDaySatisfactions(days, simDat):
         y=random,
         mode='lines',
         name='Random',
+        line=dict(
+            color='magenta'
+        )
+    ))
+
+    fig.add_trace(py.graph_objects.Scatter(
+        x=errorBarsDays,
+        y=socialSpecificDays,
+        mode='markers',
+        marker=dict(
+            color='red'
+        ),
+        showlegend=False,
+        error_y=dict(
+            type='data',
+            symmetric=False,
+            array=socialPosError,
+            arrayminus=socialNegError
+        )
+    ))
+
+    fig.add_trace(py.graph_objects.Scatter(
+        x=errorBarsDays,
+        y=selfishSpecificDays,
+        mode='markers',
+        marker=dict(
+            color='blue'
+        ),
+        showlegend=False,
+        error_y=dict(
+            type='data',
+            symmetric=False,
+            array=selfishPosError,
+            arrayminus=selfishNegError
+        )
     ))
 
     fig.update_layout(
