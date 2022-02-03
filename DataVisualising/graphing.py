@@ -230,10 +230,12 @@ def visualiseHeatMaps(evolveId, evolving_index):
 
     socialheatmap = sns.heatmap(DOIsocial, ax=axs[0], yticklabels=row_labels, xticklabels=col_labels, annot=True)
     axs[0].set_title('Average Social Satisfaction')
+    axs[0].set(xlabel='Exchanges', ylabel='Days')
     socialheatmap.invert_yaxis()
 
     selfishheatmap = sns.heatmap(DOIselfish, ax=axs[1], yticklabels=row_labels, xticklabels=col_labels, annot=True)
     axs[1].set_title('Average Selfish Satisfaction')
+    axs[1].set(xlabel='Exchanges', ylabel='Days')
     #socialheatmap.set_title('Average Selfish Satisfaction')
     selfishheatmap.invert_yaxis()
 
