@@ -41,14 +41,16 @@ namespace HonoursProject.behaviours
                         int favoursOwedToRequester = 0;
                         int favoursGivenToRequester = 0;
 
-                        if (DataStore.Instance.GlobalFavoursOwed.ContainsKey(requestingAgentName))
+                        // DataStore.Instance.GlobalFavoursOwed
+                        if (agent.FavoursOwed.ContainsKey(requestingAgentName))
                         {
-                            favoursOwedToRequester = DataStore.Instance.GlobalFavoursOwed[requestingAgentName];
+                            favoursOwedToRequester = agent.FavoursOwed[requestingAgentName];
                         }
 
-                        if (DataStore.Instance.GlobalFavoursGiven.ContainsKey(requestingAgentName))
+                        //DataStore.Instance.GlobalFavoursGiven
+                        if (agent.FavoursGiven.ContainsKey(requestingAgentName))
                         {
-                            favoursGivenToRequester = DataStore.Instance.GlobalFavoursGiven[requestingAgentName];
+                            favoursGivenToRequester = agent.FavoursGiven[requestingAgentName];
                         }
 
                         //If agent owes a favour, then request will be accepted

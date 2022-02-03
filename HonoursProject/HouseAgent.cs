@@ -227,13 +227,14 @@ namespace HonoursProject
                             //Favour given will only be remembered if the social agent's satisfaction is left unchanged or is a lower value after the exchange
                             if (_agentBehaviour is SocialBehaviour && newSatisfaction <= oldSatisfaction)
                             {
-                                if (!_dataStore.GlobalFavoursGiven.ContainsKey(requestingAgentName))
+                                //_dataStore.GlobalFavoursGiven
+                                if (!FavoursGiven.ContainsKey(requestingAgentName))
                                 {
-                                    _dataStore.GlobalFavoursGiven.Add(requestingAgentName, 1);
+                                    FavoursGiven.Add(requestingAgentName, 1);
                                 }
                                 else
                                 {
-                                    _dataStore.GlobalFavoursGiven[requestingAgentName]++;
+                                    FavoursGiven[requestingAgentName]++;
                                 }
                             }
 
@@ -388,13 +389,14 @@ namespace HonoursProject
             //If requesting agent is a social agent, then remember that they owe a favour to the agent that accepted the request
             if (_agentBehaviour is SocialBehaviour && newSatisfaction > oldSatisfaction)
             {
-                if (!_dataStore.GlobalFavoursOwed.ContainsKey(agentWithDesiredSlot))
+                //_dataStore.GlobalFavoursOwed
+                if (!FavoursOwed.ContainsKey(agentWithDesiredSlot))
                 {
-                    _dataStore.GlobalFavoursOwed.Add(agentWithDesiredSlot, 1);
+                    FavoursOwed.Add(agentWithDesiredSlot, 1);
                 }
                 else
                 {
-                    _dataStore.GlobalFavoursOwed[agentWithDesiredSlot]++;
+                    FavoursOwed[agentWithDesiredSlot]++;
                 }
             }
         }

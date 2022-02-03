@@ -14,10 +14,13 @@ namespace HonoursProject
         private static DataStore _instance; /*!< Stores the instance of the singleton. */
         private List<HouseAgent> _houseAgents = new List<HouseAgent>(); /*!< List of all the house agents in the model. */
 
-        private Dictionary<int, List<List<List<double>>>> _simulations = new Dictionary<int, List<List<List<double>>>>(); /*!< Dictionary of data which contains 
-                                                                                                                           * - Data for every evolving agent value in list of evolving agents
-                                                                                                                           * - Data for every model executed for each evolving agent execution
-                                                                                                                           * - Data for each day in the model*/
+        //private Dictionary<int, List<List<List<List<double>>>>> _simulations = new Dictionary<int, List<List<List<List<double>>>>>(); /*!< Dictionary of data which contains 
+                                                                                                                           //* - Data for every evolving agent value in list of evolving agents
+                                                                                                                           //* - Data for every model executed for each evolving agent execution
+                                                                                                                           //* - Data for each day in the model*/
+
+        private List<Dictionary<int, List<List<List<double>>>>> _simulations = new List<Dictionary<int, List<List<List<double>>>>>();
+
         private double randomStart;
         private double optimalStart;
 
@@ -120,7 +123,13 @@ namespace HonoursProject
         }
 
         //! Getter and setter for simulation data.
-        public Dictionary<int, List<List<List<double>>>> SimulationData
+        /*public Dictionary<int, List<List<List<List<double>>>>> SimulationData
+        {
+            get { return _simulations; }
+            set { _simulations = value; }
+        }*/
+
+        public List<Dictionary<int, List<List<List<double>>>>> SimulationData
         {
             get { return _simulations; }
             set { _simulations = value; }

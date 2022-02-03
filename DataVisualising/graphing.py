@@ -1,6 +1,8 @@
 import numpy as np
 import os
 import plotly as py
+import matplotlib.pyplot as plt
+import seaborn as sns
 from flask import Flask, request
 app = Flask(__name__)
 
@@ -11,19 +13,22 @@ def hello_world():
 @app.route('/graph', methods=['POST'])
 def graph():
     request_data = request.get_json()
-    evolving_index = request_data[0]
-    simulation = evolving_index['Value'][0]
-    day = simulation[0][0]
+    for i in range(len(request_data)):
+        evolving_index = request_data[i]
 
-    averageSimulationData = calculateAverageSimulation(evolving_index) #doing this with just the first evolving array as trial - will need to loop this for each evolving agent
-    days = []
+        for exchange in evolving_index:
+            averageSimulationData = calculateAverageSimulation(evolving_index[exchange])
+            days = []
 
-    #Number of days to array for graphing
-    for i in range(len(evolving_index['Value'][0])):
-        days.append(i)
+            #Number of days to array for graphing
+            for j in range(len(evolving_index[exchange][0])):
+                days.append(j)
 
-    visualiseEndOfDaySatisfactions(days, averageSimulationData)
-    print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
+            visualiseEndOfDaySatisfactions(i, exchange, days, averageSimulationData)
+        #heatmap goes here
+        visualiseHeatMaps(i, evolving_index)
+
+    #print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "Data visualisation complete!"
 
 #Function that will graph the end of day average satisfactions for agent types in the model
@@ -31,7 +36,7 @@ def graph():
 #Random - The average satisfaction of agents at the beginning of each day with the slots they were randomly allocated
 #Selfish - The average satisfaction of selfish agents
 #Social - The average satisfaction of social agents
-def visualiseEndOfDaySatisfactions(days, simDat):
+def visualiseEndOfDaySatisfactions(evolveId, exchange, days, simDat):
     selfish = []
     social = []
     optimal = []
@@ -193,36 +198,263 @@ def visualiseEndOfDaySatisfactions(days, simDat):
         title_x=0.5
     )
 
-    fig.write_image("./avg3.pdf")
+    fig.write_image("./avg_"+str(evolveId)+"_"+str(exchange)+".pdf")
 
+#Function that will create heat maps of the models to visualise how the number of exchange rounds effects satisfactions
+def visualiseHeatMaps(evolveId, evolving_index):
+    #fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
+    fig.suptitle("Learning 100%", fontsize=16)
+
+    exchangeAllocationData = calculateGetHeatMapData(evolving_index)
+
+    #extracting selfish and social satisfaction for each allotment of exchange rounds
+    selfishSatisfaction = []
+    socialSatisfaction = []
+
+    #For loop that will go over each of the exchange allocation models and will loop over all the days in that model
+    #So that data for days in that model can be extracted
+    for exchangeAllocation in exchangeAllocationData:
+        extractSocialSatisfactions = []
+        extractSelfishSatisfactions = []
+        for day in exchangeAllocation:
+            extractSocialSatisfactions.append(round(day[4],2))
+            extractSelfishSatisfactions.append(round(day[2],2))
+        socialSatisfaction.append(extractSocialSatisfactions)
+        selfishSatisfaction.append(extractSelfishSatisfactions)
+    
+    #Currently have an array (exchange round) which contains an array of satisfactions for days
+
+    
+    #Will need to make a loop to go over col_labels (as int) and row_labels (as int) to get the elements from Xsatisfaction
+    #So getting exchange allocated per day 100 on day 150 will be -> socialSatisfaction[2][149] (assuming exchange allocated list in C# is [1, 50, 100])
+
+    #row_labels=['1', '100', '150']
+    #row_labels=['1', '25', '50', '100', '125', '150']
+
+    row_labels=['1', '100', '200', '300', '400', '500']
+
+    #col_labels=['1', '20']
+
+    #col_labels=['1', '50', '100']
+    col_labels=['1', '50', '100', '150', '200']
+
+    DOIsocial = [[0 for x in range(len(col_labels))] for y in range(len(row_labels))]
+    DOIselfish = [[0 for x in range(len(col_labels))] for y in range(len(row_labels))]
+
+    for i in range(len(col_labels)):
+        for j in range(len(row_labels)):
+            DOIsocial[j][i] = socialSatisfaction[i][int(row_labels[j])-1]
+            DOIselfish[j][i] = selfishSatisfaction[i][int(row_labels[j])-1]
+
+    socialheatmap = sns.heatmap(DOIsocial, ax=axs[0], yticklabels=row_labels, xticklabels=col_labels, annot=True)
+    axs[0].set_title('Average Social Satisfaction')
+    socialheatmap.invert_yaxis()
+
+    selfishheatmap = sns.heatmap(DOIselfish, ax=axs[1], yticklabels=row_labels, xticklabels=col_labels, annot=True)
+    axs[1].set_title('Average Selfish Satisfaction')
+    #socialheatmap.set_title('Average Selfish Satisfaction')
+    selfishheatmap.invert_yaxis()
+
+
+    #plt.tight_layout()
+    fileName = "./heatmap_"+str(evolveId)+".pdf"
+    plt.savefig(fileName,
+        dpi=None,
+        facecolor='w',
+        edgecolor='w',
+        orientation='landscape',
+        format=None,
+        transparent=False,
+        bbox_inches=None,
+        pad_inches=0,
+        metadata=None)
+
+
+    # selfish_subplot = selfishSatisfaction.pivot("Day", "Exchanges", "Selfish")
+    # social_subplot = socialSatisfaction.pivot("Day", "Exchanges", "Social")
+
+    # for index, exchAlloc in enumerate(selfish_subplot):
+    #     sns.heatmap(exchAlloc, cmap="Reds", center=0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10} )
+    #     title = "Learning 50%"
+    #     axs[0][index].set_title(title, fontsize=12, y=1.11)
+    #     axs[0][index].invert_yaxis()
+    #     axs[0][index].set_ylabel('')
+    #     axs[0][index].set_xlabel('')
+
+    
+    # for index, exchAlloc in enumerate(social_subplot):
+    #     sns.heatmap(exchAlloc, cmap="Reds", center=0.5, vmin=0, vmax=1.0, ax=axs[1][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10} )
+    #     axs[1][index].invert_yaxis()
+    #     axs[1][index].set_ylabel('')
+    #     axs[1][index].set_xlabel('')
+
+    # fileName = "./heatmap_" + str(evolveId)
+    # plt.savefig(fileName,
+    #     dpi=None,
+    #     facecolor='w',
+    #     edgecolor='w',
+    #     orientation='landscape',
+    #     format=None,
+    #     transparent=False,
+    #     bbox_inches=None,
+    #     pad_inches=0,
+    #     metadata=None)
+
+
+
+    
 
 #Function to go over the data for a running of the model and get the average values for each day over each repeated run
 def calculateAverageSimulation(data):
-    numOfDays = len(data['Value'][0])
-    dayEntries = len(data['Value'][0][0])
+    numOfDays = len(data[0])
+    dayEntries = len(data[0][0])
 
     #Array that will store the average data for each day over all simulations that were run
     dayAverages = [[0 for x in range(dayEntries)] for y in range(numOfDays)]
 
     #For every simulation - Add each day and the data for that day to the dayAverages array
     #Currently only doing this for 1 of the evolving agent model runs - add another loop above this to go over each evolving agent model as well?
-    for simulation in data['Value']:
-        for i in range(len(simulation)):
+    for simulation in range(len(data)):
+        for i in range(len(data[simulation])):
             #for each day
-            for j in range(len(simulation[i])):
+            for j in range(len(data[simulation][i])):
                 #For day data
-                dayAverages[i][j] += simulation[i][j]
+                dayAverages[i][j] += data[simulation][i][j]
                 # selfish.append(simulation[i][2])
                 # social.append(simulation[i][4])
     
     #Getting the averages for days in the simulation
     for i in range(len(dayAverages)):
         for j in range(len(dayAverages[i])):
-            dayAverages[i][j] /= len(data['Value'])
+            dayAverages[i][j] /= len(data)
 
     return dayAverages
 
+#Function that will extract information for heat map - will have to extract data from each of the different number of allocated
+#exchange rounds
+#Returns an array of arrays - an array of averages of each of the allocated exchange rounds
+def calculateGetHeatMapData(data):
+    arrayOfExchangeAllocationData = []
+    for exchange in data:
+        averageDataForExchangeAllocation = calculateAverageSimulation(data[exchange])
+        arrayOfExchangeAllocationData.append(averageDataForExchangeAllocation)
+    return arrayOfExchangeAllocationData
 
+def heatmap(data, row_labels, col_labels, ax=None,
+            cbar_kw={}, cbarlabel="", **kwargs):
+    """
+    Create a heatmap from a numpy array and two lists of labels.
+
+    Parameters
+    ----------
+    data
+        A 2D numpy array of shape (M, N).
+    row_labels
+        A list or array of length M with the labels for the rows.
+    col_labels
+        A list or array of length N with the labels for the columns.
+    ax
+        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
+        not provided, use current axes or create a new one.  Optional.
+    cbar_kw
+        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+    cbarlabel
+        The label for the colorbar.  Optional.
+    **kwargs
+        All other arguments are forwarded to `imshow`.
+    """
+
+    if not ax:
+        ax = plt.gca()
+
+    # Plot the heatmap
+    im = ax.imshow(data, **kwargs)
+
+    # Create colorbar
+    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+
+    # Show all ticks and label them with the respective list entries.
+    ax.set_xticks(np.arange(data.shape[1]), labels=col_labels)
+    ax.set_yticks(np.arange(data.shape[0]), labels=row_labels)
+
+    # Let the horizontal axes labeling appear on top.
+    ax.tick_params(top=True, bottom=False,
+                   labeltop=True, labelbottom=False)
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+             rotation_mode="anchor")
+
+    # Turn spines off and create white grid.
+    ax.spines[:].set_visible(False)
+
+    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
+    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+    ax.tick_params(which="minor", bottom=False, left=False)
+
+    return im, cbar
+
+
+def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
+                     textcolors=("black", "white"),
+                     threshold=None, **textkw):
+    """
+    A function to annotate a heatmap.
+
+    Parameters
+    ----------
+    im
+        The AxesImage to be labeled.
+    data
+        Data used to annotate.  If None, the image's data is used.  Optional.
+    valfmt
+        The format of the annotations inside the heatmap.  This should either
+        use the string format method, e.g. "$ {x:.2f}", or be a
+        `matplotlib.ticker.Formatter`.  Optional.
+    textcolors
+        A pair of colors.  The first is used for values below a threshold,
+        the second for those above.  Optional.
+    threshold
+        Value in data units according to which the colors from textcolors are
+        applied.  If None (the default) uses the middle of the colormap as
+        separation.  Optional.
+    **kwargs
+        All other arguments are forwarded to each call to `text` used to create
+        the text labels.
+    """
+
+    if not isinstance(data, (list, np.ndarray)):
+        data = im.get_array()
+
+    # Normalize the threshold to the images color range.
+    if threshold is not None:
+        threshold = im.norm(threshold)
+    else:
+        threshold = im.norm(data.max())/2.
+
+    # Set default alignment to center, but allow it to be
+    # overwritten by textkw.
+    kw = dict(horizontalalignment="center",
+              verticalalignment="center")
+    kw.update(textkw)
+
+    # Get the formatter in case a string is supplied
+    if isinstance(valfmt, str):
+        valfmt = matplotlib.ticker.StrMethodFormatter(valfmt)
+
+    # Loop over the data and create a `Text` for each "pixel".
+    # Change the text's color depending on the data.
+    texts = []
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            kw.update(color=textcolors[int(im.norm(data[i, j]) > threshold)])
+            text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
+            texts.append(text)
+
+    return texts
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
