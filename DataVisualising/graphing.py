@@ -59,11 +59,6 @@ def visualiseEndOfDaySatisfactions(evolveId, exchange, days, simDat):
 
     socialSpecificDays = []
     selfishSpecificDays = []
-    
-    #Getting the days where error bars will be added - every 50 days
-    # for i in range(len(days)):
-    #     if(i > 5 and i % 50 == 0):
-    #         errorBarsDays.append(i)
 
     #Also need to add in one for the last day (since this only goes to 149)
     #So check that if day+1 == len(days) and day % 50 then add to errorBarsDays
@@ -202,7 +197,6 @@ def visualiseEndOfDaySatisfactions(evolveId, exchange, days, simDat):
 
 #Function that will create heat maps of the models to visualise how the number of exchange rounds effects satisfactions
 def visualiseHeatMaps(evolveId, evolving_index):
-    #fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
     fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
     fig.suptitle("Learning 100%", fontsize=16)
 
@@ -222,21 +216,8 @@ def visualiseHeatMaps(evolveId, evolving_index):
             extractSelfishSatisfactions.append(round(day[2],2))
         socialSatisfaction.append(extractSocialSatisfactions)
         selfishSatisfaction.append(extractSelfishSatisfactions)
-    
-    #Currently have an array (exchange round) which contains an array of satisfactions for days
-
-    
-    #Will need to make a loop to go over col_labels (as int) and row_labels (as int) to get the elements from Xsatisfaction
-    #So getting exchange allocated per day 100 on day 150 will be -> socialSatisfaction[2][149] (assuming exchange allocated list in C# is [1, 50, 100])
-
-    #row_labels=['1', '100', '150']
-    #row_labels=['1', '25', '50', '100', '125', '150']
 
     row_labels=['1', '100', '200', '300', '400', '500']
-
-    #col_labels=['1', '20']
-
-    #col_labels=['1', '50', '100']
     col_labels=['1', '50', '100', '150', '200']
 
     DOIsocial = [[0 for x in range(len(col_labels))] for y in range(len(row_labels))]
@@ -269,41 +250,6 @@ def visualiseHeatMaps(evolveId, evolving_index):
         bbox_inches=None,
         pad_inches=0,
         metadata=None)
-
-
-    # selfish_subplot = selfishSatisfaction.pivot("Day", "Exchanges", "Selfish")
-    # social_subplot = socialSatisfaction.pivot("Day", "Exchanges", "Social")
-
-    # for index, exchAlloc in enumerate(selfish_subplot):
-    #     sns.heatmap(exchAlloc, cmap="Reds", center=0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10} )
-    #     title = "Learning 50%"
-    #     axs[0][index].set_title(title, fontsize=12, y=1.11)
-    #     axs[0][index].invert_yaxis()
-    #     axs[0][index].set_ylabel('')
-    #     axs[0][index].set_xlabel('')
-
-    
-    # for index, exchAlloc in enumerate(social_subplot):
-    #     sns.heatmap(exchAlloc, cmap="Reds", center=0.5, vmin=0, vmax=1.0, ax=axs[1][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10} )
-    #     axs[1][index].invert_yaxis()
-    #     axs[1][index].set_ylabel('')
-    #     axs[1][index].set_xlabel('')
-
-    # fileName = "./heatmap_" + str(evolveId)
-    # plt.savefig(fileName,
-    #     dpi=None,
-    #     facecolor='w',
-    #     edgecolor='w',
-    #     orientation='landscape',
-    #     format=None,
-    #     transparent=False,
-    #     bbox_inches=None,
-    #     pad_inches=0,
-    #     metadata=None)
-
-
-
-    
 
 #Function to go over the data for a running of the model and get the average values for each day over each repeated run
 def calculateAverageSimulation(data):
@@ -340,121 +286,6 @@ def calculateGetHeatMapData(data):
         averageDataForExchangeAllocation = calculateAverageSimulation(data[exchange])
         arrayOfExchangeAllocationData.append(averageDataForExchangeAllocation)
     return arrayOfExchangeAllocationData
-
-def heatmap(data, row_labels, col_labels, ax=None,
-            cbar_kw={}, cbarlabel="", **kwargs):
-    """
-    Create a heatmap from a numpy array and two lists of labels.
-
-    Parameters
-    ----------
-    data
-        A 2D numpy array of shape (M, N).
-    row_labels
-        A list or array of length M with the labels for the rows.
-    col_labels
-        A list or array of length N with the labels for the columns.
-    ax
-        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
-        not provided, use current axes or create a new one.  Optional.
-    cbar_kw
-        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
-    cbarlabel
-        The label for the colorbar.  Optional.
-    **kwargs
-        All other arguments are forwarded to `imshow`.
-    """
-
-    if not ax:
-        ax = plt.gca()
-
-    # Plot the heatmap
-    im = ax.imshow(data, **kwargs)
-
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
-
-    # Show all ticks and label them with the respective list entries.
-    ax.set_xticks(np.arange(data.shape[1]), labels=col_labels)
-    ax.set_yticks(np.arange(data.shape[0]), labels=row_labels)
-
-    # Let the horizontal axes labeling appear on top.
-    ax.tick_params(top=True, bottom=False,
-                   labeltop=True, labelbottom=False)
-
-    # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
-             rotation_mode="anchor")
-
-    # Turn spines off and create white grid.
-    ax.spines[:].set_visible(False)
-
-    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
-    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
-    ax.tick_params(which="minor", bottom=False, left=False)
-
-    return im, cbar
-
-
-def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
-                     textcolors=("black", "white"),
-                     threshold=None, **textkw):
-    """
-    A function to annotate a heatmap.
-
-    Parameters
-    ----------
-    im
-        The AxesImage to be labeled.
-    data
-        Data used to annotate.  If None, the image's data is used.  Optional.
-    valfmt
-        The format of the annotations inside the heatmap.  This should either
-        use the string format method, e.g. "$ {x:.2f}", or be a
-        `matplotlib.ticker.Formatter`.  Optional.
-    textcolors
-        A pair of colors.  The first is used for values below a threshold,
-        the second for those above.  Optional.
-    threshold
-        Value in data units according to which the colors from textcolors are
-        applied.  If None (the default) uses the middle of the colormap as
-        separation.  Optional.
-    **kwargs
-        All other arguments are forwarded to each call to `text` used to create
-        the text labels.
-    """
-
-    if not isinstance(data, (list, np.ndarray)):
-        data = im.get_array()
-
-    # Normalize the threshold to the images color range.
-    if threshold is not None:
-        threshold = im.norm(threshold)
-    else:
-        threshold = im.norm(data.max())/2.
-
-    # Set default alignment to center, but allow it to be
-    # overwritten by textkw.
-    kw = dict(horizontalalignment="center",
-              verticalalignment="center")
-    kw.update(textkw)
-
-    # Get the formatter in case a string is supplied
-    if isinstance(valfmt, str):
-        valfmt = matplotlib.ticker.StrMethodFormatter(valfmt)
-
-    # Loop over the data and create a `Text` for each "pixel".
-    # Change the text's color depending on the data.
-    texts = []
-    for i in range(data.shape[0]):
-        for j in range(data.shape[1]):
-            kw.update(color=textcolors[int(im.norm(data[i, j]) > threshold)])
-            text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
-            texts.append(text)
-
-    return texts
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
