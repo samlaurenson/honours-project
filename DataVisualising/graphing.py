@@ -198,6 +198,7 @@ def visualiseEndOfDaySatisfactions(evolveId, exchange, days, simDat):
 #Function that will create heat maps of the models to visualise how the number of exchange rounds effects satisfactions
 def visualiseHeatMaps(evolveId, evolving_index):
     fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
+    plt.subplots_adjust(hspace=0.8)
     fig.suptitle("Learning 100%", fontsize=16)
 
     exchangeAllocationData = calculateGetHeatMapData(evolving_index)

@@ -41,10 +41,10 @@ namespace HonoursProject
             int numberOfSimulationRuns = 4;
 
             int numberOfHouseholds = 96;
-            int numberOfDays = 500;
-            List<int> exchangeRoundList = new List<int>() { 1, 50, 100, 150, 200 };
+            int numberOfDays = 200;
+            //List<int> exchangeRoundList = new List<int>() { 1, 50, 100, 150, 200 };
             //List<int> exchangeRoundList = new List<int>() { 1, 50, 100 };
-            //List<int> exchangeRoundList = new List<int>() { 1 };
+            List<int> exchangeRoundList = new List<int>() { 100 };
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
@@ -73,7 +73,7 @@ namespace HonoursProject
                         var advertAgent = new AdvertisingAgent(exchangeRoundList[e]);
 
                         //listNumberEvolvingAgents[i]
-                        var dayManager = new DayManagerAgent(96, numberOfDays);
+                        var dayManager = new DayManagerAgent(48, numberOfDays);
 
                         for (int k = 0; k < numberOfHouseholds / 2; k++)
                         {
@@ -132,6 +132,10 @@ namespace HonoursProject
 
                         DataStore.Instance.EndOfDaySatisfaction.Clear(); //Clearing list so can be used again
 
+                        //Clearing global favour storage so that favours from previous model runs do not carry over
+                        DataStore.Instance.GlobalFavoursOwed.Clear();
+                        DataStore.Instance.GlobalFavoursGiven.Clear();
+
                         Console.WriteLine($"///////// Sim {j + 1} done //////////////");
                     }
                     Console.WriteLine($"Completed model running with {exchangeRoundList[e]} exchange rounds");
@@ -143,7 +147,7 @@ namespace HonoursProject
             //Turning simulation data in to json file which will be sent to the python flask server to produce graphs on the data
             string json = JsonSerializer.Serialize(DataStore.Instance.SimulationData.ToList());
 
-            File.WriteAllText(@"..\..\..\outputFile.json", json);
+            //File.WriteAllText(@"..\..\..\outputFile.json", json);
 
             var output = await _httpClient.PostAsync("/graph", new StringContent(json, Encoding.UTF8,"application/json"));
 

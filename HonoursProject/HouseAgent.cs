@@ -227,14 +227,22 @@ namespace HonoursProject
                             //Favour given will only be remembered if the social agent's satisfaction is left unchanged or is a lower value after the exchange
                             if (_agentBehaviour is SocialBehaviour && newSatisfaction <= oldSatisfaction)
                             {
-                                //_dataStore.GlobalFavoursGiven
-                                if (!FavoursGiven.ContainsKey(requestingAgentName))
+                                /*if (!FavoursGiven.ContainsKey(requestingAgentName))
                                 {
                                     FavoursGiven.Add(requestingAgentName, 1);
                                 }
                                 else
                                 {
                                     FavoursGiven[requestingAgentName]++;
+                                }*/
+
+                                if (!_dataStore.GlobalFavoursGiven.ContainsKey(requestingAgentName))
+                                {
+                                    _dataStore.GlobalFavoursGiven.Add(requestingAgentName, 1);
+                                }
+                                else
+                                {
+                                    _dataStore.GlobalFavoursGiven[requestingAgentName]++;
                                 }
                             }
 
@@ -389,14 +397,22 @@ namespace HonoursProject
             //If requesting agent is a social agent, then remember that they owe a favour to the agent that accepted the request
             if (_agentBehaviour is SocialBehaviour && newSatisfaction > oldSatisfaction)
             {
-                //_dataStore.GlobalFavoursOwed
-                if (!FavoursOwed.ContainsKey(agentWithDesiredSlot))
+                /*if (!FavoursOwed.ContainsKey(agentWithDesiredSlot))
                 {
                     FavoursOwed.Add(agentWithDesiredSlot, 1);
                 }
                 else
                 {
                     FavoursOwed[agentWithDesiredSlot]++;
+                }*/
+
+                if (!_dataStore.GlobalFavoursOwed.ContainsKey(agentWithDesiredSlot))
+                {
+                    _dataStore.GlobalFavoursOwed.Add(agentWithDesiredSlot, 1);
+                }
+                else
+                {
+                    _dataStore.GlobalFavoursOwed[agentWithDesiredSlot]++;
                 }
             }
         }
