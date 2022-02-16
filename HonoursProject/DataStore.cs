@@ -19,7 +19,8 @@ namespace HonoursProject
                                                                                                                            //* - Data for every model executed for each evolving agent execution
                                                                                                                            //* - Data for each day in the model*/
 
-        private List<Dictionary<int, List<List<List<double>>>>> _simulations = new List<Dictionary<int, List<List<List<double>>>>>();
+
+        private Dictionary<int, Dictionary<int, List<List<List<double>>>>> _simulations = new Dictionary<int, Dictionary<int, List<List<List<double>>>>>();
 
         private double randomStart;
         private double optimalStart;
@@ -129,7 +130,7 @@ namespace HonoursProject
             set { _simulations = value; }
         }*/
 
-        public List<Dictionary<int, List<List<List<double>>>>> SimulationData
+        public Dictionary<int, Dictionary<int, List<List<List<double>>>>> SimulationData
         {
             get { return _simulations; }
             set { _simulations = value; }

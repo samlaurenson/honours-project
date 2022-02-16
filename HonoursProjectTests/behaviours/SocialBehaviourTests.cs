@@ -22,6 +22,8 @@ namespace HonoursProject.behaviours.Tests
             datastore.HouseAgents.Clear();
             datastore.GlobalFavoursOwed.Clear();
             datastore.GlobalFavoursGiven.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
 
             var agent = new HouseAgent(new SocialBehaviour(), 0);
             var agent2 = new HouseAgent(new SocialBehaviour(), 1);
@@ -51,6 +53,8 @@ namespace HonoursProject.behaviours.Tests
             datastore.HouseAgents.Clear();
             datastore.GlobalFavoursOwed.Clear();
             datastore.GlobalFavoursGiven.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
 
             var agent = new HouseAgent(new SocialBehaviour(), 0);
             var agent2 = new HouseAgent(new SocialBehaviour(), 1);
@@ -74,13 +78,15 @@ namespace HonoursProject.behaviours.Tests
         }
 
         //Uncomment when not using global social capital
-        /*[TestMethod()]
+        [TestMethod()]
         public void ConsiderRequestTest_AgentAcceptedBecauseFavourOwed()
         {
             DataStore datastore = DataStore.Instance;
             datastore.HouseAgents.Clear();
             datastore.GlobalFavoursOwed.Clear();
             datastore.GlobalFavoursGiven.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
 
             var agent = new HouseAgent(new SocialBehaviour(), 0);
             var agent2 = new HouseAgent(new SocialBehaviour(), 1);
@@ -102,9 +108,9 @@ namespace HonoursProject.behaviours.Tests
 
             bool decision = agent.Behaviour.ConsiderRequest(agent, "agent2", 6, 4);
             Assert.IsTrue(decision);
-        }*/
+        }
 
-        [TestMethod()]
+        /*[TestMethod()]
         public void ConsiderRequestTest_GlobalCapital_AgentAcceptedBecauseFavourOwed()
         {
             DataStore datastore = DataStore.Instance;
@@ -132,10 +138,10 @@ namespace HonoursProject.behaviours.Tests
 
             bool decision = agent.Behaviour.ConsiderRequest(agent, "agent2", 6, 4);
             Assert.IsTrue(decision);
-        }
+        }*/
 
         //Comment out when not using global social capital
-        [TestMethod()]
+        /*[TestMethod()]
         public void ConsiderRequestTest_GlobalCapital_AgentDeclinesUsingSocialCapital()
         {
             DataStore datastore = DataStore.Instance;
@@ -164,7 +170,7 @@ namespace HonoursProject.behaviours.Tests
 
             bool decision = agent.Behaviour.ConsiderRequest(agent, "agent2", 6, 4);
             Assert.IsFalse(decision);
-        }
+        }*/
 
         //Comment out when not using global social capital
         [TestMethod()]
@@ -174,6 +180,8 @@ namespace HonoursProject.behaviours.Tests
             datastore.HouseAgents.Clear();
             datastore.GlobalFavoursOwed.Clear();
             datastore.GlobalFavoursGiven.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
 
             var agent = new HouseAgent(new SocialBehaviour(), 0);
             var agent2 = new HouseAgent(new SocialBehaviour(), 1);
@@ -198,13 +206,15 @@ namespace HonoursProject.behaviours.Tests
         }
 
         //Uncomment when not using global social capital
-        /*[TestMethod()]
+        [TestMethod()]
         public void ConsiderRequestTest_AgentDeclinesUsingSocialCapital()
         {
             DataStore datastore = DataStore.Instance;
             datastore.HouseAgents.Clear();
             datastore.GlobalFavoursOwed.Clear();
             datastore.GlobalFavoursGiven.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
 
             var agent = new HouseAgent(new SocialBehaviour(), 0);
             var agent2 = new HouseAgent(new SocialBehaviour(), 1);
@@ -227,7 +237,7 @@ namespace HonoursProject.behaviours.Tests
 
             bool decision = agent.Behaviour.ConsiderRequest(agent, "agent2", 6, 4);
             Assert.IsFalse(decision);
-        }*/
+        }
 
         /*
          *

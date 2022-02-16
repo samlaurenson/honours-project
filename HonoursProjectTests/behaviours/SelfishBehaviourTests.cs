@@ -20,6 +20,8 @@ namespace HonoursProject.behaviours.Tests
         {
             DataStore datastore = DataStore.Instance;
             datastore.HouseAgents.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
 
             var agent = new HouseAgent(new SelfishBehaviour(), 0);
             var agent2 = new HouseAgent(new SelfishBehaviour(), 1);
@@ -46,6 +48,8 @@ namespace HonoursProject.behaviours.Tests
         {
             DataStore datastore = DataStore.Instance;
             datastore.HouseAgents.Clear();
+            datastore.SimulationData.Clear();
+            datastore.EndOfDaySatisfaction.Clear();
             var agent = new HouseAgent(new SelfishBehaviour(), 0);
             var agent2 = new HouseAgent(new SelfishBehaviour(), 1);
 

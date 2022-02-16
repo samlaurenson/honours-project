@@ -227,23 +227,23 @@ namespace HonoursProject
                             //Favour given will only be remembered if the social agent's satisfaction is left unchanged or is a lower value after the exchange
                             if (_agentBehaviour is SocialBehaviour && newSatisfaction <= oldSatisfaction)
                             {
-                                /*if (!FavoursGiven.ContainsKey(requestingAgentName))
+                                if (!FavoursGiven.ContainsKey(requestingAgentName))
                                 {
                                     FavoursGiven.Add(requestingAgentName, 1);
                                 }
                                 else
                                 {
                                     FavoursGiven[requestingAgentName]++;
-                                }*/
+                                }
 
-                                if (!_dataStore.GlobalFavoursGiven.ContainsKey(requestingAgentName))
+                                /*if (!_dataStore.GlobalFavoursGiven.ContainsKey(requestingAgentName))
                                 {
                                     _dataStore.GlobalFavoursGiven.Add(requestingAgentName, 1);
                                 }
                                 else
                                 {
                                     _dataStore.GlobalFavoursGiven[requestingAgentName]++;
-                                }
+                                }*/
                             }
 
                             //Sends message to the requesting agent with the slot they have (and need to replace) with their desired slot
@@ -273,15 +273,14 @@ namespace HonoursProject
         //! Function that will handle the allocation of requested slots for this agent.
         /*!
           Will randomly generate time slots that will be added to the requested time slots list and will do this until the requested slot list is full (determined by number of slots agents can have)
+         \param Number of unique time slots that are available in the environment
          */
-        public void RequestedSlotAllocationHandler()
+        public void RequestedSlotAllocationHandler(int uniqueTimeSlots)
         {
             if (_requestedSlots.Count > 0)
             {
                 _requestedSlots.Clear();
             }
-
-            int uniqueTimeSlots = Environment.Memory["UniqueTimeSlots"];
 
             for (int i = 1; i <= numberOfTimeSlotsWanted; i++)
             {
@@ -397,23 +396,23 @@ namespace HonoursProject
             //If requesting agent is a social agent, then remember that they owe a favour to the agent that accepted the request
             if (_agentBehaviour is SocialBehaviour && newSatisfaction > oldSatisfaction)
             {
-                /*if (!FavoursOwed.ContainsKey(agentWithDesiredSlot))
+                if (!FavoursOwed.ContainsKey(agentWithDesiredSlot))
                 {
                     FavoursOwed.Add(agentWithDesiredSlot, 1);
                 }
                 else
                 {
                     FavoursOwed[agentWithDesiredSlot]++;
-                }*/
+                }
 
-                if (!_dataStore.GlobalFavoursOwed.ContainsKey(agentWithDesiredSlot))
+                /*if (!_dataStore.GlobalFavoursOwed.ContainsKey(agentWithDesiredSlot))
                 {
                     _dataStore.GlobalFavoursOwed.Add(agentWithDesiredSlot, 1);
                 }
                 else
                 {
                     _dataStore.GlobalFavoursOwed[agentWithDesiredSlot]++;
-                }
+                }*/
             }
         }
 

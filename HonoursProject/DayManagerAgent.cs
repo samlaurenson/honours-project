@@ -83,12 +83,13 @@ namespace HonoursProject.behaviours
          */
         private void AllocateSlots()
         {
+            int uniqueTimeSlots = Environment.Memory["UniqueTimeSlots"];
             foreach (HouseAgent agent in _dataStore.HouseAgents)
             {
                 agent.RequestedSlots.Clear();
                 agent.AllocatedSlots.Clear();
 
-                agent.RequestedSlotAllocationHandler();
+                agent.RequestedSlotAllocationHandler(uniqueTimeSlots);
                 agent.RandomSlotAllocationHandler();
             }
         }

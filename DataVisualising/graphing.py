@@ -13,20 +13,32 @@ def hello_world():
 @app.route('/graph', methods=['POST'])
 def graph():
     request_data = request.get_json()
-    for i in range(len(request_data)):
-        evolving_index = request_data[i]
 
-        for exchange in evolving_index:
-            averageSimulationData = calculateAverageSimulation(evolving_index[exchange])
+    model_data = request_data[0]
+
+    exchange_round_allocation = []
+    days_heatmap = []
+
+    for allocation in request_data[1]:
+        exchange_round_allocation.append(str(allocation))
+
+    for day in request_data[2]:
+        days_heatmap.append(str(day))
+
+    for i in range(len(model_data)):
+        evolving_index = model_data[i]
+
+        for exchange in evolving_index['Value']:
+            averageSimulationData = calculateAverageSimulation(evolving_index['Value'][exchange])
             days = []
 
             #Number of days to array for graphing
-            for j in range(len(evolving_index[exchange][0])):
+            for j in range(len(evolving_index['Value'][exchange][0])):
                 days.append(j)
 
             visualiseEndOfDaySatisfactions(i, exchange, days, averageSimulationData)
         #heatmap goes here
-        visualiseHeatMaps(i, evolving_index)
+        visualiseHeatMaps(i, evolving_index, exchange_round_allocation, days_heatmap)
 
     #print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "Data visualisation complete!"
@@ -196,12 +208,12 @@ def visualiseEndOfDaySatisfactions(evolveId, exchange, days, simDat):
     fig.write_image("./avg_"+str(evolveId)+"_"+str(exchange)+".pdf")
 
 #Function that will create heat maps of the models to visualise how the number of exchange rounds effects satisfactions
-def visualiseHeatMaps(evolveId, evolving_index):
+def visualiseHeatMaps(evolveId, evolving_index, exchange_round_allocation, days_heatmap):
     fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
     plt.subplots_adjust(hspace=0.8)
     fig.suptitle("Learning 100%", fontsize=16)
 
-    exchangeAllocationData = calculateGetHeatMapData(evolving_index)
+    exchangeAllocationData = calculateGetHeatMapData(evolving_index['Value'])
 
     #extracting selfish and social satisfaction for each allotment of exchange rounds
     selfishSatisfaction = []
@@ -218,8 +230,8 @@ def visualiseHeatMaps(evolveId, evolving_index):
         socialSatisfaction.append(extractSocialSatisfactions)
         selfishSatisfaction.append(extractSelfishSatisfactions)
 
-    row_labels=['1', '100', '200', '300', '400', '500']
-    col_labels=['1', '50', '100', '150', '200']
+    row_labels= days_heatmap
+    col_labels= exchange_round_allocation
 
     DOIsocial = [[0 for x in range(len(col_labels))] for y in range(len(row_labels))]
     DOIselfish = [[0 for x in range(len(col_labels))] for y in range(len(row_labels))]

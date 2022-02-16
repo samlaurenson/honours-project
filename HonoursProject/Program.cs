@@ -42,20 +42,25 @@ namespace HonoursProject
 
             int numberOfHouseholds = 96;
             int numberOfDays = 200;
-            //List<int> exchangeRoundList = new List<int>() { 1, 50, 100, 150, 200 };
+
+            List<int> exchangeRoundList = new List<int>() { 1, 50, 100, 150, 200 };
             //List<int> exchangeRoundList = new List<int>() { 1, 50, 100 };
-            List<int> exchangeRoundList = new List<int>() { 100 };
+            //List<int> exchangeRoundList = new List<int>() { 1, 3 };
+
+            List<int> daysToHeatMap = new List<int>() { 1, 100, 200, 300, 400, 500 };
+            //List<int> daysToHeatMap = new List<int>() { 1, 100, 200 };
 
             List<int> listNumberEvolvingAgents = CalculateNumberOfEvolvingAgents(numberOfHouseholds);
 
             Console.WriteLine("Starting model...");
 
             //listNumberEvolvingAgents.Count
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < listNumberEvolvingAgents.Count; i++)
             {
                 int numberOfAgentsEvolving = listNumberEvolvingAgents[i];
 
-                DataStore.Instance.SimulationData.Add(new Dictionary<int, List<List<List<double>>>>());
+                //DataStore.Instance.SimulationData.Add(new Dictionary<int, List<List<List<double>>>>());
+                DataStore.Instance.SimulationData.Add(listNumberEvolvingAgents[i], new Dictionary<int, List<List<List<double>>>>());
 
                 //exchangeRoundList.Count
                 for (int e = 0; e < exchangeRoundList.Count; e++)
@@ -111,13 +116,26 @@ namespace HonoursProject
                         List<List<double>> temp = new List<List<double>>();
                         temp.AddRange(DataStore.Instance.EndOfDaySatisfaction);
 
-                        if (DataStore.Instance.SimulationData[i].ContainsKey(exchangeRoundList[e]))
+                        /*if (DataStore.Instance.SimulationData[i].ContainsKey(exchangeRoundList[e]))
                         {
                             DataStore.Instance.SimulationData[i][exchangeRoundList[e]].Add(new List<List<double>>(temp));
                         }
                         else
                         {
                             DataStore.Instance.SimulationData[i].Add(exchangeRoundList[e], new List<List<List<double>>>() {temp});
+                        }*/
+
+                        //var tmp = DataStore.Instance.simdat.Keys;
+                        //var tmp2 = DataStore.Instance.simdat.Values;
+                        //var tmp3 = DataStore.Instance.simdat.Keys;
+
+                        if (DataStore.Instance.SimulationData[listNumberEvolvingAgents[i]].ContainsKey(exchangeRoundList[e]))
+                        {
+                            DataStore.Instance.SimulationData[listNumberEvolvingAgents[i]][exchangeRoundList[e]].Add(new List<List<double>>(temp));
+                        }
+                        else
+                        {
+                            DataStore.Instance.SimulationData[listNumberEvolvingAgents[i]].Add(exchangeRoundList[e], new List<List<List<double>>>() { temp });
                         }
 
                         //Temporarily using this so that can simulate with just 100 exchanges
@@ -133,8 +151,8 @@ namespace HonoursProject
                         DataStore.Instance.EndOfDaySatisfaction.Clear(); //Clearing list so can be used again
 
                         //Clearing global favour storage so that favours from previous model runs do not carry over
-                        DataStore.Instance.GlobalFavoursOwed.Clear();
-                        DataStore.Instance.GlobalFavoursGiven.Clear();
+                        //DataStore.Instance.GlobalFavoursOwed.Clear();
+                        //DataStore.Instance.GlobalFavoursGiven.Clear();
 
                         Console.WriteLine($"///////// Sim {j + 1} done //////////////");
                     }
@@ -144,10 +162,18 @@ namespace HonoursProject
                 Console.WriteLine($"/////////// {numberOfAgentsEvolving} agents evolving ({i+1}/{listNumberEvolvingAgents.Count}) ////////////");
             }
 
-            //Turning simulation data in to json file which will be sent to the python flask server to produce graphs on the data
-            string json = JsonSerializer.Serialize(DataStore.Instance.SimulationData.ToList());
+            List<object> outputToJson = new List<object>();
 
-            //File.WriteAllText(@"..\..\..\outputFile.json", json);
+            outputToJson.Add(DataStore.Instance.SimulationData.ToList());
+            outputToJson.Add(exchangeRoundList);
+            outputToJson.Add(daysToHeatMap);
+
+            //Turning simulation data in to json file which will be sent to the python flask server to produce graphs on the data
+            //string json = JsonSerializer.Serialize(DataStore.Instance.SimulationData.ToList());
+
+            string json = JsonSerializer.Serialize(outputToJson.ToList());
+
+            File.WriteAllText(@"..\..\..\outputFile.json", json);
 
             var output = await _httpClient.PostAsync("/graph", new StringContent(json, Encoding.UTF8,"application/json"));
 
