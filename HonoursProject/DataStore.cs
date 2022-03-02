@@ -13,30 +13,17 @@ namespace HonoursProject
     {
         private static DataStore _instance; /*!< Stores the instance of the singleton. */
         private List<HouseAgent> _houseAgents = new List<HouseAgent>(); /*!< List of all the house agents in the model. */
-
-        //private Dictionary<int, List<List<List<List<double>>>>> _simulations = new Dictionary<int, List<List<List<List<double>>>>>(); /*!< Dictionary of data which contains 
-                                                                                                                           //* - Data for every evolving agent value in list of evolving agents
-                                                                                                                           //* - Data for every model executed for each evolving agent execution
-                                                                                                                           //* - Data for each day in the model*/
-
-
         private Dictionary<int, Dictionary<int, List<List<List<double>>>>> _simulations = new Dictionary<int, Dictionary<int, List<List<List<double>>>>>();
-
         private double randomStart;
         private double optimalStart;
-
         private List<List<double>> _endOfDaySatisfactions = new List<List<double>>(); /*!< List that stores the end of day satisfactions of agents for each day */
-
         private List<int> _availableSlots = new List<int>(); /*!< List of available slots that can be allocated to agents. */
-
         private static readonly Random _random = new Random(); /*!< Environment random. */
         [ThreadStatic] private static Random _local; //Creating a thread safe random. Using same instance of random on multiple threads can cause it to break and always return 0
-
         private List<List<double>> bucketedDemandCurves;  /*!< List of bucketed demand curves. Used to generate allocated and requested slots for agents. */
         private List<double> totalDemandValues; /*!< List of total demand values. Used to generate allocated and requested slots for agents. */
-
-        private Dictionary<string, int> _globalFavoursGiven = new Dictionary<string, int>();
-        private Dictionary<string, int> _globalFavoursOwed = new Dictionary<string, int>();
+        private Dictionary<string, int> _globalFavoursGiven = new Dictionary<string, int>(); /*! Dictionary of agents and the number of favours they have given */
+        private Dictionary<string, int> _globalFavoursOwed = new Dictionary<string, int>(); /*! Dictionary of agents and the number of favours they owe */
 
         //! Constructor for DataStore.
         private DataStore() {}
@@ -58,12 +45,14 @@ namespace HonoursProject
             }
         }
 
+        //! Getter and setter for global favours given dictionary.
         public Dictionary<string, int> GlobalFavoursGiven
         {
             get { return _globalFavoursGiven; }
             set { _globalFavoursGiven = value; }
         }
 
+        //! Getter and setter for global favours owed dictionary.
         public Dictionary<string, int> GlobalFavoursOwed
         {
             get { return _globalFavoursOwed; }
@@ -123,19 +112,13 @@ namespace HonoursProject
             set { _endOfDaySatisfactions = value; }
         }
 
-        //! Getter and setter for simulation data.
-        /*public Dictionary<int, List<List<List<List<double>>>>> SimulationData
-        {
-            get { return _simulations; }
-            set { _simulations = value; }
-        }*/
-
         public Dictionary<int, Dictionary<int, List<List<List<double>>>>> SimulationData
         {
             get { return _simulations; }
             set { _simulations = value; }
         }
 
+        //! Function that will calculate the satisfactions of agents after their allocation of slots (before exchanges begin) and the optimal satisfaction that can be obtained with the slots present in the environment.
         public void addStartOfDaySatisfactions()
         {
             randomStart = 0.0;

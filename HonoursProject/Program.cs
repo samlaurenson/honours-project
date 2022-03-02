@@ -24,7 +24,7 @@ namespace HonoursProject
 {
     public class Program
     {
-        public static HttpClient _httpClient = new HttpClient() { };
+        public static HttpClient _httpClient = new HttpClient() { }; //*!
         async static Task Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
@@ -78,7 +78,7 @@ namespace HonoursProject
 
             string json = JsonSerializer.Serialize(outputToJson.ToList());
 
-            File.WriteAllText(@"..\..\..\outputFile.json", json);
+            //File.WriteAllText(@"..\..\..\outputFile.json", json);
 
             var output = await _httpClient.PostAsync("/graph", new StringContent(json, Encoding.UTF8,"application/json"));
 
@@ -88,6 +88,16 @@ namespace HonoursProject
             }
         }
 
+        //! Function that creates, populates and runs the environment using function input parameters.
+        /*!
+        \param listNumberEvolvingAgents A List of the number of agents that will evolve in the model. Will go through each of the items in the list and will produce results for each number of agents that will evolve.
+        \param exchangeRoundList A List of the number of exchange rounds that will be modelled. Each element in the list is the number of exchange rounds a model will use.
+        \param numberOfSimulationRuns The number of times the model will repeat. The more times the model is re-run, then the more accurate the final results will be.
+        \param uniqueTimeSlots The number of unique time slots that will be in the model.
+        \param numberOfHouseholds The number of house agents that will be added to the model.
+        \param maximumSlotCapacity The maximum number of times a specific slot can be added to the environment. For example, if time slot 5 had a maximum capacity of 10, then there can be at most 10 occurrences of time slot 5 in the environment.
+        \param numberOfDays The number of days that the model will run with.
+         */
         public static Dictionary<int, Dictionary<int, List<List<List<double>>>>> InitialiseEnvironment(List<int> listNumberEvolvingAgents, List<int> exchangeRoundList, int numberOfSimulationRuns, int uniqueTimeSlots, int numberOfHouseholds, int maximumSlotCapacity, int numberOfDays)
         {
             if (numberOfHouseholds <= 0)
