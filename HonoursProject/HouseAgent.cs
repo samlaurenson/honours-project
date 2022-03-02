@@ -39,6 +39,11 @@ namespace HonoursProject
          */
         public HouseAgent(IBehaviour behaviour, int id)
         {
+            //If agent behaviour input is invalid, ID is invalid or if agent ID has already been added to houseagent list
+            if (behaviour == null || id < 0 || _dataStore.HouseAgents.Where(ag => ag.GetID == id).Count() > 1)
+            {
+                throw new Exception("Invalid House Agent Inputs");
+            }
             this._agentBehaviour = behaviour;
             this._id = id;
         }
@@ -273,6 +278,7 @@ namespace HonoursProject
         //! Function that will handle the allocation of requested slots for this agent.
         /*!
           Will randomly generate time slots that will be added to the requested time slots list and will do this until the requested slot list is full (determined by number of slots agents can have)
+          Function will be initiated by the day manager at the start of each day so that agents can be given a random list of slots the agent will desire
          \param Number of unique time slots that are available in the environment
          */
         public void RequestedSlotAllocationHandler(int uniqueTimeSlots)
@@ -298,6 +304,9 @@ namespace HonoursProject
         }
 
         //! Function that will randomly allocate slots for this agent.
+        /*!
+         Function will be initiated by the day manager at the start of each day so that agent can be allocated random slots.
+         */
         public void RandomSlotAllocationHandler()
         {
             if (_allocatedSlots.Count > 0)
@@ -347,7 +356,7 @@ namespace HonoursProject
          \param advertisingAgentSlots The list of slots that is being advertised
          \return A Tuple which contains the desired slot (Item 1) and the slot that will be proposed in exchange (Item 2)
          */
-        public Tuple<int?, int?> SlotToRequest(List<int> advertisingAgentSlots)
+        private Tuple<int?, int?> SlotToRequest(List<int> advertisingAgentSlots)
         {
             int? slotToRequest = null;
             int? slotToPropose = null;
@@ -384,7 +393,7 @@ namespace HonoursProject
          \param desiredSlot The slot the agent wants from another agent.
          \param agentWithDesiredSlot The name of the agent who has the desired slot.
          */
-        public void HandleAcceptedRequest(int currentSlot, int desiredSlot, string agentWithDesiredSlot)
+        private void HandleAcceptedRequest(int currentSlot, int desiredSlot, string agentWithDesiredSlot)
         {
             double oldSatisfaction = CalculateSatisfaction(AllocatedSlots);
 
@@ -420,7 +429,7 @@ namespace HonoursProject
         /*!
          \return String of unwanted time slots to send to advertiser.
          */
-        public string ListUnwantedSlots()
+        private string ListUnwantedSlots()
         {
             //Listing slots - if a slot in the allocated list is not in the requested list - then this is considered unwanted and will be listed
             List<int> slotsToList = new List<int>();

@@ -9,7 +9,7 @@ namespace HonoursProject.behaviours.Tests
     [TestClass()]
     public class DayManagerAgentTests
     {
-        [TestMethod()]
+        /*[TestMethod()]
         public void EndOfDayManagerTest()
         {
             var sel = new HouseAgent(new SelfishBehaviour(), 0);
@@ -27,6 +27,6 @@ namespace HonoursProject.behaviours.Tests
             dayman.EndOfDayManager();
 
             Assert.AreEqual(1, dayman.CurrentDay); //Checking that the day has incremented correctly and is now at day 1 (2nd day in the model)
-        }
+        }*/
     }
 }

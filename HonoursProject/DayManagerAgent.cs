@@ -31,13 +31,15 @@ namespace HonoursProject.behaviours
         public DayManagerAgent(int numberOfEvolvingAgents, int days)
         {
             this._numberOfEvolvingAgents = numberOfEvolvingAgents;
-            this._maxDays = days;
-        }
 
-        //! Getter for current day in the model.
-        public int CurrentDay
-        {
-            get { return _numOfDays; }
+            if (days <= 0)
+            {
+                throw new Exception("Invalid day input");
+            }
+            else
+            {
+                this._maxDays = days;
+            }
         }
 
         //! Setup function
@@ -154,7 +156,7 @@ namespace HonoursProject.behaviours
             if (_dataStore.HouseAgents.Count == 0)
             {
                 Stop(); //If there are no agents in the model - leave the model
-            } 
+            }
         }
 
         //! Function that will run functions that are to be executed at the end of a day and increment day counter.
@@ -162,7 +164,7 @@ namespace HonoursProject.behaviours
           The AllocatedSlots function is not included in this handler function as the AllocatedSlots function requires randomness, which is difficult to unit test, and also
           requires an ActressMAS environment to be running since the AllocatedSlots function will broadcast messages to agents, if there is no environment running then this would cause an issue.
          */
-        public void EndOfDayManager()
+        private void EndOfDayManager()
         {
             _dataStore.CalculateEndOfDaySatisfactions(this._numOfDays);
             this._numOfDays++;

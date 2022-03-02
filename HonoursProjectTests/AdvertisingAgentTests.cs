@@ -12,7 +12,7 @@ namespace HonoursProject.Tests
     [TestClass()]
     public class AdvertisingAgentTests
     {
-        [TestMethod()]
+        /*[TestMethod()]
         public void ListHouseTimeSlotsTest()
         {
             //Testing that unwanted slots listed by households are being added to the advertising dictionary properly.
@@ -147,6 +147,6 @@ namespace HonoursProject.Tests
 
             //Advertising agent should be removed from list of agents to advertise for since they will not be able to make another interaction this round
             Assert.AreEqual(0, advert.AdvertisedSlots.Count);
-        }
+        }*/
     }
 }

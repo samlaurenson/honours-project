@@ -38,7 +38,7 @@ def graph():
 
             visualiseEndOfDaySatisfactions(i, exchange, days, averageSimulationData)
         #heatmap goes here
-        visualiseHeatMaps(i, evolving_index, exchange_round_allocation, days_heatmap)
+        visualiseHeatMaps(i, evolving_index, exchange_round_allocation, days_heatmap, request_data[3][i])
 
     #print(np.matrix(averageSimulationData))     #Printing to check calculations work as expected
     return "Data visualisation complete!"
@@ -208,10 +208,10 @@ def visualiseEndOfDaySatisfactions(evolveId, exchange, days, simDat):
     fig.write_image("./avg_"+str(evolveId)+"_"+str(exchange)+".pdf")
 
 #Function that will create heat maps of the models to visualise how the number of exchange rounds effects satisfactions
-def visualiseHeatMaps(evolveId, evolving_index, exchange_round_allocation, days_heatmap):
+def visualiseHeatMaps(evolveId, evolving_index, exchange_round_allocation, days_heatmap, percentageEvolving):
     fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,6))
     plt.subplots_adjust(hspace=0.8)
-    fig.suptitle("Learning 100%", fontsize=16)
+    fig.suptitle("Learning " + str(percentageEvolving) + "%", fontsize=16)
 
     exchangeAllocationData = calculateGetHeatMapData(evolving_index['Value'])
 

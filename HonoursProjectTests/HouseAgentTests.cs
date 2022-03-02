@@ -12,44 +12,17 @@ namespace HonoursProject.Tests
     public class HouseAgentTests
     {
         [TestMethod()]
-        public void CalculateSatisfactionTest_AgentInteractionAndEnvironmentTest()
+        public void HouseAgent_NullInput()
         {
-            //Unit test to ensure that agent interactions are working as expected.
-            //If agent interactions are working - then unit test should terminate, otherwise unit test will execute indefinitely
-            DataStore datastore = DataStore.Instance;
-            datastore.HouseAgents.Clear();
-            datastore.SimulationData.Clear();
-            datastore.EndOfDaySatisfaction.Clear();
+            //Testing that if behaviour is not input - exception is thrown
+            Assert.ThrowsException<Exception>(() => new HouseAgent(null, 1));
+        }
 
-            var env = new EnvironmentMas();
-
-            for (int k = 0; k < 25 / 2; k++)
-            {
-                var houseAg = new HouseAgent(new SelfishBehaviour(), k);
-                houseAg.SocialCapital = true;
-                datastore.HouseAgents.Add(houseAg);
-                env.Add(houseAg, $"house{k}");
-            }
-
-            for (int k = 25 / 2; k < 25; k++)
-            {
-                var houseAg = new HouseAgent(new SocialBehaviour(), k);
-                houseAg.SocialCapital = true;
-                datastore.HouseAgents.Add(houseAg);
-                env.Add(houseAg, $"house{k}");
-            }
-
-            var day = new DayManagerAgent(9, 5);
-            var ad = new AdvertisingAgent(10);
-            env.Memory.Add("UniqueTimeSlots", 24);
-            env.Memory.Add("NoOfAgents", 2);
-            env.Memory.Add("MaxSlotCapacity", 16);
-            env.Add(day, "daymanager");
-            env.Add(ad, "advertiser");
-            env.Start();
-
-            //If environment worked correctly - then there should be some agent satisfactions stored in this list
-            Assert.IsNotNull(datastore.EndOfDaySatisfaction);
+        [TestMethod()]
+        public void HouseAgent_InvalidID()
+        {
+            //Testing that if agent has an invalid ID - exception is thrown
+            Assert.ThrowsException<Exception>(() => new HouseAgent(new SocialBehaviour(), -100));
         }
 
         [TestMethod()]
@@ -111,7 +84,7 @@ namespace HonoursProject.Tests
             Assert.AreEqual(0.25, agent.CalculateSatisfaction(allocatedSlots));
         }
 
-        [TestMethod()]
+        /*[TestMethod()]
         public void ListUnwantedSlotsTest()
         {
             //Checking that the house agent is listing the correct slots - being the slots that it does not want
@@ -179,6 +152,6 @@ namespace HonoursProject.Tests
             string expected = $"{expectedTuple.Item1} {expectedTuple.Item2}";
 
             Assert.AreEqual(expected, actual);
-        }
+        }*/
     }
 }

@@ -62,7 +62,7 @@ namespace HonoursProject
         /*!
          Function will reset the timers of the advertising agent, the current exchange round counter and flags that determine what point in the exchange the agent is at.
          */
-        public void DayResetAdvertiser()
+        private void DayResetAdvertiser()
         {
             this._currentExchangeRound = 0;
             this._exchangeWaitTimer = 4;
@@ -125,7 +125,7 @@ namespace HonoursProject
          \param sender The household that is listing their unwanted time slots.
          \param parameters The contents of the "list" message sent by the household listing their slots. The message contents contain all the unwanted time slots for the agent.
          */
-        public void ListHouseTimeSlots(string sender, List<string> parameters)
+        private void ListHouseTimeSlots(string sender, List<string> parameters)
         {
             List<int> advertisedSlots = new List<int>();
             for (int i = 0; i < parameters.Count; i++)
@@ -141,7 +141,7 @@ namespace HonoursProject
          The agents that were not selected for consideration will have their made interaction flag reset as they would have not made an interaction.
          \return Message that will be sent to agent who has the desired slot containing the requesting agent name, their proposed slot and what slot they want
          */
-        public string RequestHandler()
+        private string RequestHandler()
         {
             string message = "";
             if (requests.Count == 0)
@@ -232,7 +232,7 @@ namespace HonoursProject
                     _pickedReq = false;
                     this._exchangeWaitTimer = 4;
                 }
-            }  
+            }
             else if (this._exchangeInProgress)
             {
                 //Waiting for agents to finish their exchange before broadcasting another time slot
@@ -249,7 +249,8 @@ namespace HonoursProject
                         this._endTimer = 4;
                         this._pickedReq = true;
                     }
-                } else if(_pickedReq)
+                }
+                else if (_pickedReq)
                 {
                     if (--this._endTimer <= 0)
                     {
