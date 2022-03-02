@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HonoursProject: HonoursProject.behaviours.DayManagerAgent Class Reference</title>
+<title>My Project: HonoursProject.behaviours.DayManagerAgent Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">HonoursProject
+   <div id="projectname">My Project
    </div>
   </td>
  </tr>
@@ -68,7 +68,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#properties">Properties</a> &#124;
 <a href="class_honours_project_1_1behaviours_1_1_day_manager_agent-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">HonoursProject.behaviours.DayManagerAgent Class Reference</div></div>
 </div><!--header-->
@@ -97,16 +96,6 @@ override void&#160;</td><td class="memItemRight" valign="bottom"><b>Act</b> (Mes
 <tr class="memitem:ad5ff1f11ef03419a9b43b831171a6a9d"><td class="memItemLeft" align="right" valign="top">override void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1behaviours_1_1_day_manager_agent.html#ad5ff1f11ef03419a9b43b831171a6a9d">ActDefault</a> ()</td></tr>
 <tr class="memdesc:ad5ff1f11ef03419a9b43b831171a6a9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Act default function.  <a href="class_honours_project_1_1behaviours_1_1_day_manager_agent.html#ad5ff1f11ef03419a9b43b831171a6a9d">More...</a><br /></td></tr>
 <tr class="separator:ad5ff1f11ef03419a9b43b831171a6a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b014a55330c247563388649cd3b51f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_honours_project_1_1behaviours_1_1_day_manager_agent.html#a3b014a55330c247563388649cd3b51f8">EndOfDayManager</a> ()</td></tr>
-<tr class="memdesc:a3b014a55330c247563388649cd3b51f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that will run functions that are to be executed at the end of a day and increment day counter.  <a href="class_honours_project_1_1behaviours_1_1_day_manager_agent.html#a3b014a55330c247563388649cd3b51f8">More...</a><br /></td></tr>
-<tr class="separator:a3b014a55330c247563388649cd3b51f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="properties" name="properties"></a>
-Properties</h2></td></tr>
-<tr class="memitem:a158c81b3d1cd794f61e44230b31b8cb4"><td class="memItemLeft" align="right" valign="top"><a id="a158c81b3d1cd794f61e44230b31b8cb4" name="a158c81b3d1cd794f61e44230b31b8cb4"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>CurrentDay</b><code> [get]</code></td></tr>
-<tr class="memdesc:a158c81b3d1cd794f61e44230b31b8cb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for current day in the model. <br /></td></tr>
-<tr class="separator:a158c81b3d1cd794f61e44230b31b8cb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >DayManager Agent. </p>
@@ -170,26 +159,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>CurrentDay</b><code> [
 
 </div>
 </div>
-<a id="a3b014a55330c247563388649cd3b51f8" name="a3b014a55330c247563388649cd3b51f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b014a55330c247563388649cd3b51f8">&#9670;&nbsp;</a></span>EndOfDayManager()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HonoursProject.behaviours.DayManagerAgent.EndOfDayManager </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Function that will run functions that are to be executed at the end of a day and increment day counter. </p>
-<p >The AllocatedSlots function is not included in this handler function as the AllocatedSlots function requires randomness, which is difficult to unit test, and also requires an ActressMAS environment to be running since the AllocatedSlots function will broadcast messages to agents, if there is no environment running then this would cause an issue. </p>
-
-</div>
-</div>
 <a id="af358419868ed2d9d7f9dcb58e75e0cf9" name="af358419868ed2d9d7f9dcb58e75e0cf9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af358419868ed2d9d7f9dcb58e75e0cf9">&#9670;&nbsp;</a></span>Setup()</h2>
 
@@ -211,7 +180,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>CurrentDay</b><code> [
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>FINAL SOFTWARE/HonoursProject/DayManagerAgent.cs</li>
+<li>G:/Honours project/FINAL SOFTWARE/HonoursProject/DayManagerAgent.cs</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

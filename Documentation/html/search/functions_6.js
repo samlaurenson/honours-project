@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['randomslotallocationhandler_0',['RandomSlotAllocationHandler',['../class_honours_project_1_1_house_agent.html#ace26262b275c458babdbc8e3522d0c01',1,'HonoursProject::HouseAgent']]],
-  ['requestedslotallocationhandler_1',['RequestedSlotAllocationHandler',['../class_honours_project_1_1_house_agent.html#a8a6db8d19fcd7c7e3a5a6a68db1c5022',1,'HonoursProject::HouseAgent']]],
-  ['requesthandler_2',['RequestHandler',['../class_honours_project_1_1_advertising_agent.html#af636737a439ea8ccd48f0c93894d73cc',1,'HonoursProject::AdvertisingAgent']]]
+  ['setup_0',['Setup',['../class_honours_project_1_1_advertising_agent.html#a98430cf36bcb178e3a0de3d802387577',1,'HonoursProject.AdvertisingAgent.Setup()'],['../class_honours_project_1_1behaviours_1_1_day_manager_agent.html#af358419868ed2d9d7f9dcb58e75e0cf9',1,'HonoursProject.behaviours.DayManagerAgent.Setup()'],['../class_honours_project_1_1_house_agent.html#a1d6fe9f43f85786ff17e36ab8148582f',1,'HonoursProject.HouseAgent.Setup()']]]
 ];
